@@ -55,10 +55,11 @@ This function should only modify configuration layer settings."
      imenu-list
      ycmd
      ;; neotree
-     spell-checking
+     (spell-checking :variables spell-checking-enable-by-default nil)
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-sort-by-usage t)
+     syntax-checking
      ;; markdown
      ranger
      org
@@ -78,7 +79,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(darkroom
-                                      ;; (dired+ :location "~/.emacs.d/elpa/26.1/dired+-20170818.1411")
+                                      (dired+ :location "~/.emacs.d/elpa/26.1/dired+-20170818.1411")
                                       dracula-theme
                                       ag
                                       doom-themes)
@@ -215,7 +216,6 @@ It should only modify the values of Spacemacs settings."
      solarized-dark
      spacemacs-light
      solarized-light
-     leuven
      monokai
      zenburn)
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -239,8 +239,8 @@ It should only modify the values of Spacemacs settings."
                      ;; "Meslo LG L DZ for Powerline" :size 19 :height 0
                      ;; "Inconsolata for Powerline"
                      "Inconsolata"
-                     :size 32  ;; Inconsolata Laptop
-                     ;; :size 16  ;; Inconsolata Desktop
+                     ;; :size 32  ;; Inconsolata Laptop
+                     :size 16  ;; Inconsolata Desktop
                      :weight bold
                      ;; :width condensed
                      ;; :width extra-condensed
@@ -554,40 +554,40 @@ you should place your code here."
     (evil-scroll-line-to-center
      (line-number-at-pos)))
 
-  ;; (defvar ao/v-dired-omit t
-  ;;   "If dired-omit-mode enabled by default. Don't setq me.")
+  (defvar ao/v-dired-omit t
+    "If dired-omit-mode enabled by default. Don't setq me.")
 
-  ;; (defun ao/dired-omit-switch ()
-  ;;   "this function is a small enhancement for `dired-omit-mode', which will
-  ;;  \"remember\" omit state across Dired buffers."
-  ;;   (interactive)
-  ;;   (if (eq ao/v-dired-omit t)
-  ;;       (setq ao/v-dired-omit nil)
-  ;;     (setq ao/v-dired-omit t))
-  ;;   (ao/dired-omit-caller)
-  ;;   (when (equal major-mode 'dired-mode)
-  ;;     (revert-buffer)))
+  (defun ao/dired-omit-switch ()
+    "this function is a small enhancement for `dired-omit-mode', which will
+   \"remember\" omit state across Dired buffers."
+    (interactive)
+    (if (eq ao/v-dired-omit t)
+        (setq ao/v-dired-omit nil)
+      (setq ao/v-dired-omit t))
+    (ao/dired-omit-caller)
+    (when (equal major-mode 'dired-mode)
+      (revert-buffer)))
 
-  ;; (defun ao/dired-omit-caller ()
-  ;;   (if ao/v-dired-omit
-  ;;       (setq dired-omit-mode t)
-  ;;     (setq dired-omit-mode nil)))
+  (defun ao/dired-omit-caller ()
+    (if ao/v-dired-omit
+        (setq dired-omit-mode t)
+      (setq dired-omit-mode nil)))
 
-  ;; (defun ao/dired-back-to-top()
-  ;;   "Move to the first file."
-  ;;   (interactive)
-  ;;   (beginning-of-buffer)
-  ;;   (dired-next-line 2))
+  (defun ao/dired-back-to-top()
+    "Move to the first file."
+    (interactive)
+    (beginning-of-buffer)
+    (dired-next-line 2))
 
-  ;; (defun ao/dired-jump-to-bottom()
-  ;;   "Move to last file."
-  ;;   (interactive)
-  ;;   (end-of-buffer)
-  ;;   (dired-next-line -1))
+  (defun ao/dired-jump-to-bottom()
+    "Move to last file."
+    (interactive)
+    (end-of-buffer)
+    (dired-next-line -1))
 
-  ;; (defun align-before-last-item (start end)
-  ;;   (interactive "r")
-  ;;   (align-regexp start end (concat "\\(\\s-*\\)" "[a-zA-Z_]+[;,]$")))
+  (defun align-before-last-item (start end)
+    (interactive "r")
+    (align-regexp start end (concat "\\(\\s-*\\)" "[a-zA-Z_]+[;,]$")))
 
   (defun term-send-return()
     "send execute"
@@ -642,6 +642,10 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; (load-file "~/.emacs.d/private/local/prm-mode/prm-mode.el")
   ;; (require 'prm-mode)
   ;; (add-to-list 'auto-mode-alist '("\\.prm$" . prm-mode))
+  ;; ------------------------- GMsh -------------------------------------------
+  (load-file "~/.emacs.d/private/local/gmsh.el")
+  (require 'gmsh)
+  (add-to-list 'auto-mode-alist '("\\.geo$" . gmsh-mode))
   ;; ------------------- silver searcher -------------------------------------
   (require 'ag)
   (define-key evil-normal-state-map (kbd "SPC p s") 'projectile-ag)
@@ -669,7 +673,6 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (add-hook 'python-mode-hook  (fci-mode 1))
   (add-hook 'freefem++-mode-hook  (fci-mode 1))
   (add-hook 'org-mode-hook  (fci-mode 1))
-  (add-hook 'freefem++-mode-hook 'linum-mode)
   (add-hook 'text-mode-hook (lambda () (fci-mode -1)))
   (add-hook 'prog-mode-hook  (lambda () (fci-mode 1)))
   ;; ---------------------------- LaTeX --------------------------------------
@@ -711,7 +714,6 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; ;; Browse url function use w3m
   ;; (setq w3m-view-this-url-new-session-in-background t)
   ;; ;; W3M view url new session in background
-
   ;; ----------------------------- Fixes ---------------------------------
   ;; Fix paste in vim visual
   (fset 'evil-visual-update-x-selection 'ignore)
@@ -730,11 +732,22 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (add-hook 'c++-mode-hook (lambda () (purpose-mode nil)))
   ;; no asking for compilation directory
   (put 'helm-make-build-dir 'safe-local-variable 'stringp)
+  ;; make compilation buffer stick to the frame
+  (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
+  ;; fix semantic auto complete bullshit
+  (defun semantic-completion-advice (adviced-f &rest r)
+    "Check if POINT it's inside a string or comment before calling semantic-*"
+    (if (or (inside-string-q) (inside-comment-q))
+        (not (message "Oleeee! do not call function, we're inside a string or comment!"))
+      (apply adviced-f r)))
+  (advice-add 'semantic-analyze-completion-at-point-function :around #'semantic-completion-advice)
   ;; ----------------------------- Ranger ------------------------------------
   (ranger-override-dired-mode t)
   (setq ranger-cleanup-eagerly t)
-  (setq ranger-cleanup-on-disable t)
-  (setq ranger-enter-with-minus t)
+  ;; (setq ranger-cleanup-on-disable t)
+  (setq ranger-parent-depth 0)
+
+  (setq ranger-enter-with-minus nil)
   (setq ranger-show-hidden nil)
   (setq ranger-deer-show-details nil)
   (define-key dired-mode-map (kbd "<C-return>") 'ergoemacs-open-in-external-app)
@@ -749,7 +762,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; (setq-default dired-omit-files-p 'nil)  ; Don't show hidden files by default
   ;; (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$\\|\\.pyc$"))
   ;; (add-hook 'dired-mode-hook 'ao/dired-omit-caller)
- ;; (define-key evil-normal-state-map (kbd "_") 'projectile-dired)
+  ;; (define-key evil-normal-state-map (kbd "_") 'projectile-dired)
   ;; (define-key evil-normal-state-map (kbd "-") 'dired-jump)
   ;; (setq diredp-hide-details-initially-flag nil)
   ;; (eval-after-load "dired-mode"
@@ -758,11 +771,25 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;;            "h" 'diredp-up-directory-reuse-dir-buffer
   ;;            "l" 'diredp-find-file-reuse-dir-buffer
   ;;            "I" 'ao/dired-omit-switch
-  ;;            "za" 'ao/dired-omit-switch
+  ;;            "zh" 'ao/dired-omit-switch
   ;;            "gg" 'ao/dired-back-to-top
   ;;            "G" 'ao/dired-jump-to-bottom
   ;;            )
   ;;   )
+  (define-key dired-mode-map (kbd "<C-return>") 'ergoemacs-open-in-external-app)
+  ;; ----------------------- spell and syntax checking -----------------------
+  (add-hook 'latex-mode-hook (lambda () (flyspell-mode t)))
+  (add-hook 'org-mode-hook (lambda () (flyspell-mode t)))
+  (add-hook 'c++-mode-hook (lambda () (setq flycheck-gcc-language-standard "c++11")))
+  ;; ----------------------------- Shell --------------------------------
+  ;; spacemacs/helm-shell-history
+  (evil-define-key 'normal comint-mode-map (kbd "<return>") 'term-send-return)
+  (evil-define-key 'normal comint-mode-map (kbd ",,") 'spacemacs/helm-shell-history)
+  (eval-after-load "comint-mode"
+    (evilified-state-evilify comint-mode comint-mode-map
+      "," 'spacemacs/helm-shell-history
+      )
+    )
   ;; ----------------------------- Keybindings --------------------------------
   ;; show compilation window
   (define-key evil-normal-state-map (kbd "SPC b c") 'switch-to-compilation-buffer)
@@ -816,6 +843,8 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (define-key evil-normal-state-map (kbd ">") 'evil-shift-right-line)
   (define-key evil-normal-state-map (kbd "<") 'evil-shift-left-line)
   ;; evil keys in company mode
+  (define-key evil-normal-state-map (kbd "]") 'evil-forward-section-begin)
+  (define-key evil-normal-state-map (kbd "[") 'evil-backward-section-begin)
 
   (add-hook 'company-mode-hook ;; guessing
             '(lambda ()
@@ -842,7 +871,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (define-key evil-normal-state-map (kbd "M-l") 'windmove-right)
 
   ;; to work in term
-(evil-define-key 'normal comint-mode-map (kbd "<return>") 'term-send-return)
+  (evil-define-key 'normal comint-mode-map (kbd "<return>") 'term-send-return)
   ;; (define-key evil-hybrid-state-map (kbd "M-h") 'windmove-left)
   ;; (define-key evil-hybrid-state-map (kbd "M-j") 'windmove-down)
   ;; (define-key evil-hybrid-state-map (kbd "M-k") 'windmove-up)
@@ -908,6 +937,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (spaceline-toggle-buffer-id-on)
   (spaceline-toggle-buffer-position-off)
   (spaceline-toggle-anzu-on)
+  (spacemacs/toggle-minibuffer-system-monitor-on)
   ;;  maximum 68 lines (2-pane view on my laptop)
   (setq-default fill-column 78)
   ;; (setq fci-rule-color "#5682a3")
@@ -916,7 +946,9 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
 
   ;; (setq evil-normal-state-cursor '("#51afef" (box)))
   ;; (setq evil-normal-state-cursor '(box "#3F5E9D"))
-  ;; (setq evil-hybrid-state-cursor '("chartreuse3" (bar . 2)))
+  (setq evil-normal-state-cursor '("#51afef" box))
+  (setq evil-hybrid-state-cursor '("#98be65" bar))
+  (setq evil-visual-state-cursor '("#51afef" box))
   ;; (setq evil-hybrid-state-cursor '("#98be65" (bar . 2)))
   ;; `(spacemacs-hybrid-face ((t (:foreground "#98be65" :background "#92f442" :inherit 'mode-line))))
 
@@ -936,7 +968,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (ranger ag yapfify xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tagedit stickyfunc-enhance srefactor spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox spinner orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc indent-guide imenu-list hydra hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit ghub with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump dracula-theme doom-themes all-the-icons memoize disaster diminish diff-hl define-word darkroom cython-mode company-ycmd ycmd pkg-info request-deferred request deferred epl company-web web-completion-data company-tern dash-functional tern company-statistics company-c-headers company-auctex company-anaconda company column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed auctex anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup))))
+    (prettier-js helm-git-grep evil-ediff doom-modeline eldoc-eval shrink-path ag yapfify xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tagedit stickyfunc-enhance srefactor spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox spinner orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc indent-guide imenu-list hydra hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit ghub with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump dracula-theme doom-themes all-the-icons memoize disaster diminish diff-hl define-word darkroom cython-mode company-ycmd ycmd pkg-info request-deferred request deferred epl company-web web-completion-data company-tern dash-functional tern company-statistics company-c-headers company-auctex company-anaconda company column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed auctex anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup \(one-dark\ :location\ local\)-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
