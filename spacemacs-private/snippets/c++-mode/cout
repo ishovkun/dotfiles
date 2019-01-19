@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name : cout
+#key : cout
+#contributor : Igor
+# --
+std::cout << $1 << std::endl;

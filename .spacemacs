@@ -1,4 +1,4 @@
-;; -*- mode: emacs-lisp -*-
+;; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -33,7 +33,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(html
+   '(yaml
+     html
      javascript
      cmake
      ;; ----------------------------------------------------------------
@@ -42,6 +43,7 @@ This function should only modify configuration layer settings."
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      helm
+     ;; ivy
      markdown
      semantic
      auto-completion
@@ -50,25 +52,37 @@ This function should only modify configuration layer settings."
      git
      (latex :variables latex-enable-auto-fill nil)
      python
-     (c-c++ :variables c-c++-enable-clang-support t
-            c-c++-default-mode-for-headers 'c++-mode)
+     (c-c++ :variables
+            ;; c-c++-enable-clang-support t
+            c-c++-backend 'lsp-cquery
+            c-c++-adopt-subprojects t
+            c-c++-lsp-executable "/usr/bin/cquery"
+            c-c++-default-mode-for-headers 'c++-mode
+            lsp-project-blacklist "/usr"
+            c-c++-enable-google-style t)
      imenu-list
-     ycmd
+     ;; ycmd
+     lsp
      ;; neotree
      (spell-checking :variables spell-checking-enable-by-default nil)
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
+                      auto-completion-enable-help-tooltip t
                       auto-completion-enable-sort-by-usage t)
+     spell-checking
      syntax-checking
      ;; markdown
      ranger
      org
+     deft                               ; notes
+     google-calendar
      shell
      ;; (shell :variables
      ;;        shell-default-position 'bottom
      ;;        shell-default-height 30)     ;; syntax-checking
      version-control
-     ;; w3m
+     w3m
+     pdf
      )
 
    ;; List of additional packages that will be installed without being
@@ -79,9 +93,8 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(darkroom
-                                      (dired+ :location "~/.emacs.d/elpa/26.1/dired+-20170818.1411")
-                                      dracula-theme
                                       ag
+                                      all-the-icons-dired
                                       doom-themes)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -208,6 +221,7 @@ It should only modify the values of Spacemacs settings."
    '(
      ;; (palenight :location local)
      (one-dark :location local)
+     ;; (one-dark-multi :location local)
      ;; (cobalt2 :location local)
      doom-vibrant
      solarized-dark
@@ -218,16 +232,18 @@ It should only modify the values of Spacemacs settings."
      solarized-light
      monokai
      zenburn)
+
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
-   ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
-   ;; are spaceline themes. `vanilla' is default Emacs mode-line. `custom' is a
-   ;; user defined themes, refer to the DOCUMENTATION.org for more info on how
-   ;; to create your own spaceline theme. Value can be a symbol or list with\
-   ;; additional properties.
+   ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
+   ;; first three are spaceline themes. `doom' is the doom-emacs mode-line.
+   ;; `vanilla' is default Emacs mode-line. `custom' is a user defined themes,
+   ;; refer to the DOCUMENTATION.org for more info on how to create your own
+   ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
    ;; other separators at
    ;; https://github.com/syl20bnr/spacemacs/blob/develop/doc/DOCUMENTATION.org#powerline-separators
-   dotspacemacs-mode-line-theme '(spacemacs :separator arrow :separator-scale 1.0)
+   dotspacemacs-mode-line-theme '(doom :separator arrow :separator-scale 1.1)
+   ;; dotspacemacs-mode-line-theme '(all-the-icons :separator arrow :separator-scale 1.1)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -236,15 +252,17 @@ It should only modify the values of Spacemacs settings."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '(
-                     ;; "Meslo LG L DZ for Powerline" :size 19 :height 0
-                     ;; "Inconsolata for Powerline"
-                     "Inconsolata"
-                     ;; :size 32  ;; Inconsolata Laptop
-                     :size 16  ;; Inconsolata Desktop
-                     :weight bold
-                     ;; :width condensed
-                     ;; :width extra-condensed
-                     :powerline-scale 2)
+                    ;; ------------- iosevka ------------------
+                    ;; "Inconsolata"
+                    ;; "Inconsolata LGC" ;; aur otf-inconsolata-lgc-git
+                    ;; :size 28          ;; Inconsolata Laptop
+                    ;; :size 16          ;; Inconsolata Desktop
+                    ;; ------------- iosevka ------------------
+                    "Iosevka SS04" ;; aur ttf-iosevka-ss04
+                    :size 31       ;; iosevka Laptop
+                    :weight bold
+                    ;; :width extra-condensed
+                    :powerline-scale 1.0)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
 
@@ -314,7 +332,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; define the position to display `helm', options are `bottom', `top',
    ;; `left', or `right'. (default 'bottom)
-   dotspacemacs-helm-position 'bottom
+   dotspacemacs-helm-position 'top
 
    ;; Controls fuzzy matching in helm. If set to `always', force fuzzy matching
    ;; in all non-asynchronous sources. If set to `source', preserve individual
@@ -325,7 +343,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil, the paste transient-state is enabled. While enabled, pressing
    ;; `p' several times cycles through the elements in the `kill-ring'.
    ;; (default nil)
-   dotspacemacs-enable-paste-transient-state nil
+   dotspacemacs-enable-paste-transient-state 1
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
@@ -495,6 +513,13 @@ It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   )
 
+(defun dotspacemacs/user-load ()
+  "Library to load while dumping.
+This function is called only while dumping Spacemacs configuration. You can
+`require' or `load' the libraries of your choice that will be included in the
+dump."
+  )
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -524,30 +549,6 @@ you should place your code here."
       (previous-line)
       (indent-for-tab-command)))
 
-  (defun select-current-line ()
-    "Select current line."
-    (interactive)
-    (back-to-indentation)
-    (set-mark (line-end-position))
-    (exchange-point-and-mark)
-    )
-
-  (defun insert-new-line-below ()
-    "inserts a new line below and moves cursor to its beginning"
-    (interactive)
-    (let ((oldpos (point)))
-      (end-of-line)
-      (newline-and-indent)))
-
-  (defun insert-new-line-above ()
-    "inserts a new line above and moves cursor to its beginning"
-    (interactive)
-    (let ((oldpos (point)))
-      (beginning-of-line)
-      (newline)
-      (previous-line)
-      (indent-for-tab-command)))
-
   (defun scroll-up-half-page ()
     (interactive)
     (evil-scroll-up nil)
@@ -557,43 +558,46 @@ you should place your code here."
   (defvar ao/v-dired-omit t
     "If dired-omit-mode enabled by default. Don't setq me.")
 
-  (defun ao/dired-omit-switch ()
-    "this function is a small enhancement for `dired-omit-mode', which will
-   \"remember\" omit state across Dired buffers."
-    (interactive)
-    (if (eq ao/v-dired-omit t)
-        (setq ao/v-dired-omit nil)
-      (setq ao/v-dired-omit t))
-    (ao/dired-omit-caller)
-    (when (equal major-mode 'dired-mode)
-      (revert-buffer)))
+  ;; (defun ao/dired-omit-switch ()
+  ;;   "this function is a small enhancement for `dired-omit-mode', which will
+  ;;  \"remember\" omit state across Dired buffers."
+  ;;   (interactive)
+  ;;   (if (eq ao/v-dired-omit t)
+  ;;       (setq ao/v-dired-omit nil)
+  ;;     (setq ao/v-dired-omit t))
+  ;;   (ao/dired-omit-caller)
+  ;;   (when (equal major-mode 'dired-mode)
+  ;;     (revert-buffer)))
 
-  (defun ao/dired-omit-caller ()
-    (if ao/v-dired-omit
-        (setq dired-omit-mode t)
-      (setq dired-omit-mode nil)))
+  ;; (defun ao/dired-omit-caller ()
+  ;;   (if ao/v-dired-omit
+  ;;       (setq dired-omit-mode t)
+  ;;     (setq dired-omit-mode nil)))
 
-  (defun ao/dired-back-to-top()
-    "Move to the first file."
-    (interactive)
-    (beginning-of-buffer)
-    (dired-next-line 2))
+  ;; (defun ao/dired-back-to-top()
+  ;;   "Move to the first file."
+  ;;   (interactive)
+  ;;   (beginning-of-buffer)
+  ;;   (dired-next-line 2))
 
-  (defun ao/dired-jump-to-bottom()
-    "Move to last file."
-    (interactive)
-    (end-of-buffer)
-    (dired-next-line -1))
+  ;; (defun ao/dired-jump-to-bottom()
+  ;;   "Move to last file."
+  ;;   (interactive)
+  ;;   (end-of-buffer)
+  ;;   (dired-next-line -1))
 
   (defun align-before-last-item (start end)
     (interactive "r")
     (align-regexp start end (concat "\\(\\s-*\\)" "[a-zA-Z_]+[;,]$")))
 
   (defun term-send-return()
-    "send execute"
+    "send return"
     (interactive)
-    (evil-goto-line)
-    (comint-send-input))
+    (if (equal (point) (point-max))
+      (comint-send-input)
+      (progn (evil-goto-line)
+       (evil-end-of-line))
+      ))
   ;;----------------------------------------
   ;;Open file by C-return in external application
   (defun ergoemacs-open-in-external-app ()
@@ -629,8 +633,18 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
           (switch-to-buffer-other-window (current-buffer))
         (switch-to-buffer (current-buffer)))))
 
-  (defun switch-to-shell-buffer (&optional arg)
+  (defun switch-to-eshell-buffer (&optional arg)
     "Switch to the `*Compilation*' buffer.
+if prefix argument ARG is given, switch to it in an other, possibly new window."
+    (interactive "P")
+    (with-current-buffer (get-buffer "*eshell*")
+      (goto-char (point-max))
+      (if arg
+          (switch-to-buffer-other-window (current-buffer))
+        (switch-to-buffer (current-buffer)))))
+
+  (defun switch-to-shell-buffer (&optional arg)
+    "Switch to the `*Shell*' buffer.
 if prefix argument ARG is given, switch to it in an other, possibly new window."
     (interactive "P")
     (with-current-buffer (get-buffer "*shell*")
@@ -638,17 +652,62 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
       (if arg
           (switch-to-buffer-other-window (current-buffer))
         (switch-to-buffer (current-buffer)))))
+
+  (defun switch-to-w3m-buffer (&optional arg)
+    "Switch to the `*w3m*' buffer.
+if prefix argument ARG is given, switch to it in an other, possibly new window."
+    (interactive "P")
+    (with-current-buffer (get-buffer "*w3m*")
+      (goto-char (point-max))
+      (if arg
+          (switch-to-buffer-other-window (current-buffer))
+        (switch-to-buffer (current-buffer)))))
+
+  (defun kill-all-dired-buffers ()
+    "Kill all dired buffers."
+    (interactive)
+    (save-excursion
+      (let ((count 0))
+        (dolist (buffer (buffer-list))
+          (set-buffer buffer)
+          (when (equal major-mode 'ranger-mode)
+            (setq count (1+ count))
+            (kill-buffer buffer)))
+        (message "Killed %i dired buffer(s)." count)))
+    (ranger-close))
+
+	;; clear these weird carrige returns produced by windows editors (^M)
+	(defun delete-fucking-ms ()
+		(interactive)
+		(save-excursion
+			(goto-char 0)
+			(while (search-forward "\r" nil :noerror)
+				(replace-match ""))))
+
+  (defun evil-paste-after-from-0 ()
+    (interactive)
+    (let ((evil-this-register ?0))
+      (call-interactively 'evil-paste-after)))
   ;; ------------------- dealii prm ------------------------------------------
   ;; (load-file "~/.emacs.d/private/local/prm-mode/prm-mode.el")
   ;; (require 'prm-mode)
   ;; (add-to-list 'auto-mode-alist '("\\.prm$" . prm-mode))
-  ;; ------------------------- GMsh -------------------------------------------
-  (load-file "~/.emacs.d/private/local/gmsh.el")
-  (require 'gmsh)
-  (add-to-list 'auto-mode-alist '("\\.geo$" . gmsh-mode))
+  ;; --------------------- Eclipse .DATA -------------------------------------
+  (load-file "~/.emacs.d/private/local/eclipse-mode.el")
+  (require 'eclipse)
+  ;; (autoload 'eclipse-mode "eclipse" "Enter ECLIPSE mode." t)
+  (setq auto-mode-alist (cons '("\\.DATA\\'" . eclipse-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.data\\'" . eclipse-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.INC\\'" . eclipse-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.inc\\'" . eclipse-mode) auto-mode-alist))
+  (autoload 'eclipse-shell "eclipse" "Interactive ECLIPSE mode." t)
+  ;; -------------------------- Javascript -----------------------------------
+  (setq auto-mode-alist (cons '("\\.qml\\'" . javascript-mode) auto-mode-alist))
   ;; ------------------- silver searcher -------------------------------------
   (require 'ag)
   (define-key evil-normal-state-map (kbd "SPC p s") 'projectile-ag)
+  (define-key evil-normal-state-map (kbd "SPC p S") 'ag-project-files)
+  (define-key ag-mode-map (kbd "n") #'evil-search-next)
   ;; --------------------------- Python --------------------------------------
   ;; (if (eq system-type 'gnu/linux)
   ;;     (progn
@@ -673,11 +732,27 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (add-hook 'python-mode-hook  (fci-mode 1))
   (add-hook 'freefem++-mode-hook  (fci-mode 1))
   (add-hook 'org-mode-hook  (fci-mode 1))
+  (add-hook 'freefem++-mode-hook 'linum-mode)
   (add-hook 'text-mode-hook (lambda () (fci-mode -1)))
   (add-hook 'prog-mode-hook  (lambda () (fci-mode 1)))
+  ;; ---------------------------- Deft ---------------------------------------
+  (setq deft-directory "~/Dropbox/enotes")
+  (setq deft-extensions '("org" "md"))
+  ;; deft-auto-save-interval (default: 1.0).
+  (setq deft-auto-save-interval 60.0)
+
+  (setq deft-auto-save-buffers nil)
+  (setq deft-use-filename-as-title nil)
+  (setq deft-use-filter-string-for-filename t)
+  (setq deft-file-naming-rules
+        '((noslash . "-")
+          (nospace . "-")
+          (case-fn . downcase)))
+  ;; to customize format: M-x customize-variables deft-time-format
+  ;; set to " %m-%d"
   ;; ---------------------------- LaTeX --------------------------------------
   (auctex-latexmk-setup)
-  (set-default 'preview-scale-function 2.0)
+  (set-default 'preview-scale-function 3.0)
   (spacemacs/toggle-auto-fill-mode-off)
   ;; (setq latex-enable-auto-fill -1)
   ;; (word-wrap) ;; as opposed to characer wrap
@@ -685,36 +760,77 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (add-hook 'text-mode-hook (lambda () (auto-fill-mode -1)))
   ;; bigger latex fragment
   (add-hook 'org-mode-hook (lambda ()
-                             (plist-put org-format-latex-options :scale 2.0)
+                             (plist-put org-format-latex-options :scale 3.0)
                              ))
+  (setq org-startup-with-inline-images t)
+  (evil-define-key 'normal org-mode-map (kbd ", .") 'org-toggle-latex-fragment)
+  ;; ---------------------------- ORG calendar --------------------------------------
+  (setq org-gcal-client-id "1046223883337-g5m0oj48ri3g0blvpiker752kd39qv43.apps.googleusercontent.com"
+        org-gcal-client-secret "zLRzWSYHzuQ4GG8qAJPFLjZY")
+  (setq org-gcal-file-alist '(("igshov@gmail.com" . "/home/ishovkun/Dropbox/enotes/gmail_cal.org")))
+  (setq org-agenda-files
+        (quote ("/home/ishovkun/Dropbox/enotes/gmail_cal.org")))
   ;; ---------------------- Darkroom --------------------------------
   (require 'darkroom)
   ;; ---------------------- YCMD --------------------------------
   ;; build ycmd with ./build.py --clang-completer --system-libclang
-  (require 'ycmd)
-  (add-hook 'c++-mode-hook 'ycmd-mode)
-  ;; (setq ycmd-server-command '("python" "-u" "/home/ishovkun/build/ycmd/ycmd"))
-  (setq ycmd-server-command (list "python" (file-truename "~/build/ycmd/ycmd")))
-  (setq ycmd-force-semantic-completion t)
+  ;; (require 'ycmd)
+  ;; (add-hook 'c++-mode-hook 'ycmd-mode)
+  ;; (setq ycmd-server-command (list "python" (file-truename "~/build/ycmd/ycmd")))
+  ;; (setq ycmd-server-command (list "python" (file-truename "/usr/share/ycmd/ycmd")))
+  ;; (setq ycmd-force-semantic-completion t)
   ;; ----------------------------- imenu-list --------------------------
   (setq imenu-list-auto-resize nil)
   (setq imenu-list-size 0.2)
   ;; ----------------------------- doc-view ----------------------------
   (setq doc-view-continuous t)
   ;; ------------------------------ W3M --------------------------------
-  ;; (setq w3m-home-page "https://www.google.com")
-  ;; ;; W3M Home Page
-  ;; (setq w3m-default-display-inline-images t)
-  ;; (setq w3m-default-toggle-inline-images t)
-  ;; ;; W3M default display images
-  ;; (setq w3m-command-arguments '("-cookie" "-F"))
-  ;; (setq w3m-use-cookies t)
-  ;; ;; W3M use cookies
-  ;; (setq browse-url-browser-function 'w3m-browse-url)
-  ;; ;; Browse url function use w3m
-  ;; (setq w3m-view-this-url-new-session-in-background t)
-  ;; ;; W3M view url new session in background
+  ;; disable annoying confirmation about leaving secure page
+  (setq w3m-confirm-leaving-secure-page nil)
+  ;; W3M Home Page
+  (setq w3m-home-page "https://www.google.com")
+  ;; W3M default display images
+  (setq w3m-default-display-inline-images t)
+  (setq w3m-default-toggle-inline-images t)
+  ;; W3M use cookies
+  (setq w3m-command-arguments '("-cookie" "-F"))
+  (setq w3m-use-cookies t)
+  ;; Browse url function use w3m
+  (setq browse-url-browser-function 'w3m-browse-url)
+  ;; W3M view url new session in background
+  (setq w3m-view-this-url-new-session-in-background t)
+  ;; keys
+  (with-eval-after-load 'w3m
+    (define-key w3m-mode-map (kbd "f") 'ace-link-eww)
+    (define-key w3m-mode-map (kbd "e") 'evil-scroll-up)
+    (define-key w3m-mode-map (kbd "C-e") 'evil-scroll-up)
+    (define-key w3m-mode-map (kbd "d") 'evil-scroll-down)
+    (define-key w3m-mode-map (kbd "M-k") 'windmove-up)
+    (define-key w3m-mode-map (kbd "M-n") 'w3m-next-buffer)
+    (define-key w3m-mode-map (kbd "M-p") 'w3m-previous-buffer)
+    (define-key w3m-mode-map (kbd "x") 'w3m-delete-buffer)
+    (define-key w3m-mode-map (kbd "w") 'w3m-select-buffer)
+    (evilified-state-evilify w3m-mode w3m-mode-map
+      "f" 'ace-link-eww
+      "C-e" 'evil-scroll-up
+      "ww" 'w3m-select-buffer
+      "H" 'w3m-view-previous-page
+      "L" 'w3m-view-next-page
+      )
+    )
+  ;; (ace-link-eww)
   ;; ----------------------------- Fixes ---------------------------------
+  ;; Fix slow helm frame popup in emacs-26 helm issue #1976
+  (when (= emacs-major-version 26)
+    (setq x-wait-for-event-timeout nil))
+  ;; workaround replace string bug
+  ;; https://github.com/syl20bnr/spacemacs/issues/9700
+  (setq frame-title-format nil)
+  ;; scrolling
+   ;;; scroll one line at a time (less "jumpy" than defaults)
+  (setq mouse-wheel-scroll-amount '(2 ((shift) . 1))) ;; two lines at a time
+  (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+  (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
   ;; Fix paste in vim visual
   (fset 'evil-visual-update-x-selection 'ignore)
   ;; use spaces instead of tabs
@@ -729,7 +845,9 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; line numbers in cmake-mode
   (add-hook 'cmake-mode-hook  'display-line-numbers-mode)
   ;; fix compilation mode position
-  (add-hook 'c++-mode-hook (lambda () (purpose-mode nil)))
+ (add-hook 'c-mode-hook      (lambda () (purpose-mode -1)))
+ (add-hook 'c++-mode-hook    (lambda () (purpose-mode -1)))
+ (add-hook 'ranger-mode-hook (lambda () (purpose-mode -1)))
   ;; no asking for compilation directory
   (put 'helm-make-build-dir 'safe-local-variable 'stringp)
   ;; make compilation buffer stick to the frame
@@ -741,6 +859,10 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
         (not (message "Oleeee! do not call function, we're inside a string or comment!"))
       (apply adviced-f r)))
   (advice-add 'semantic-analyze-completion-at-point-function :around #'semantic-completion-advice)
+  ;; work around rename bug
+  (setq frame-title-format nil)
+  ;; fix evil paste
+  (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
   ;; ----------------------------- Ranger ------------------------------------
   (ranger-override-dired-mode t)
   (setq ranger-cleanup-eagerly t)
@@ -750,11 +872,22 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (setq ranger-enter-with-minus nil)
   (setq ranger-show-hidden nil)
   (setq ranger-deer-show-details nil)
+  (add-hook 'ranger-mode-hook (lambda () (purpose-mode -1)))
   (define-key dired-mode-map (kbd "<C-return>") 'ergoemacs-open-in-external-app)
-  ;; (define-key dired-mode-map (kbd "J") 'ranger-next-tab)
-  ;; (define-key dired-mode-map (kbd "K") 'ranger-prev-rab)
+  (define-key ranger-mode-map (kbd "C-t") 'ranger-new-tab)
+  (define-key ranger-mode-map (kbd "C-w") 'ranger-close-tab)
+  (define-key ranger-mode-map (kbd "J") 'ranger-next-tab)
+  (define-key ranger-mode-map (kbd "K") 'ranger-prev-tab)
+  (define-key ranger-mode-map (kbd "q") 'kill-all-dired-buffers)
+  ;; (put 'dired-find-file-other-buffer 'disabled t)
   ;; zp - toggle details
   ;; zz show history
+  (setq ranger-omit-regexp "^\.DS_Store$"
+        ranger-excluded-extensions '("mkv" "iso" "mp4")
+        ranger-deer-show-details nil
+        ranger-max-preview-size 10)
+  (define-key ranger-mode-map (kbd "<C-return>") 'ergoemacs-open-in-external-app)
+  (add-hook 'ranger-mode-hook 'all-the-icons-dired-mode)
   ;; ----------------------------- Dired -------------------------------------
   ;; (require 'dired+)  ; Enable dired+
   ;; (setq dired-dwim-target t)            ; copy to another dired window
@@ -776,7 +909,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;;            "G" 'ao/dired-jump-to-bottom
   ;;            )
   ;;   )
-  (define-key dired-mode-map (kbd "<C-return>") 'ergoemacs-open-in-external-app)
+  ;; (define-key dired-mode-map (kbd "<C-return>") 'ergoemacs-open-in-external-app)
   ;; ----------------------- spell and syntax checking -----------------------
   (add-hook 'latex-mode-hook (lambda () (flyspell-mode t)))
   (add-hook 'org-mode-hook (lambda () (flyspell-mode t)))
@@ -784,16 +917,28 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; ----------------------------- Shell --------------------------------
   ;; spacemacs/helm-shell-history
   (evil-define-key 'normal comint-mode-map (kbd "<return>") 'term-send-return)
-  (evil-define-key 'normal comint-mode-map (kbd ",,") 'spacemacs/helm-shell-history)
+  (evil-define-key 'normal comint-mode-map (kbd "C-e") 'evil-scroll-up)
+
+  (evil-define-key 'normal comint-mode-map (kbd ", ,") 'spacemacs/helm-shell-history)
+  (global-unset-key (kbd "C-r"))
+  (evil-define-key 'normal comint-mode-map (kbd "C-r") 'spacemacs/helm-shell-history)
+  (evil-define-key 'hybrid comint-mode-map (kbd "C-r") 'spacemacs/helm-shell-history)
+  (evil-define-key 'normal eshell-mode-map (kbd "C-r") 'spacemacs/helm-eshell-history)
+  (evil-define-key 'hybrid eshell-mode-map (kbd "C-r") 'spacemacs/helm-eshell-history)
+  (evil-define-key 'normal eshell-mode-map (kbd "<return>") 'eshell-send-input)
   (eval-after-load "comint-mode"
     (evilified-state-evilify comint-mode comint-mode-map
       "," 'spacemacs/helm-shell-history
       )
     )
+  (define-key comint-mode-map (kbd "<tab>") 'completion-at-point)
   ;; ----------------------------- Keybindings --------------------------------
   ;; show compilation window
   (define-key evil-normal-state-map (kbd "SPC b c") 'switch-to-compilation-buffer)
   (define-key evil-normal-state-map (kbd "SPC b t") 'switch-to-shell-buffer)
+  (define-key evil-normal-state-map (kbd "SPC b e") 'switch-to-eshell-buffer)
+  (global-set-key (kbd "<f7>") 'shell)
+  (define-key evil-normal-state-map (kbd "SPC b w") 'switch-to-w3m-buffer)
   (savehist-mode 1)
   ;; add shortcuts to resize windows
   (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
@@ -811,15 +956,25 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; (define-key company-mode-map "\C-f" ')
   (define-key evil-normal-state-map (kbd "SPC g g") 'goto-line)
   ;; helm
-  (require 'helm)
-  (require 'helm-swoop)
   (define-key evil-normal-state-map (kbd "SPC SPC") 'helm-mini)
+  ;; (define-key evil-normal-state-map (kbd "SPC SPC") 'ivy-switch-buffer)
+  ;; (define-key ivy-map (kbd "C-w") 'backward-kill-word)
+  ;; (define-key ivy-map (kbd "C-j") 'helm-next-line)
+  ;; (define-key ivy-map (kbd "C-k") 'helm-previous-line)
+  ;; (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
+  ;; (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
+  ;; (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
+  ;; (define-key helm-mode-map (kbd "C-w") 'backward-kill-word)
+  (require 'helm)
   (define-key helm-map (kbd "C-w") 'backward-kill-word)
   (define-key helm-map (kbd "C-q") 'backward-delete-char-untabify)
   (define-key helm-map (kbd "C-j") 'helm-next-line)
   (define-key helm-map (kbd "C-k") 'helm-previous-line)
-  (define-key helm-swoop-map (kbd "C-w") 'backward-kill-word)
-  (define-key helm-swoop-map (kbd "C-q") 'backward-delete-char-untabify)
+
+  (with-eval-after-load 'helm-swoop
+    (define-key helm-swoop-map (kbd "C-w") 'backward-kill-word)
+  )
+
   (define-key evil-hybrid-state-map (kbd "\C-o") 'insert-new-line-below)
   (define-key evil-hybrid-state-map (kbd "M-o") 'insert-new-line-above)
   ; Set Alt-k to kill the line to the left
@@ -827,8 +982,11 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (eval-after-load 'freefem++-mode
     '(define-key ffpp-mode-map "\C-c\C-k" 'freefempp-interrupt-process))
   ;; Evil mode keys
-  (define-key evil-normal-state-map (kbd "C-e") 'scroll-up-half-page)
-  (define-key evil-visual-state-map (kbd "C-e") 'scroll-up-half-page)
+  (define-key evil-normal-state-map (kbd "C-e") 'evil-scroll-up)
+  (eval-after-load 'pdf-view-mode
+    '(define-key pdf-view-mode-map (kbd "e") 'pdf-view-scroll-down-or-previous-page)
+    )
+  (define-key evil-visual-state-map (kbd "C-e") 'evil-scroll-up)
   (define-key compilation-mode-map (kbd "C-e") 'scroll-up-half-page)
   (define-key evil-insert-state-map (kbd "C-q") 'backward-delete-char-untabify)
   ; j for gj and k for gk
@@ -836,26 +994,29 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
   (define-key evil-normal-state-map (kbd "SPC t d") 'darkroom-tentative-mode)
   (define-key evil-normal-state-map (kbd "$") 'evil-end-of-visual-line)
+  (define-key evil-visual-state-map (kbd "$") 'evil-last-non-blank)
   (define-key evil-normal-state-map (kbd "0") 'evil-beginning-of-visual-line)
   (define-key evil-normal-state-map (kbd "SPC ;") 'evilnc-comment-or-uncomment-lines)
   (define-key evil-visual-state-map (kbd "SPC ;") 'evilnc-comment-or-uncomment-lines)
   (define-key evil-normal-state-map (kbd "C-s") 'save-buffer)
   (define-key evil-normal-state-map (kbd ">") 'evil-shift-right-line)
   (define-key evil-normal-state-map (kbd "<") 'evil-shift-left-line)
+  (evil-define-key 'hybrid c++-mode-map (kbd "]") 'evil-forward-section-begin)
+  (evil-define-key 'hybrid c++mode-map (kbd "[") 'evil-backward-section-begin)
+  (evil-define-key 'hybrid c-mode-map (kbd "<f5>") 'recompile)
+  (define-key evil-normal-state-map (kbd "M-n") 'next-buffer)
+  (define-key evil-normal-state-map (kbd "M-p") 'previous-buffer)
+
   ;; evil keys in company mode
-  (define-key evil-normal-state-map (kbd "]") 'evil-forward-section-begin)
-  (define-key evil-normal-state-map (kbd "[") 'evil-backward-section-begin)
+  (eval-after-load 'company
+    '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
 
   (add-hook 'company-mode-hook ;; guessing
             '(lambda ()
                (define-key company-mode-map (kbd "C-j") 'company-select-next)
                (define-key company-mode-map (kbd "C-k") 'company-select-previous)
+               (define-key company-active-map (kbd "C-w") 'backward-kill-word)
                ))
-  ;; (eval-after-load "company-mode"
-  ;;     '(progn
-  ;;       (define-key company-mode-map (kbd "C-j") 'company-select-next)
-  ;;       (define-key company-mode-map (kbd "C-k") 'company-select-previous)
-  ;;       ))
   ;; align
   (define-key evil-normal-state-map (kbd "SPC x a ;") 'align-before-last-item)
   ;; switch between buffers
@@ -865,18 +1026,19 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (global-set-key (kbd "M-j") 'windmove-down)
   (global-set-key (kbd "M-l") 'windmove-right)
   (global-set-key (kbd "M-h") 'windmove-left)
+
   (define-key evil-normal-state-map (kbd "M-j") 'windmove-down)
   (define-key evil-normal-state-map (kbd "M-k") 'windmove-up)
   (define-key evil-normal-state-map (kbd "M-h") 'windmove-left)
   (define-key evil-normal-state-map (kbd "M-l") 'windmove-right)
 
+  ;; replace surrounding symbols
+  (define-key evil-normal-state-map (kbd "SPC (") 'evil-surround-change)
   ;; to work in term
-  (evil-define-key 'normal comint-mode-map (kbd "<return>") 'term-send-return)
   ;; (define-key evil-hybrid-state-map (kbd "M-h") 'windmove-left)
   ;; (define-key evil-hybrid-state-map (kbd "M-j") 'windmove-down)
   ;; (define-key evil-hybrid-state-map (kbd "M-k") 'windmove-up)
   ;; (define-key evil-hybrid-state-map (kbd "M-l") 'windmove-right)
-
 
   (add-hook 'org-mode-hook (lambda()
                              (define-key evil-normal-state-local-map (kbd "M-j") 'windmove-down)
@@ -894,10 +1056,13 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; toggle imenu-list
   (define-key evil-normal-state-map (kbd "C-\\") 'imenu-list-minor-mode)
   (global-set-key (kbd "C-\\") 'imenu-list-minor-mode)
+  (define-key evil-normal-state-map (kbd "SPC (") 'evil-surround-change)
+
   ;; ----------------------------- GUI ----------------------------------------
   ;; add face for function call
   (defface font-lock-method-call-face
     '((t . (:foreground "orangered" :bold t)))
+
     "Face to display method calls in.")
   (font-lock-add-keywords 'c++-mode
                           `((,(concat
@@ -924,20 +1089,21 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
     :ensure t
     :config
     (add-hook 'c-mode-common-hook 'google-set-c-style))
+
   ;; Fix terminal background
-  (custom-set-faces (if (not window-system) '(default ((t (:background "nil"))))))
-  (custom-set-faces (if (not window-system) '(linum  ((t (:background "nil"))))))
-  (custom-set-faces (if (not window-system) '(hl-line  ((t (:background "nil"))))))
+  ;; (custom-set-faces (if (not window-system) '(default ((t (:background "nil"))))))
+  ;; (custom-set-faces (if (not window-system) '(linum  ((t (:background "nil"))))))
+  ;; (custom-set-faces (if (not window-system) '(hl-line  ((t (:background "nil"))))))
+
   ;; spaceline
-  ;; (setq spaceline-major)
-  ;; (spaceline-toggle-major-mode-off)
-  (spaceline-toggle-minor-modes-off)
-  (spaceline-toggle-major-mode-on)
-  (spaceline-toggle-buffer-size-off)
-  (spaceline-toggle-buffer-id-on)
-  (spaceline-toggle-buffer-position-off)
-  (spaceline-toggle-anzu-on)
-  (spacemacs/toggle-minibuffer-system-monitor-on)
+  (setq doom-modeline-buffer-file-name-style 'buffer-name)
+  (setq doom-modeline-height 2)
+  ;; (spaceline-toggle-minor-modes-off)
+  ;; (spaceline-toggle-major-mode-on)
+  ;; (spaceline-toggle-buffer-size-off)
+  ;; (spaceline-toggle-buffer-id-on)
+  ;; (spaceline-toggle-buffer-position-off)
+  ;; (spaceline-toggle-anzu-on)
   ;;  maximum 68 lines (2-pane view on my laptop)
   (setq-default fill-column 78)
   ;; (setq fci-rule-color "#5682a3")
@@ -949,6 +1115,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (setq evil-normal-state-cursor '("#51afef" box))
   (setq evil-hybrid-state-cursor '("#98be65" bar))
   (setq evil-visual-state-cursor '("#51afef" box))
+  ;; (setq pdf-view-midnight-colors '("#abb2bf" . "#282c34"))
   ;; (setq evil-hybrid-state-cursor '("#98be65" (bar . 2)))
   ;; `(spacemacs-hybrid-face ((t (:foreground "#98be65" :background "#92f442" :inherit 'mode-line))))
 
@@ -966,9 +1133,13 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
+ '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (prettier-js helm-git-grep evil-ediff doom-modeline eldoc-eval shrink-path ag yapfify xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tagedit stickyfunc-enhance srefactor spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox spinner orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc indent-guide imenu-list hydra hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit ghub with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump dracula-theme doom-themes all-the-icons memoize disaster diminish diff-hl define-word darkroom cython-mode company-ycmd ycmd pkg-info request-deferred request deferred epl company-web web-completion-data company-tern dash-functional tern company-statistics company-c-headers company-auctex company-anaconda company column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed auctex anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup \(one-dark\ :location\ local\)-theme))))
+    (helm-w3m w3m evil-matchit eshell-prompt-extras doom-modeline markdown-mode magit zenburn-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tagedit symon string-inflection stickyfunc-enhance srefactor spaceline-all-the-icons solarized-theme smeargle slim-mode shrink-path shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el password-generator paradox overseer orgit org-projectile org-present org-pomodoro org-mime org-gcal org-download org-bullets org-brain open-junk-file neotree nameless mwim multi-term move-text monokai-theme mmm-mode markdown-toc magit-svn magit-gitflow macrostep lsp-ui lorem-ipsum livid-mode live-py-mode link-hint json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-rtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z esh-help emmet-mode elisp-slime-nav eldoc-eval editorconfig dumb-jump dotenv-mode doom-themes disaster diminish diff-hl deft define-word darkroom cython-mode cquery counsel-projectile company-web company-tern company-statistics company-rtags company-quickhelp company-lsp company-c-headers company-auctex company-anaconda column-enforce-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls calfw browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk all-the-icons-dired aggressive-indent ag ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")) t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -976,17 +1147,3 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  )
 )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (ag yapfify xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org tagedit stickyfunc-enhance srefactor spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox spinner orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc indent-guide imenu-list hydra hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit ghub with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump dracula-theme doom-themes all-the-icons memoize disaster diminish diff-hl define-word darkroom cython-mode company-ycmd ycmd pkg-info request-deferred request deferred epl company-web web-completion-data company-tern dash-functional tern company-statistics company-c-headers company-auctex company-anaconda company column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed auctex anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup \(one-dark\ :location\ local\)-theme))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
