@@ -1,0 +1,1196 @@
+# You can edit this file by hand, but it's recommended not to do that.
+
+# Marks:
+'1
+	/home/ishovkun/dev
+	wings
+1533945324
+'2
+	/home/ishovkun/Dropbox/Igor/Presentations/17.07 Biot_acid/img
+	2frac-new.png
+1504090265
+'3
+	/home/ishovkun/Dropbox/Igor/Presentations/17.07 Biot_acid/img
+	long_frac.png
+1504081578
+'D
+	/home/ishovkun/Dropbox
+	..
+1492095339
+'H
+	/home/ishovkun/
+	..
+1492089394
+'a
+	/home/ishovkun
+	.byobu
+1545720000
+'b
+	/home/ishovkun/build
+	Trilinos
+1541337109
+'d
+	/home/ishovkun/Dropbox/conf
+	..
+1539894467
+'h
+	/home/ishovkun/
+	..
+1492089394
+'l
+	/home/ishovkun/Dropbox/Igor/Literature
+	..
+1492095376
+'m
+	/home/ishovkun/mega
+	..
+1503404219
+'p
+	/home/ishovkun/Dropbox/Igor/Presentations
+	..
+1503747465
+'s
+	/home/ishovkun/sim
+	sda_3x3x1
+1538274938
+'v
+	/home/ishovkun/dev
+	AD-GPRS
+1530599236
+'w
+	/home/ishovkun/Dropbox/Igor/Write up
+	..
+1503160734
+
+# TUI:
+al
+q0
+v2
+ov
+m-1
+l2
+r2
+
+# Left window history (oldest to newest):
+d/home/ishovkun/.config/qterminal.org
+	color-schemes
+1
+d/home/ishovkun/.config/qterminal.org/color-schemes
+	Dracula.colorscheme
+1
+d/home/ishovkun/.config/qterminal.org
+	color-schemes
+1
+d/home/ishovkun/.config
+	qterminal.org
+34
+d/home/ishovkun
+	.emacs.d
+10
+d/home/ishovkun/.emacs.d
+	assets
+6
+d/home/ishovkun/.emacs.d/assets
+	spacemacs-badge.svg
+1
+d/home/ishovkun/.emacs.d
+	news
+11
+d/home/ishovkun/.emacs.d/news
+	..
+0
+d/home/ishovkun/.emacs.d
+	news
+11
+d/home/ishovkun/.emacs.d/news
+	..
+0
+d/home/ishovkun/.emacs.d
+	news
+11
+d/home/ishovkun
+	.emacs.d
+10
+d/home/ishovkun/build
+	msh2gprs
+15
+d/home/ishovkun/build/msh2gprs
+	scripts
+4
+d/home/ishovkun/build/msh2gprs/scripts
+	..
+0
+d/home/ishovkun/build/msh2gprs
+	examples
+3
+d/home/ishovkun/build/msh2gprs/examples
+	mech
+2
+d/home/ishovkun/build/msh2gprs/examples/mech
+	dfm-shear
+1
+d/home/ishovkun/build/msh2gprs/examples/mech/dfm-shear
+	..
+0
+d/home/ishovkun/build/msh2gprs/examples/mech
+	dfm-shear
+1
+d/home/ishovkun/build/msh2gprs/examples
+	mech
+2
+d/home/ishovkun/build/msh2gprs
+	examples
+3
+d/home/ishovkun/build
+	msh2gprs
+15
+d/home/ishovkun
+	Dropbox
+31
+d/home/ishovkun/Dropbox
+	conf
+10
+d/home/ishovkun/Dropbox/conf
+	wallpapers
+15
+d/home/ishovkun/Dropbox
+	conf
+10
+d/home/ishovkun
+	.byobu
+2
+d/home/ishovkun/.byobu
+	bin
+1
+d/home/ishovkun/.byobu/bin
+	battery
+1
+d/home/ishovkun/Dropbox/conf
+	wallpapers
+15
+d/home/ishovkun/Dropbox
+	Igor
+5
+d/home/ishovkun/Dropbox/Igor
+	Write up
+3
+d/home/ishovkun/Dropbox/Igor/Write up
+	2018 Toughness-dominated fractures
+9
+d/home/ishovkun/Dropbox/Igor/Write up/2018 Toughness-dominated fractures
+	paper.out
+28
+d/home/ishovkun/Dropbox/Igor/Write up
+	2018 Toughness-dominated fractures
+9
+d/home/ishovkun/Dropbox/Igor
+	Write up
+3
+d/home/ishovkun/Dropbox
+	Igor
+5
+d/home/ishovkun
+	.emacs.d
+4
+d/home/ishovkun/.emacs.d
+	private
+12
+d/home/ishovkun/.emacs.d/private
+	local
+1
+d/home/ishovkun/.emacs.d/private/local
+	one-dark-theme
+3
+d/home/ishovkun/.emacs.d/private/local/one-dark-theme
+	one-dark-theme.el
+1
+d/home/ishovkun/.emacs.d/private/local
+	one-dark-multi-theme
+2
+d/home/ishovkun/.emacs.d/private/local/one-dark-multi-theme
+	one-dark-multi-theme.el
+1
+d/home/ishovkun/.emacs.d/private/local
+	one-dark-multi
+2
+d/home/ishovkun/.emacs.d/private/local/one-dark-multi
+	one-dark-theme.el
+1
+d/home/ishovkun/.emacs.d/private/local
+	one-dark-theme
+2
+d/home/ishovkun/.emacs.d/private/local/one-dark-theme
+	one-dark-theme.el
+1
+d/home/ishovkun/.emacs.d/private/local
+	README.md
+5
+d/home/ishovkun/.emacs.d/private
+	local
+1
+d/home/ishovkun/.emacs.d
+	private
+12
+d/home/ishovkun
+	.emacs.d
+4
+d/home
+	ishovkun
+1
+d/
+	usr
+17
+d/usr
+	share
+8
+d/usr/share
+	plasma
+46
+d/usr/share/plasma
+	plasmoids
+5
+d/usr/share/plasma/plasmoids
+	org.kde.plasma.mediacontroller
+43
+d/usr/share/plasma/plasmoids/org.kde.plasma.mediacontroller
+	contents
+1
+d/usr/share/plasma/plasmoids/org.kde.plasma.mediacontroller/contents
+	ui
+1
+d/usr/share/plasma/plasmoids/org.kde.plasma.mediacontroller/contents/ui
+	..
+0
+d/usr/share/plasma/plasmoids/org.kde.plasma.mediacontroller/contents
+	ui
+1
+d/usr/share/plasma/plasmoids/org.kde.plasma.mediacontroller
+	contents
+1
+d/usr/share/plasma/plasmoids/org.kde.plasma.mediacontroller/contents
+	ui
+1
+d/usr/share/plasma/plasmoids/org.kde.plasma.mediacontroller/contents/ui
+	ExpandedRepresentation.qml
+1
+d/usr/share/plasma/plasmoids/org.kde.plasma.mediacontroller/contents
+	ui
+1
+d/usr/share/plasma/plasmoids/org.kde.plasma.mediacontroller
+	contents
+1
+d/usr/share/plasma/plasmoids
+	org.kde.plasma.mediacontroller
+32
+d/usr/share/plasma
+	plasmoids
+5
+d/usr/share
+	plasma
+32
+d/usr
+	share
+8
+d/
+	usr
+17
+d/home/ishovkun
+	.emacs.d
+4
+d/home/ishovkun/.emacs.d
+	.cache
+1
+d/home/ishovkun/.emacs.d/.cache
+	lsp-cquery
+8
+d/home/ishovkun/.emacs.d/.cache/lsp-cquery
+	@@home@ishovkun@dev@msh2gprs
+1
+d/home/ishovkun/.emacs.d/.cache/lsp-cquery/@@home@ishovkun@dev@msh2gprs
+	@usr@include@alloca.h
+1
+d/home/ishovkun/.emacs.d/.cache/lsp-cquery
+	@home@ishovkun@dev@msh2gprs
+2
+d/home/ishovkun/.emacs.d/.cache/lsp-cquery/@home@ishovkun@dev@msh2gprs
+	..
+0
+d/home/ishovkun/.emacs.d/.cache/lsp-cquery
+	..
+0
+d/home/ishovkun/.emacs.d/.cache
+	lsp-cquery
+8
+d/home/ishovkun/.emacs.d/.cache/lsp-cquery
+	..
+0
+d/home/ishovkun/.emacs.d/.cache
+	spacemacs-buffer.el
+23
+d/home/ishovkun/.emacs.d
+	private
+13
+d/home/ishovkun/.emacs.d/private
+	local
+2
+d/home/ishovkun/.emacs.d/private/local
+	
+2
+d/home/ishovkun
+	..
+0
+d/home/ishovkun/dev
+	AD-GPRS
+1
+d/home/ishovkun/dev/AD-GPRS
+	Documentation
+3
+d/home/ishovkun/dev/AD-GPRS/Documentation
+	TechnicalDescription
+9
+d/home/ishovkun/dev/AD-GPRS/Documentation/TechnicalDescription
+	AD-GPRS_keyword.pdf
+3
+d/home/ishovkun/Dropbox/conf
+	.emacs
+15
+d/home/ishovkun/Dropbox/Igor/Write up
+	2018 Fracture propagation in heterogeneous porous media
+7
+d/home/ishovkun/Dropbox/Igor/Write up/2018 Fracture propagation in heterogeneous porous media
+	paper.nlo
+26
+d/home/ishovkun/sim
+	sda_3x3x1
+10
+d/home/ishovkun
+	.vifm
+11
+d/home/ishovkun/.vifm
+	vifmrc
+7
+d/home/ishovkun/Dropbox/conf
+	alacritty.yml
+15
+d
+
+# Right window history (oldest to newest):
+D/home/ishovkun/.emacs.d/layers
+	+fun
+10
+D/home/ishovkun/.emacs.d/layers/+fun
+	games
+2
+D/home/ishovkun/.emacs.d/layers/+fun/games
+	..
+0
+D/home/ishovkun/.emacs.d/layers/+fun
+	selectric
+3
+D/home/ishovkun/.emacs.d/layers/+fun/selectric
+	..
+0
+D/home/ishovkun/.emacs.d/layers/+fun
+	selectric
+3
+D/home/ishovkun/.emacs.d/layers/+fun/selectric
+	img
+1
+D/home/ishovkun/.emacs.d/layers/+fun/selectric/img
+	..
+0
+D/home/ishovkun/.emacs.d/layers/+fun/selectric
+	img
+1
+D/home/ishovkun/.emacs.d/layers/+fun
+	selectric
+3
+D/home/ishovkun/.emacs.d/layers
+	+fun
+10
+D/home/ishovkun/.emacs.d/layers/+fun
+	xkcd
+4
+D/home/ishovkun/.emacs.d/layers/+fun/xkcd
+	..
+0
+D/home/ishovkun/.emacs.d/layers/+fun
+	xkcd
+4
+D/home/ishovkun/.emacs.d/layers
+	+intl
+11
+D/home/ishovkun/.emacs.d/layers/+intl
+	..
+0
+D/home/ishovkun/.emacs.d/layers
+	+pair-programming
+16
+D/home/ishovkun/.emacs.d/layers/+pair-programming
+	..
+0
+D/home/ishovkun/.emacs.d/layers
+	+spacemacs
+19
+D/home/ishovkun/.emacs.d/layers/+spacemacs
+	spacemacs-defaults
+2
+D/home/ishovkun/.emacs.d/layers/+spacemacs/spacemacs-defaults
+	..
+0
+D/home/ishovkun/.emacs.d/layers/+spacemacs
+	spacemacs-org
+11
+D/home/ishovkun/.emacs.d/layers
+	+spacemacs
+19
+D/home/ishovkun/.emacs.d/layers/+spacemacs
+	spacemacs-visual
+14
+D/home/ishovkun/.emacs.d/layers/+spacemacs/spacemacs-visual
+	local
+1
+D/home/ishovkun/.emacs.d/layers/+spacemacs/spacemacs-visual/local
+	zoom-frm
+1
+D/home/ishovkun/.emacs.d/layers/+spacemacs/spacemacs-visual/local/zoom-frm
+	..
+0
+D/home/ishovkun/.emacs.d/layers/+spacemacs/spacemacs-visual/local
+	zoom-frm
+1
+D/home/ishovkun/.emacs.d/layers/+spacemacs/spacemacs-visual
+	local
+1
+D/home/ishovkun/.emacs.d/layers/+spacemacs
+	spacemacs-visual
+14
+D/home/ishovkun/.emacs.d/layers
+	+tags
+20
+D/home/ishovkun/.emacs.d/layers/+tags
+	..
+0
+D/home/ishovkun/.emacs.d/layers
+	+themes
+21
+D/home/ishovkun/.emacs.d/layers/+themes
+	colors
+1
+D/home/ishovkun/.emacs.d/layers/+themes/colors
+	img
+1
+D/home/ishovkun/.emacs.d/layers/+themes/colors/img
+	..
+0
+D/home/ishovkun/.emacs.d/layers/+themes/colors
+	local
+2
+D/home/ishovkun/.emacs.d/layers/+themes/colors/local
+	nyan-mode
+1
+D/home/ishovkun/.emacs.d/layers/+themes/colors
+	local
+2
+D/home/ishovkun/.emacs.d/layers/+themes
+	colors
+1
+D/home/ishovkun/.emacs.d/layers
+	+distributions
+4
+D/home/ishovkun/.emacs.d
+	core
+7
+D/home/ishovkun/.emacs.d/core
+	libs
+5
+D/home/ishovkun/.emacs.d/core/libs
+	spacemacs-theme
+1
+D/home/ishovkun/.emacs.d/core/libs/spacemacs-theme
+	README.md
+2
+D/home/ishovkun/.emacs.d/core/libs
+	spacemacs-theme
+1
+D/home/ishovkun/.emacs.d/core
+	libs
+5
+D/home/ishovkun/.emacs.d
+	core
+7
+D/home/ishovkun
+	.emacs.d
+14
+D/home
+	ishovkun
+1
+D/
+	usr
+17
+D/usr
+	share
+8
+D/usr/share
+	kmines
+36
+D/usr/share/kmines
+	themes
+1
+D/usr/share/kmines/themes
+	default.desktop
+4
+D/usr/share/kmines
+	themes
+1
+D/usr/share
+	kmines
+22
+D/usr
+	share
+8
+D/
+	usr
+17
+D/home/ishovkun
+	.emacs.d
+14
+D/home/ishovkun/.emacs.d
+	elpa
+9
+D/home/ishovkun/.emacs.d/elpa
+	26.1
+1
+D/home/ishovkun/.emacs.d/elpa/26.1
+	..
+0
+D/home/ishovkun/.emacs.d/elpa
+	26.1
+1
+D/home/ishovkun/.emacs.d/elpa/26.1
+	..
+0
+D/home/ishovkun/.emacs.d/elpa
+	gnupg
+2
+D/home/ishovkun/.emacs.d/elpa/gnupg
+	..
+0
+D/home/ishovkun/.emacs.d/elpa
+	gnupg
+2
+D/home/ishovkun/.emacs.d/elpa/gnupg
+	..
+0
+D/home/ishovkun/.emacs.d/elpa
+	26.1
+1
+D/home/ishovkun/.emacs.d/elpa/26.1
+	develop
+22
+D/home/ishovkun/.emacs.d/elpa/26.1/develop
+	doom-modeline-20181228.1527
+22
+D/home/ishovkun/.emacs.d/elpa/26.1/develop/doom-modeline-20181228.1527
+	doom-modeline.el
+3
+D/home/ishovkun/.emacs.d/elpa/26.1/develop
+	lsp-ui-20181226.623
+29
+D/home/ishovkun
+	.fltk
+15
+D/home
+	ishovkun
+1
+D/home/ishovkun
+	.fltk
+16
+D/home/ishovkun/build
+	Trilinos
+7
+D/home/ishovkun
+	build
+33
+D/home/ishovkun/Dropbox/conf
+	.byobu
+1
+D/home/ishovkun/Dropbox
+	conf
+10
+D/home/ishovkun
+	dev
+33
+D/home/ishovkun/dev
+	algorithms
+3
+D/home/ishovkun
+	dev
+33
+D/home/ishovkun/build
+	Trilinos
+7
+D/home/ishovkun
+	build
+32
+D/home/ishovkun/dev
+	wings
+7
+D/home/ishovkun/dev/wings
+	src
+5
+D/home/ishovkun/dev/wings/src
+	lib
+1
+D/home/ishovkun/dev/wings/src/lib
+	Wellbore
+4
+D/home/ishovkun/dev/wings/src/lib/Wellbore
+	Wellbore.hpp
+3
+D/home/ishovkun/sim
+	edfm-2frac
+5
+D/home/ishovkun/sim/edfm-2frac
+	OUTPUT.wells
+1
+D/home/ishovkun/sim/edfm-2frac/OUTPUT.wells
+	P1.txt
+1
+D/home/ishovkun/sim/edfm-2frac
+	GPRS.txt
+5
+D/home/ishovkun/sim
+	edfm-2frac
+5
+D/home/ishovkun/Dropbox/conf
+	.byobu
+1
+D/home/ishovkun/Dropbox
+	conf
+10
+D/home/ishovkun
+	Downloads
+23
+D/home/ishovkun/Downloads
+	..
+0
+D
+
+# Command line history (oldest to newest):
+:mkdir edfm-40
+:colorscheme
+:colorschoeme astrell
+:colorscheme astrell
+:colorscheme desert
+:colorscheme ph.vifm
+:w
+:colorscheme Default
+:buffer
+:mkdir account.com.gmail.gmail
+:mkdire account.com.gmail.utexas
+:mkdir account.com.gmail.utexas
+:mkdir com.gmail.Gmail
+:mkdir com.gmail.utexas
+:touch account.com.gmail.gmail
+:touch account.com.gmail.utexas
+:mkdir vary_h
+:mkdir 
+:mkdir results
+:c
+:caca
+:
+: 
+:let @*=expand("%:p")<cr>
+:Geomechanics notes
+:mkdir Geomechanics notes
+:mkdir code
+:help
+:mkdir sim
+:mkdir point
+::q
+:mkdir examples
+:mkdir muparser
+:tab
+:mkdir notes
+:mkdir enotes
+:mkdir images
+:mkdir edfm-10x10x1
+:mkdir edfm-2frac
+:mkdi
+:mkdir uint256_t
+:touch README.md
+:colorscheme dracula
+:colorscheme g80
+:colorscheme molokai
+:tabnew
+:colorscheme ishovkun
+:wq
+:mkdir dfm-2-3
+:touch mesh.geo
+:mkdir yaml
+:copy
+:source ~/.vifm/vifmrc
+:cp ~/
+:mkdir qterminal.org
+:mkdire color-schemes
+:mkdir color-schemes
+:q
+
+# Search history (oldest to newest):
+/vkt
+/vtk
+/pg
+/tmux
+/conf
+/buobi
+/cv
+/trili
+/dox
+/exo
+/uin
+/mesh
+/.d
+/.vifm
+/Down
+/ishovkun
+/iso
+/ishovk
+/buil
+/reviws
+/yaml
+/cmakeli
+/cmake
+/par
+/json
+/t_fra
+/geo
+/hash
+/mesh_me
+/tetra
+/he
+/we
+/hex
+/ad
+/gm_fra
+/do
+/msh2
+/main
+/femou
+/oh
+/vifmrc
+/Drop
+/build
+/sim
+/gm_
+/dra
+/loca
+/confi
+/qterm
+/ass
+/bul
+/msh
+/zgen
+/deer
+/fzf
+/bin
+/drop
+/con
+/byobu
+/usr/bin/byobu-reconnect-sockets
+/igor
+/wri
+/laye
+/col
+/theme
+/them
+/color
+/core
+/lib
+/pr
+/plasma
+/media
+/i
+/usr
+/share
+/kmi
+/cach
+/lsp
+/emacs.d
+/packa
+/epla
+/devel
+/doom
+/priva
+/lsp-\/ls
+/lsp-ui
+/d
+/dev
+/eag
+/ea
+/wind
+/win
+/docu
+/well
+/gp
+/down
+/emacs
+/paper.pdg
+/pdf
+/vifm
+
+# Prompt history (oldest to newest):
+pr
+pishovkun
+pcom.gmail.gmail
+pauto
+pimg
+pBibliography.bib
+p_region_.pdf
+p_region_.
+pus-visa-2017.zip
+pplane_strain_wellbore.edp
+pminimum_fraction-new.py
+pchrome
+pconf.json
+puint256
+p.byobu-bin
+pone-dark-multi-theme
+pone-dark-multi-theme.el
+pone-dark-theme-backup
+pone-dark-multi
+pone-dark-multi.el
+pone-dark-theme.el
+pone-dark-theme
+
+# Local filter history (oldest to newest):
+
+# Registers:
+""/home/ishovkun/.vifm/vifmrc
+
+# Directory stack (oldest to newest):
+
+# Trash content:
+t/home/ishovkun/.vifm/Trash/000_vifm
+	/home/ishovkun/.config/vifm
+t/home/ishovkun/.vifm/Trash/000_COPYING
+	/home/ishovkun/.vifm/colors/COPYING
+t/home/ishovkun/.vifm/Trash/000_Default.vifm
+	/home/ishovkun/.vifm/colors/Default.vifm
+t/home/ishovkun/.vifm/Trash/000_README.md
+	/home/ishovkun/.vifm/colors/README.md
+t/home/ishovkun/.vifm/Trash/000_astrell.vifm
+	/home/ishovkun/.vifm/colors/astrell.vifm
+t/home/ishovkun/.vifm/Trash/000_create_themes.md
+	/home/ishovkun/.vifm/colors/create_themes.md
+t/home/ishovkun/.vifm/Trash/000_darkdesert.vifm
+	/home/ishovkun/.vifm/colors/darkdesert.vifm
+t/home/ishovkun/.vifm/Trash/000_desert.vifm
+	/home/ishovkun/.vifm/colors/desert.vifm
+t/home/ishovkun/.vifm/Trash/000_g80.vifm
+	/home/ishovkun/.vifm/colors/g80.vifm
+t/home/ishovkun/.vifm/Trash/000_matrix.vifm
+	/home/ishovkun/.vifm/colors/matrix.vifm
+t/home/ishovkun/.vifm/Trash/000_mc-like.vifm
+	/home/ishovkun/.vifm/colors/mc-like.vifm
+t/home/ishovkun/.vifm/Trash/000_near-default.vifm
+	/home/ishovkun/.vifm/colors/near-default.vifm
+t/home/ishovkun/.vifm/Trash/000_ph.vifm
+	/home/ishovkun/.vifm/colors/ph.vifm
+t/home/ishovkun/.vifm/Trash/000_reicheltd-light.vifm
+	/home/ishovkun/.vifm/colors/reicheltd-light.vifm
+t/home/ishovkun/.vifm/Trash/000_semidarkdesert.vifm
+	/home/ishovkun/.vifm/colors/semidarkdesert.vifm
+t/home/ishovkun/.vifm/Trash/000_snowwhite.vifm
+	/home/ishovkun/.vifm/colors/snowwhite.vifm
+t/home/ishovkun/.vifm/Trash/000_solarized-dark.vifm
+	/home/ishovkun/.vifm/colors/solarized-dark.vifm
+t/home/ishovkun/.vifm/Trash/000_zenburn.vifm
+	/home/ishovkun/.vifm/colors/zenburn.vifm
+t/home/ishovkun/.vifm/Trash/000_zenburn_1.vifm
+	/home/ishovkun/.vifm/colors/zenburn_1.vifm
+t/home/ishovkun/.vifm/Trash/000_ChangeLog
+	/home/ishovkun/.vifm/colors/ChangeLog
+t/home/ishovkun/.vifm/Trash/000_Breeze Base.colors
+	/home/ishovkun/Downloads/Breeze Base.colors
+t/home/ishovkun/.vifm/Trash/000_Breeze Calc.colors
+	/home/ishovkun/Downloads/Breeze Calc.colors
+t/home/ishovkun/.vifm/Trash/000_Breeze Draw.colors
+	/home/ishovkun/Downloads/Breeze Draw.colors
+t/home/ishovkun/.vifm/Trash/000_Breeze Impress.colors
+	/home/ishovkun/Downloads/Breeze Impress.colors
+t/home/ishovkun/.vifm/Trash/000_Breeze Spotify.colors
+	/home/ishovkun/Downloads/Breeze Spotify.colors
+t/home/ishovkun/.vifm/Trash/000_Breeze Writer.colors
+	/home/ishovkun/Downloads/Breeze Writer.colors
+t/home/ishovkun/.vifm/Trash/000_My Music (1).m3u
+	/home/ishovkun/Downloads/My Music (1).m3u
+t/home/ishovkun/.vifm/Trash/000_My Music.m3u
+	/home/ishovkun/Downloads/My Music.m3u
+t/home/ishovkun/.vifm/Trash/000_Rouling_Shelkopryad_RuLit_Net_367500.epub
+	/home/ishovkun/Downloads/Rouling_Shelkopryad_RuLit_Net_367500.epub
+t/home/ishovkun/.vifm/Trash/000_Rouling_Shelkopryad_RuLit_Net_367500.fb2.zip
+	/home/ishovkun/Downloads/Rouling_Shelkopryad_RuLit_Net_367500.fb2.zip
+t/home/ishovkun/.vifm/Trash/000_[rutracker.org].t5357166.torrent
+	/home/ishovkun/Downloads/[rutracker.org].t5357166.torrent
+t/home/ishovkun/.vifm/Trash/000_[rutracker.org].t5429634.torrent
+	/home/ishovkun/Downloads/[rutracker.org].t5429634.torrent
+t/home/ishovkun/.vifm/Trash/000_Monaco_Linux-Powerline.ttf
+	/home/ishovkun/Downloads/Monaco_Linux-Powerline.ttf
+t/home/ishovkun/.vifm/Trash/000_Monaco_Linux.ttf
+	/home/ishovkun/Downloads/Monaco_Linux.ttf
+t/home/ishovkun/.vifm/Trash/000_Risk.docx
+	/home/ishovkun/Downloads/Risk.docx
+t/home/ishovkun/.vifm/Trash/000_Risk.pdf
+	/home/ishovkun/Downloads/Risk.pdf
+t/home/ishovkun/.vifm/Trash/000_account.com.gmail.gmail
+	/home/ishovkun/.mutt/account.com.gmail.gmail
+t/home/ishovkun/.vifm/Trash/000_account.com.gmail.utexas
+	/home/ishovkun/.mutt/account.com.gmail.utexas
+t/home/ishovkun/.vifm/Trash/000_et
+	/home/ishovkun/et
+t/home/ishovkun/.vifm/Trash/000_schematic-for-solutions.pdf
+	/home/ishovkun/Dropbox/Igor/Write up/robin-study/img/schematic-for-solutions.pdf
+t/home/ishovkun/.vifm/Trash/000_analytical-tip.py
+	/home/ishovkun/mega/robin-study/wellbore/analytical-tip.py
+t/home/ishovkun/.vifm/Trash/000_analytical.py
+	/home/ishovkun/mega/robin-study/wellbore/analytical.py
+t/home/ishovkun/.vifm/Trash/000_analytical.txt
+	/home/ishovkun/mega/robin-study/wellbore/analytical.txt
+t/home/ishovkun/.vifm/Trash/000_error_frac.pdf
+	/home/ishovkun/Dropbox/Igor/Write up/robin-study/img/error_frac.pdf
+t/home/ishovkun/.vifm/Trash/000_plot-error.py
+	/home/ishovkun/mega/robin-study/vary_h/plot-error.py
+t/home/ishovkun/.vifm/Trash/000_paper.aux
+	/home/ishovkun/.vifm/colors/paper.aux
+t/home/ishovkun/.vifm/Trash/000_docpref.tex
+	/home/ishovkun/Dropbox/Igor/Write up/toughness-dominated fractures/docpref.tex
+t/home/ishovkun/.vifm/Trash/000_core.30694
+	/home/ishovkun/Dropbox/Igor/Write up/core.30694
+t/home/ishovkun/.vifm/Trash/000_notes
+	/home/ishovkun/Dropbox/Igor/notes
+t/home/ishovkun/.vifm/Trash/000_Geomechanics
+	/home/ishovkun/Dropbox/Igor/Geomechanics
+t/home/ishovkun/.vifm/Trash/000_stats.png
+	/home/ishovkun/Dropbox/Igor/Write up/toughness-dominated fractures/img/stats.png
+t/home/ishovkun/.vifm/Trash/000_Polyaxial_stress-induced_variable_aperture_model_f (1).pdf
+	/home/ishovkun/Downloads/Polyaxial_stress-induced_variable_aperture_model_f (1).pdf
+t/home/ishovkun/.vifm/Trash/000_keylogger.py
+	/home/ishovkun/Dropbox/conf/keylogger.py
+t/home/ishovkun/.vifm/Trash/000_keylogger.pyc
+	/home/ishovkun/Dropbox/conf/keylogger.pyc
+t/home/ishovkun/.vifm/Trash/000_fonts
+	/home/ishovkun/.thunderbird/60bv7ufe.default/fonts
+t/home/ishovkun/.vifm/Trash/000_icons
+	/home/ishovkun/.thunderbird/60bv7ufe.default/icons
+t/home/ishovkun/.vifm/Trash/000_screenshots
+	/home/ishovkun/.thunderbird/60bv7ufe.default/screenshots
+t/home/ishovkun/.vifm/Trash/000_userChrome.css
+	/home/ishovkun/.thunderbird/60bv7ufe.default/userChrome.css
+t/home/ishovkun/.vifm/Trash/000_themes
+	/home/ishovkun/.thunderbird/60bv7ufe.default/themes
+t/home/ishovkun/.vifm/Trash/000_tweaks
+	/home/ishovkun/.thunderbird/60bv7ufe.default/tweaks
+t/home/ishovkun/.vifm/Trash/000_LICENSE
+	/home/ishovkun/.thunderbird/60bv7ufe.default/LICENSE
+t/home/ishovkun/.vifm/Trash/001_README.md
+	/home/ishovkun/.thunderbird/60bv7ufe.default/README.md
+t/home/ishovkun/.vifm/Trash/000_fl_depth.txt
+	/home/ishovkun/dev/msh2gprs/fl_depth.txt
+t/home/ishovkun/.vifm/Trash/000_fl_dimens.txt
+	/home/ishovkun/dev/msh2gprs/fl_dimens.txt
+t/home/ishovkun/.vifm/Trash/000_fl_poro.txt
+	/home/ishovkun/dev/msh2gprs/fl_poro.txt
+t/home/ishovkun/.vifm/Trash/000_fl_pres.txt
+	/home/ishovkun/dev/msh2gprs/fl_pres.txt
+t/home/ishovkun/.vifm/Trash/000_fl_satnum.txt
+	/home/ishovkun/dev/msh2gprs/fl_satnum.txt
+t/home/ishovkun/.vifm/Trash/000_fl_temp.txt
+	/home/ishovkun/dev/msh2gprs/fl_temp.txt
+t/home/ishovkun/.vifm/Trash/000_fl_thc.txt
+	/home/ishovkun/dev/msh2gprs/fl_thc.txt
+t/home/ishovkun/.vifm/Trash/000_fl_tran.txt
+	/home/ishovkun/dev/msh2gprs/fl_tran.txt
+t/home/ishovkun/.vifm/Trash/000_fl_tran_n.txt
+	/home/ishovkun/dev/msh2gprs/fl_tran_n.txt
+t/home/ishovkun/.vifm/Trash/000_fl_tran_u.txt
+	/home/ishovkun/dev/msh2gprs/fl_tran_u.txt
+t/home/ishovkun/.vifm/Trash/000_fl_vol.txt
+	/home/ishovkun/dev/msh2gprs/fl_vol.txt
+t/home/ishovkun/.vifm/Trash/000_fl_wells.txt
+	/home/ishovkun/dev/msh2gprs/fl_wells.txt
+t/home/ishovkun/.vifm/Trash/000_fl_zmf.txt
+	/home/ishovkun/dev/msh2gprs/fl_zmf.txt
+t/home/ishovkun/.vifm/Trash/000_gm_SDA.txt
+	/home/ishovkun/dev/msh2gprs/gm_SDA.txt
+t/home/ishovkun/.vifm/Trash/000_gm_bcond.txt
+	/home/ishovkun/dev/msh2gprs/gm_bcond.txt
+t/home/ishovkun/.vifm/Trash/000_gm_biot.txt
+	/home/ishovkun/dev/msh2gprs/gm_biot.txt
+t/home/ishovkun/.vifm/Trash/000_gm_capacity.txt
+	/home/ishovkun/dev/msh2gprs/gm_capacity.txt
+t/home/ishovkun/.vifm/Trash/000_gm_density.txt
+	/home/ishovkun/dev/msh2gprs/gm_density.txt
+t/home/ishovkun/.vifm/Trash/000_gm_depth.txt
+	/home/ishovkun/dev/msh2gprs/gm_depth.txt
+t/home/ishovkun/.vifm/Trash/000_gm_elastic.txt
+	/home/ishovkun/dev/msh2gprs/gm_elastic.txt
+t/home/ishovkun/.vifm/Trash/000_gm_fractures.txt
+	/home/ishovkun/dev/msh2gprs/gm_fractures.txt
+t/home/ishovkun/.vifm/Trash/000_gm_geometry.txt
+	/home/ishovkun/dev/msh2gprs/gm_geometry.txt
+t/home/ishovkun/.vifm/Trash/000_gm_model.txt
+	/home/ishovkun/dev/msh2gprs/gm_model.txt
+t/home/ishovkun/.vifm/Trash/000_gm_reference.txt
+	/home/ishovkun/dev/msh2gprs/gm_reference.txt
+t/home/ishovkun/.vifm/Trash/000_gm_thermal.txt
+	/home/ishovkun/dev/msh2gprs/gm_thermal.txt
+t/home/ishovkun/.vifm/Trash/000_file
+	/home/ishovkun/sim/sda_3x3x1/file
+t/home/ishovkun/.vifm/Trash/001_gm_SDA.txt
+	/home/ishovkun/sim/sda_3x3x1/gm_SDA.txt
+t/home/ishovkun/.vifm/Trash/000_Notes (Case Conflict)
+	/home/ishovkun/Dropbox/Notes (Case Conflict)
+t/home/ishovkun/.vifm/Trash/000_ivy
+	/home/ishovkun/.emacs.d/layers/+completion/ivy
+t/home/ishovkun/.vifm/Trash/000_libDiscretization.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/Compiled/libDiscretization.a
+t/home/ishovkun/.vifm/Trash/000_libMesh_Library.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/Compiled/libMesh_Library.a
+t/home/ishovkun/.vifm/Trash/000_libMesh_Libraryd.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/Compiled/libMesh_Libraryd.a
+t/home/ishovkun/.vifm/Trash/000_libinmost.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/Compiled/libinmost.a
+t/home/ishovkun/.vifm/Trash/000_Mesh_Library
+	/home/ishovkun/dev/AD-GPRS/Libraries/sources/Mesh_Library
+t/home/ishovkun/.vifm/Trash/000_INMOST
+	/home/ishovkun/sim/sda_3x3x1/INMOST
+t/home/ishovkun/.vifm/Trash/000_Quad.hpp
+	/home/ishovkun/dev/msh2gprs/src/angem/Quad.hpp
+t/home/ishovkun/.vifm/Trash/000_gmsh.geo
+	/home/ishovkun/sim/edfm-10x10x1/gmsh.geo
+t/home/ishovkun/.vifm/Trash/000_gmsh.mesh
+	/home/ishovkun/sim/edfm-10x10x1/gmsh.mesh
+t/home/ishovkun/.vifm/Trash/000_wells_unstr.txt
+	/home/ishovkun/sim/edfm-10x10x1/wells_unstr.txt
+t/home/ishovkun/.vifm/Trash/000_OUT_UNSTR.et.rates.txt
+	/home/ishovkun/sim/edfm-10x10x1/OUT_UNSTR.et.rates.txt
+t/home/ishovkun/.vifm/Trash/000_OUT_UNSTR.et.vars.h5
+	/home/ishovkun/sim/edfm-10x10x1/OUT_UNSTR.et.vars.h5
+t/home/ishovkun/.vifm/Trash/000_OUT_UNSTR.et.vars.txt
+	/home/ishovkun/sim/edfm-10x10x1/OUT_UNSTR.et.vars.txt
+t/home/ishovkun/.vifm/Trash/000_cartesian
+	/home/ishovkun/sim/edfm-10x10x1/cartesian
+t/home/ishovkun/.vifm/Trash/000_blocks-0vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-0vtk
+t/home/ishovkun/.vifm/Trash/000_edfm-2frac
+	/home/ishovkun/sim/edfm-2frac
+t/home/ishovkun/.vifm/Trash/000_GPRS.txt
+	/home/ishovkun/sim/edfm-2frac/GPRS.txt
+t/home/ishovkun/.vifm/Trash/000_blocks-0.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-0.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-1.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-1.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-2.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-2.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-3.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-3.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-4.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-4.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-5.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-5.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-6.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-6.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-7.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-7.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-8.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-8.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-9.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-9.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-10.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-10.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-11.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-11.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-12.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-12.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-13.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-13.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-14.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-14.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-15.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-15.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-16.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-16.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-17.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-17.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-18.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-18.vtk
+t/home/ishovkun/.vifm/Trash/000_blocks-19.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/blocks-19.vtk
+t/home/ishovkun/.vifm/Trash/000_efrac.vtk
+	/home/ishovkun/sim/edfm-10x10x1/efrac.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-0.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-0.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-1.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-1.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-2.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-2.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-3.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-3.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-4.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-4.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-5.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-5.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-6.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-6.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-7.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-7.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-8.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-8.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-9.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-9.vtk
+t/home/ishovkun/.vifm/Trash/000_frac-10.vtk
+	/home/ishovkun/sim/edfm-10x10x1/field/frac-10.vtk
+t/home/ishovkun/.vifm/Trash/000_colors.bck
+	/home/ishovkun/.vifm/colors.bck
+t/home/ishovkun/.vifm/Trash/000_ishovkun
+	/home/ishovkun/.vifm/colors/ishovkun
+t/home/ishovkun/.vifm/Trash/000_cgal-examples
+	/home/ishovkun/dev/cgal-examples
+t/home/ishovkun/.vifm/Trash/000_yaml
+	/home/ishovkun/dev/msh2gprs/src/parsers/yaml
+t/home/ishovkun/.vifm/Trash/000_test
+	/home/ishovkun/dev/msh2gprs/src/parsers/yaml/test
+t/home/ishovkun/.vifm/Trash/000_vli
+	/home/ishovkun/dev/msh2gprs/src/vli
+t/home/ishovkun/.vifm/Trash/000_konashkovaAMS21-24-2014.pdf
+	/home/ishovkun/Downloads/konashkovaAMS21-24-2014.pdf
+t/home/ishovkun/.vifm/Trash/000_koptelovAMS101-104-2013.pdf
+	/home/ishovkun/Downloads/koptelovAMS101-104-2013.pdf
+t/home/ishovkun/.vifm/Trash/000_kronthesisschaecke04.pdf
+	/home/ishovkun/Downloads/kronthesisschaecke04.pdf
+t/home/ishovkun/.vifm/Trash/000_l2tabuen.pdf
+	/home/ishovkun/Downloads/l2tabuen.pdf
+t/home/ishovkun/.vifm/Trash/000_out.pdf
+	/home/ishovkun/Downloads/out.pdf
+t/home/ishovkun/.vifm/Trash/000_pichat.vtk
+	/home/ishovkun/Downloads/pichat.vtk
+t/home/ishovkun/.vifm/Trash/000_vifmrc
+	/home/ishovkun/Downloads/vifmrc
+t/home/ishovkun/.vifm/Trash/000_.byobu-bin
+	/home/ishovkun/.byobu-bin
+t/home/ishovkun/.vifm/Trash/000_@@home@ishovkun@dev@msh2gprs
+	/home/ishovkun/.emacs.d/.cache/lsp-cquery/@@home@ishovkun@dev@msh2gprs
+t/home/ishovkun/.vifm/Trash/000_@home@ishovkun@dev@msh2gprs
+	/home/ishovkun/.emacs.d/.cache/lsp-cquery/@home@ishovkun@dev@msh2gprs
+
+# State:
+f
+i1
+[.0
+[F
+F
+I1
+].0
+]F
+s0

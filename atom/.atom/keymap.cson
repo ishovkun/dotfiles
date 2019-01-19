@@ -1,0 +1,65 @@
+'atom-text-editor':
+  'alt-x': 'command-palette:toggle'
+  'alt-h': 'window:focus-pane-on-left'
+  'alt-l': 'window:focus-pane-on-right'
+  'alt-j': 'window:focus-pane-below'
+  'alt-k': 'window:focus-pane-above'
+
+'atom-text-editor[mini]' :
+  'ctrl-j': 'core:move-down'
+  'ctrl-k': 'core:move-up'
+  'ctrl-w': 'editor:delete-to-beginning-of-word'
+
+'atom-text-editor.vim-mode-plus:not(.insert-mode)':
+  'ctrl-e' : 'vim-mode-plus:scroll-half-screen-up'
+  'space space': 'fuzzy-finder:toggle-buffer-finder'
+  'space p f': 'fuzzy-finder:toggle-file-finder'
+  'space f s': 'core:save'
+  '-' : 'atom-commander:show-and-focus'
+  'g y' : 'vim-mode-plus:duplicate-with-comment-out-original'
+  'space ;': 'editor:toggle-line-comments'
+  'ctrl-j' : 'vim-mode-plus:mini-scroll-down'
+  'ctrl-k' : 'vim-mode-plus:mini-scroll-up'
+  ', g a' : 'switch-header-source:switch'
+  'space p p': 'project-manager:list-projects'
+
+'atom-text-editor.vim-mode-plus.insert-mode':
+  'j k': 'vim-mode-plus:activate-normal-mode'
+  'alt-f': 'editor:move-to-end-of-word'
+  'alt-b': 'editor:move-to-beginning-of-word'
+  'ctrl-f': 'core:move-right'
+  'ctrl-b': 'core:move-left'
+  'ctrl-e': 'editor:move-to-end-of-screen-line'
+  'ctrl-a': 'editor:move-to-first-character-of-line'
+  'alt-d': 'editor:delete-to-end-of-word'
+  'alt-/' : 'snippets:expand'
+
+'atom-text-editor.vim-mode-plus.normal-mode':
+  'j': 'vim-mode-plus:move-down-screen'
+  'k': 'vim-mode-plus:move-up-screen'
+  'space w d'  : 'pane:close'
+  'space 1': 'pane-manager:focus-to-pane-one'
+  'space 2': 'pane-manager:focus-to-pane-two'
+  'space 3': 'pane-manager:focus-to-pane-three'
+  'space w /': 'pane:split-right-and-copy-active-item'
+  'space w u': 'pane:reopen-closed-item'
+  'space w L': 'pane:move-item-right'
+  'space w H': 'pane:move-item-left'
+  'ctrl-x 1': 'pane-manager:change-layout-one'
+  'ctrl-x 2': 'pane-manager:change-layout-two'
+  'ctrl-x 3': 'pane-manager:change-layout-three'
+
+'atom-text-editor.vim-mode-plus.visual-mode':
+  'space ;': 'vim-mode-plus:toggle-line-comments'
+  's': 'vim-mode-plus:surround-smart-word'
+
+'body atom-text-editor.autocomplete-active':
+  'ctrl-k': 'core:move-up'
+  'ctrl-j': 'core:move-down'
+
+'.atom-commander':
+  '-' : 'atom-commander:toggle-visible'
+  'q' : 'atom-commander:toggle-visible'
+  'j' : 'core:move-down'
+  'k' : 'core:move-up'
+  'l' : 'atom-commander:open-highlighted-item'

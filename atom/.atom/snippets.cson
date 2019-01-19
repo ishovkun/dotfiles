@@ -1,0 +1,13 @@
+'.source.cpp, .source.cc .source.c .source.hpp':
+  'mycout':
+    'prefix': 'cout'
+    'body': 'std::cout << $1 << std::endl;'
+
+  'print-var':
+    'mycout=':
+      'prefix': 'cout='
+      'body': 'std::cout << "$1" << $1 << std::endl;'
+
+  'For loop':
+    'prefix': 'for'
+    'body': 'for (std::size_t $1=0; $1<$2; ++$1)'
