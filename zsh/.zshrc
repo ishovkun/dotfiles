@@ -64,9 +64,21 @@ source $ZSH/oh-my-zsh.sh
 # User configuration
 local ret_status="%(?:%{$fg_bold[green]%}❯ :%{$fg_bold[red]%}❯ )"
 
-source /home/ishovkun/.deer/deer
-zle -N deer
-bindkey '\ee' deer
+# source /home/ishovkun/.deer/deer
+# zle -N deer
+# bindkey '\ee' deer
+
+sdn-navigate () {
+  # ... possibly zle-line-init
+  eval `sdn`
+  [ -z "$cd" ] || cd "$cd"
+  [ -z "$insert" ] || LBUFFER="$LBUFFER$insert "
+  zle reset-prompt
+  # ... possibly zle-line-finish
+}
+zle -N sdn-navigate
+bindkey '\ee' sdn-navigate
+
 # load zgen
 # source "${HOME}/.zgen/zgen.zsh"
 
@@ -96,12 +108,12 @@ bindkey '\ee' deer
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias gmsh="~/build/gmsh-git-Linux64/bin/gmsh"
+alias gmsh="~/build/gmsh-4.1.4-Linux64/bin/gmsh"
 
 PYTHONPATH="${PYTHONPATH}:/home/ishovkun/dev"
 export PYTHONPATH
 
-eval $(thefuck --alias)
+# eval $(thefuck --alias)
 
 # color gcc output
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
