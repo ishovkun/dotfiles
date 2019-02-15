@@ -74,13 +74,13 @@ This function should only modify configuration layer settings."
      ranger
      org
      deft                               ; notes
-     google-calendar
+     ;; google-calendar
      shell
      ;; (shell :variables
      ;;        shell-default-position 'bottom
      ;;        shell-default-height 30)     ;; syntax-checking
      version-control
-     w3m
+     ;; w3m
      pdf
      )
 
@@ -93,6 +93,7 @@ This function should only modify configuration layer settings."
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(darkroom
                                       ag
+                                      all-the-icons
                                       all-the-icons-dired
                                       doom-themes)
    ;; A list of packages that cannot be updated.
@@ -242,6 +243,7 @@ It should only modify the values of Spacemacs settings."
    ;; other separators at
    ;; https://github.com/syl20bnr/spacemacs/blob/develop/doc/DOCUMENTATION.org#powerline-separators
    dotspacemacs-mode-line-theme '(doom :separator arrow :separator-scale 1.1)
+   ;; dotspacemacs-mode-line-theme '(spacemacs :separator arrow :separator-scale 1.1)
    ;; dotspacemacs-mode-line-theme '(all-the-icons :separator arrow :separator-scale 1.1)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
@@ -251,7 +253,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '(
-                    ;; ------------- iosevka ------------------
+                    ;; ------------- inconsolata ------------------
                     ;; "Inconsolata"
                     ;; "Inconsolata LGC" ;; aur otf-inconsolata-lgc-git
                     ;; :size 28          ;; Inconsolata Laptop
@@ -342,7 +344,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil, the paste transient-state is enabled. While enabled, pressing
    ;; `p' several times cycles through the elements in the `kill-ring'.
    ;; (default nil)
-   dotspacemacs-enable-paste-transient-state 1
+   dotspacemacs-enable-paste-transient-state nil
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
@@ -862,6 +864,8 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (setq frame-title-format nil)
   ;; fix evil paste
   (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
+  ;; follow symlinks
+  (setq vc-follow-symlinks t)
   ;; ----------------------------- Ranger ------------------------------------
   (ranger-override-dired-mode t)
   (setq ranger-cleanup-eagerly t)
@@ -887,6 +891,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
         ranger-max-preview-size 10)
   (define-key ranger-mode-map (kbd "<C-return>") 'ergoemacs-open-in-external-app)
   (add-hook 'ranger-mode-hook 'all-the-icons-dired-mode)
+  (setq all-the-icons-color-icons t)
   ;; ----------------------------- Dired -------------------------------------
   ;; (require 'dired+)  ; Enable dired+
   ;; (setq dired-dwim-target t)            ; copy to another dired window
@@ -917,7 +922,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; spacemacs/helm-shell-history
   (evil-define-key 'normal comint-mode-map (kbd "<return>") 'term-send-return)
   (evil-define-key 'normal comint-mode-map (kbd "C-e") 'evil-scroll-up)
-
+  (evil-define-key 'hybrid comint-mode-map (kbd "C-w") 'clean-aindent--bsunindent)
   (evil-define-key 'normal comint-mode-map (kbd ", ,") 'spacemacs/helm-shell-history)
   (global-unset-key (kbd "C-r"))
   (evil-define-key 'normal comint-mode-map (kbd "C-r") 'spacemacs/helm-shell-history)
@@ -1134,7 +1139,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (yasnippet-snippets pdf-tools org-download org-brain lsp-ui hl-todo eyebrowse evil-visual-mark-mode evil-nerd-commenter evil-magit eval-sexp-fu editorconfig doom-themes doom-modeline eldoc-eval define-word cython-mode cquery auto-compile aggressive-indent ace-link anaconda-mode lsp-mode ivy smartparens flycheck company window-purpose imenu-list helm helm-core avy projectile magit git-commit f simple-httpd powerline visual-fill-column evil goto-chg org-plus-contrib zenburn-theme yapfify yaml-mode xterm-color ws-butler writeroom-mode with-editor winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit tablist symon string-inflection stickyfunc-enhance srefactor spaceline-all-the-icons solarized-theme smeargle slim-mode shrink-path shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox packed overseer orgit org-projectile org-present org-pomodoro org-mime org-gcal org-bullets open-junk-file neotree nameless multi-term move-text monokai-theme mmm-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete ht highlight-parentheses highlight-numbers highlight-indentation highlight helm-xref helm-w3m helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-rtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery expand-region evil-visualstar evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump dotenv-mode disaster diminish diff-hl deft darkroom counsel-projectile company-web company-tern company-statistics company-rtags company-quickhelp company-lsp company-c-headers company-auctex company-anaconda column-enforce-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls calfw browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auctex-latexmk all-the-icons-dired ag ace-window ace-jump-helm-line ac-ispell))))
+    (zenburn-theme yasnippet-snippets writeroom-mode visual-fill-column web-mode solarized-theme pdf-tools tablist org-projectile org-download json-navigator google-translate evil-magit dumb-jump doom-modeline diff-hl define-word counsel-projectile counsel swiper ivy company-lsp cmake-ide centered-cursor-mode ace-link auctex smartparens flycheck company window-purpose helm helm-core lsp-mode magit powerline treemacs pfuture ace-window avy projectile dash org-plus-contrib hydra yapfify yaml-mode xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection stickyfunc-enhance srefactor spaceline-all-the-icons smeargle slim-mode shrink-path shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox overseer orgit org-present org-pomodoro org-mime org-category-capture org-bullets org-brain open-junk-file nameless multi-term move-text monokai-theme mmm-mode markdown-toc magit-svn magit-gitflow macrostep lsp-ui lorem-ipsum livid-mode live-py-mode link-hint levenshtein json-mode js2-refactor js-doc indent-guide importmagic impatient-mode imenu-list hungry-delete ht hl-todo highlight-parentheses highlight-numbers highlight-indentation hierarchy helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag google-c-style golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-rtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav eldoc-eval editorconfig dotenv-mode doom-themes disaster diminish deft darkroom cython-mode cquery company-web company-tern company-statistics company-rtags company-quickhelp company-c-headers company-auctex company-anaconda column-enforce-mode cmake-mode clean-aindent-mode clang-format ccls browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk all-the-icons-dired aggressive-indent ag ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
