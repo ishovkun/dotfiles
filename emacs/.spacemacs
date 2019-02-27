@@ -866,6 +866,8 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
   ;; follow symlinks
   (setq vc-follow-symlinks t)
+  ;; auto-exit comint mode when leaving insert mode
+  (add-hook 'evil-normal-state-entry-hook '(lambda () (company-abort)))
   ;; ----------------------------- Ranger ------------------------------------
   (ranger-override-dired-mode t)
   (setq ranger-cleanup-eagerly t)
