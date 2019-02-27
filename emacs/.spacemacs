@@ -867,6 +867,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; follow symlinks
   (setq vc-follow-symlinks t)
   ;; auto-exit comint mode when leaving insert mode
+  (require 'company)
   (add-hook 'evil-normal-state-entry-hook '(lambda () (company-abort)))
   ;; ----------------------------- Ranger ------------------------------------
   (ranger-override-dired-mode t)
