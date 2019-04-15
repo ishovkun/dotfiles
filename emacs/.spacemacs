@@ -599,30 +599,6 @@ you should place your code here."
        (evil-end-of-line))
       ))
   ;;----------------------------------------
-  ;;Open file by C-return in external application
-  (defun ergoemacs-open-in-external-app ()
-    "Open the current file or dired marked files in external app."
-    (interactive)
-    (let ( doIt
-          (myFileList
-            (cond
-            ((string-equal major-mode "dired-mode") (dired-get-marked-files))
-            (t (list (buffer-file-name))) ) ) )
-
-      (setq doIt (if (<= (length myFileList) 5)
-                    t
-                  (y-or-n-p "Open more than 5 files?") ) )
-
-      (when doIt
-        (cond
-        ((string-equal system-type "windows-nt")
-          (mapc (lambda (fPath) (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" fPath t t)) ) myFileList)
-          )
-        ((string-equal system-type "darwin")
-          (mapc (lambda (fPath) (shell-command (format "open \"%s\"" fPath)) )  myFileList) )
-        ((string-equal system-type "gnu/linux")
-          (mapc (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "xdg-open" fPath)) ) myFileList) ) ) ) ) )
-
   (defun switch-to-compilation-buffer (&optional arg)
     "Switch to the `*Compilation*' buffer.
 if prefix argument ARG is given, switch to it in an other, possibly new window."
@@ -862,7 +838,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; work around rename bug
   (setq frame-title-format nil)
   ;; fix evil paste
-  (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
+  ;; (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
   ;; follow symlinks
   (setq vc-follow-symlinks t)
   ;; auto-exit comint mode when leaving insert mode
@@ -878,7 +854,8 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (setq ranger-show-hidden nil)
   (setq ranger-deer-show-details nil)
   (add-hook 'ranger-mode-hook (lambda () (purpose-mode -1)))
-  (define-key dired-mode-map (kbd "<C-return>") 'ergoemacs-open-in-external-app)
+  (define-key dired-mode-map (kbd "<C-return>") 'spacemacs/open-file-or-directory-in-external-app)
+  (define-key ranger-mode-map (kbd "<C-return>") 'spacemacs/open-file-or-directory-in-external-app)
   (define-key ranger-mode-map (kbd "C-t") 'ranger-new-tab)
   (define-key ranger-mode-map (kbd "C-w") 'ranger-close-tab)
   (define-key ranger-mode-map (kbd "J") 'ranger-next-tab)
@@ -891,7 +868,6 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
         ranger-excluded-extensions '("mkv" "iso" "mp4")
         ranger-deer-show-details nil
         ranger-max-preview-size 10)
-  (define-key ranger-mode-map (kbd "<C-return>") 'ergoemacs-open-in-external-app)
   (add-hook 'ranger-mode-hook 'all-the-icons-dired-mode)
   (setq all-the-icons-color-icons t)
   ;; ----------------------------- Dired -------------------------------------
