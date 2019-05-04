@@ -682,15 +682,10 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (setq auto-mode-alist (cons '("\\.qml\\'" . javascript-mode) auto-mode-alist))
   ;; ------------------- term cursor -------------------------------------
   (unless (display-graphic-p)
-    (load-file "~/.emacs.d/private/evil-terminal-cursor-changer/evil-terminal-cursor-changer.el")
-    (require 'evil-terminal-cursor-changer)
-    (evil-terminal-cursor-changer-activate) ; or (etcc-on)
+    (load-file "~/.emacs.d/private/term-cursor.el/term-cursor.el")
+    (require 'term-cursor)
+    (global-term-cursor-mode)
     )
-  (setq evil-motion-state-cursor 'box)  ; █
-  (setq evil-visual-state-cursor 'box)  ; █
-  (setq evil-normal-state-cursor 'box)  ; █
-  (setq evil-insert-state-cursor 'bar)  ; ⎸
-  (setq evil-emacs-state-cursor  'hbar) ; _
   ;; ------------------- silver searcher -------------------------------------
   (require 'ag)
   (define-key evil-normal-state-map (kbd "SPC p s") 'projectile-ag)
