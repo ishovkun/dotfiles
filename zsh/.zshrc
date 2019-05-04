@@ -109,6 +109,8 @@ bindkey '\ee' sdn-navigate
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias gmsh="~/build/gmsh-4.1.4-Linux64/bin/gmsh"
+alias ssh="TERM=xterm-256color ssh"
+
 
 PYTHONPATH="${PYTHONPATH}:/home/ishovkun/dev"
 export PYTHONPATH
@@ -136,3 +138,6 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 
 # disable ctrl-s
 stty -ixon
+
+# trueccolor
+export TERM=xterm-24bit
