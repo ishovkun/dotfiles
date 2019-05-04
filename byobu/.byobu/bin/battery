@@ -120,7 +120,7 @@ __battery() {
 		state=$(printf "%s" "$state" | $BYOBU_SED 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')
 		case $state in
 			  charging) sign=" " ;;
-			discharging) sign="-" ;;
+			discharging) sign="" ;;
 			charged|unknown|full) sign="" ;;
 			*) sign="$state" ;;
 		esac
