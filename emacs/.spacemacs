@@ -221,7 +221,6 @@ It should only modify the values of Spacemacs settings."
    '(
      ;; (palenight :location local)
      (one-dark :location local)
-     ;; (one-dark-multi :location local)
      ;; (cobalt2 :location local)
      doom-vibrant
      solarized-dark
@@ -962,7 +961,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (define-key evil-hybrid-state-map (kbd "M-o") 'insert-new-line-above)
   ; Set Alt-k to kill the line to the left
   ;; set shortcut to interrupt FreeFem running
-  (eval-after-load 'freefem++-mode
+  (with-eval-after-load 'freefem++-mode
     '(define-key ffpp-mode-map "\C-c\C-k" 'freefempp-interrupt-process))
   ;; Evil mode keys
   (define-key evil-normal-state-map (kbd "C-e") 'evil-scroll-up)
