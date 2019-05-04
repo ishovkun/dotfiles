@@ -119,7 +119,7 @@ __battery() {
 		# Convert state to lower case
 		state=$(printf "%s" "$state" | $BYOBU_SED 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')
 		case $state in
-			  charging) sign=" " ;;
+			  charging) sign="  " ;;
 			discharging) sign="" ;;
 			charged|unknown|full) sign="" ;;
 			*) sign="$state" ;;
