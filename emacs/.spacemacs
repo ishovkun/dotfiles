@@ -62,6 +62,7 @@ This function should only modify configuration layer settings."
      imenu-list
      ;; ycmd
      lsp
+     dap
      ;; neotree
      (spell-checking :variables spell-checking-enable-by-default nil)
      (auto-completion :variables
@@ -679,6 +680,17 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (autoload 'eclipse-shell "eclipse" "Interactive ECLIPSE mode." t)
   ;; -------------------------- Javascript -----------------------------------
   (setq auto-mode-alist (cons '("\\.qml\\'" . javascript-mode) auto-mode-alist))
+  ;; ------------------- term cursor -------------------------------------
+  (unless (display-graphic-p)
+    (load-file "~/.emacs.d/private/evil-terminal-cursor-changer/evil-terminal-cursor-changer.el")
+    (require 'evil-terminal-cursor-changer)
+    (evil-terminal-cursor-changer-activate) ; or (etcc-on)
+    )
+  (setq evil-motion-state-cursor 'box)  ; █
+  (setq evil-visual-state-cursor 'box)  ; █
+  (setq evil-normal-state-cursor 'box)  ; █
+  (setq evil-insert-state-cursor 'bar)  ; ⎸
+  (setq evil-emacs-state-cursor  'hbar) ; _
   ;; ------------------- silver searcher -------------------------------------
   (require 'ag)
   (define-key evil-normal-state-map (kbd "SPC p s") 'projectile-ag)
@@ -1115,9 +1127,30 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
+ '(evil-want-Y-yank-to-eol nil)
+ '(hl-todo-keyword-faces
+   (quote
+    (("TODO" . "#dc752f")
+     ("NEXT" . "#dc752f")
+     ("THEM" . "#2d9574")
+     ("PROG" . "#4f97d7")
+     ("OKAY" . "#4f97d7")
+     ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f")
+     ("DONE" . "#86dc2f")
+     ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d")
+     ("HACK" . "#b1951d")
+     ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f")
+     ("XXX" . "#dc752f")
+     ("XXXX" . "#dc752f"))))
  '(package-selected-packages
    (quote
-    (zenburn-theme yasnippet-snippets writeroom-mode visual-fill-column web-mode solarized-theme pdf-tools tablist org-projectile org-download json-navigator google-translate evil-magit dumb-jump doom-modeline diff-hl define-word counsel-projectile counsel swiper ivy company-lsp cmake-ide centered-cursor-mode ace-link auctex smartparens flycheck company window-purpose helm helm-core lsp-mode magit powerline treemacs pfuture ace-window avy projectile dash org-plus-contrib hydra yapfify yaml-mode xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection stickyfunc-enhance srefactor spaceline-all-the-icons smeargle slim-mode shrink-path shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox overseer orgit org-present org-pomodoro org-mime org-category-capture org-bullets org-brain open-junk-file nameless multi-term move-text monokai-theme mmm-mode markdown-toc magit-svn magit-gitflow macrostep lsp-ui lorem-ipsum livid-mode live-py-mode link-hint levenshtein json-mode js2-refactor js-doc indent-guide importmagic impatient-mode imenu-list hungry-delete ht hl-todo highlight-parentheses highlight-numbers highlight-indentation hierarchy helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag google-c-style golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-rtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav eldoc-eval editorconfig dotenv-mode doom-themes disaster diminish deft darkroom cython-mode cquery company-web company-tern company-statistics company-rtags company-quickhelp company-c-headers company-auctex company-anaconda column-enforce-mode cmake-mode clean-aindent-mode clang-format ccls browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk all-the-icons-dired aggressive-indent ag ace-jump-helm-line ac-ispell))))
+    (term-cursor zenburn-theme yasnippet-snippets writeroom-mode visual-fill-column web-mode solarized-theme pdf-tools tablist org-projectile org-download json-navigator google-translate evil-magit dumb-jump doom-modeline diff-hl define-word counsel-projectile counsel swiper ivy company-lsp cmake-ide centered-cursor-mode ace-link auctex smartparens flycheck company window-purpose helm helm-core lsp-mode magit powerline treemacs pfuture ace-window avy projectile dash org-plus-contrib hydra yapfify yaml-mode xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection stickyfunc-enhance srefactor spaceline-all-the-icons smeargle slim-mode shrink-path shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox overseer orgit org-present org-pomodoro org-mime org-category-capture org-bullets org-brain open-junk-file nameless multi-term move-text monokai-theme mmm-mode markdown-toc magit-svn magit-gitflow macrostep lsp-ui lorem-ipsum livid-mode live-py-mode link-hint levenshtein json-mode js2-refactor js-doc indent-guide importmagic impatient-mode imenu-list hungry-delete ht hl-todo highlight-parentheses highlight-numbers highlight-indentation hierarchy helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag google-c-style golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-rtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav eldoc-eval editorconfig dotenv-mode doom-themes disaster diminish deft darkroom cython-mode cquery company-web company-tern company-statistics company-rtags company-quickhelp company-c-headers company-auctex company-anaconda column-enforce-mode cmake-mode clean-aindent-mode clang-format ccls browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk all-the-icons-dired aggressive-indent ag ace-jump-helm-line ac-ispell)))
+ '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")) t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
