@@ -747,6 +747,10 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
                              ))
   (setq org-startup-with-inline-images t)
   (evil-define-key 'normal org-mode-map (kbd ", .") 'org-toggle-latex-fragment)
+  (add-hook 'latex-mode-hook (lambda ()
+                             (plist-put org-format-latex-options :scale 3.0)
+                             ))
+  (setq TeX-view-program-selection '((output-pdf "Okular")))
   ;; ---------------------------- ORG calendar --------------------------------------
   (setq org-gcal-client-id "1046223883337-g5m0oj48ri3g0blvpiker752kd39qv43.apps.googleusercontent.com"
         org-gcal-client-secret "zLRzWSYHzuQ4GG8qAJPFLjZY")
@@ -972,7 +976,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
     '(define-key ffpp-mode-map "\C-c\C-k" 'freefempp-interrupt-process))
   ;; Evil mode keys
   (define-key evil-normal-state-map (kbd "C-e") 'evil-scroll-up)
-  (eval-after-load 'pdf-view-mode
+  (eval-after-load 'pdf-view
     '(define-key pdf-view-mode-map (kbd "e") 'pdf-view-scroll-down-or-previous-page)
     )
   (define-key evil-visual-state-map (kbd "C-e") 'evil-scroll-up)
