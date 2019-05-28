@@ -989,6 +989,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (define-key evil-normal-state-map (kbd "SPC ;") 'evilnc-comment-or-uncomment-lines)
   (define-key evil-visual-state-map (kbd "SPC ;") 'evilnc-comment-or-uncomment-lines)
   (define-key evil-normal-state-map (kbd "C-s") 'save-buffer)
+  (define-key evil-hybrid-state-map (kbd "C-s") 'save-buffer)
   (define-key evil-normal-state-map (kbd ">") 'evil-shift-right-line)
   (define-key evil-normal-state-map (kbd "<") 'evil-shift-left-line)
   (evil-define-key 'hybrid c++-mode-map (kbd "]") 'evil-forward-section-begin)
@@ -1030,16 +1031,26 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; (define-key evil-hybrid-state-map (kbd "M-k") 'windmove-up)
   ;; (define-key evil-hybrid-state-map (kbd "M-l") 'windmove-right)
 
-  (add-hook 'org-mode-hook (lambda()
-                             (define-key evil-normal-state-local-map (kbd "M-j") 'windmove-down)
-                             (define-key evil-normal-state-local-map (kbd "M-k") 'windmove-up)
-                             (define-key evil-normal-state-local-map (kbd "M-h") 'windmove-left)
-                             (define-key evil-normal-state-local-map (kbd "M-l") 'windmove-right)
-                             ))
+  (add-hook 'org-mode-hook
+            (lambda()
+              (define-key evil-normal-state-local-map (kbd "M-j") 'windmove-down)
+              (define-key evil-normal-state-local-map (kbd "M-k") 'windmove-up)
+              (define-key evil-normal-state-local-map (kbd "M-h") 'windmove-left)
+              (define-key evil-normal-state-local-map (kbd "M-l") 'windmove-right)
+              ))
 
   ;; (define-key evil-normal-state-map (kbd "C-j") 'evil-scroll-line-down)
   (define-key evil-normal-state-map (kbd "C-j") 'scroll-up-line)
   (define-key evil-normal-state-map (kbd "C-k") 'scroll-down-line)
+  ;; other window
+  (define-key evil-normal-state-map (kbd "C-S-k") (lambda() (interactive)
+                                                    (scroll-other-window-down 1)))
+  (define-key evil-normal-state-map (kbd "C-S-j") (lambda() (interactive)
+                                                    (scroll-other-window 1)))
+  (define-key evil-normal-state-map (kbd "C-S-e") (lambda() (interactive)
+                                                    (scroll-other-window-down 25)))
+  (define-key evil-normal-state-map (kbd "C-S-d") (lambda() (interactive)
+                                                    (scroll-other-window 25)))
   ;; dired doesn't listen to this key
   (define-key dired-mode-map (kbd "M-l") 'windmove-right)
 
