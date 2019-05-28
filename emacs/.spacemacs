@@ -906,6 +906,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   ;; ----------------------------- Shell --------------------------------
   ;; spacemacs/helm-shell-history
   (evil-define-key 'normal comint-mode-map (kbd "<return>") 'term-send-return)
+  (evil-define-key 'normal comint-mode-map (kbd "C-l") 'comint-clear-buffer)
   (evil-define-key 'normal comint-mode-map (kbd "C-e") 'evil-scroll-up)
   (evil-define-key 'hybrid comint-mode-map (kbd "C-w") 'clean-aindent--bsunindent)
   (evil-define-key 'normal comint-mode-map (kbd ", ,") 'spacemacs/helm-shell-history)
