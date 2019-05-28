@@ -108,7 +108,7 @@ bindkey '\ee' sdn-navigate
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias gmsh="~/build/gmsh-4.1.4-Linux64/bin/gmsh"
+alias gmsh="~/build/gmsh/bin/gmsh"
 alias ssh="TERM=xterm-256color ssh"
 
 
