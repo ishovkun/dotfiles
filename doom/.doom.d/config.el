@@ -1,7 +1,7 @@
 ;;; ~/.doom.d/config.el -*- lexical-binding: t; -*-
 
 ;; place your private configuration here
-(setq doom-font (font-spec :family "Iosevka SS04" :size 11))
+(setq doom-font (font-spec :family "Iosevka SS04" :size 15))
 (when (string= (system-name) "space")
   ;; different scaling
   (setq doom-font (font-spec :family "Iosevka SS04" :size 31)))
@@ -99,6 +99,9 @@
     :nv "d"   #'delete-window
     :nv "SPC" #'ace-swap-window
     :nv "1"   #'delete-other-windows
+    :n "f"    #'make-frame-command
+    :nv "v"   #'split-window-right
+    :nv "s"   #'split-window-below
     )
   ;; commenting
   :desc "comment single line" :n ";" #'evil-commentary-line
@@ -309,6 +312,10 @@
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
 ;; --------------------------------- Fixes ---------------------------------
 (setq evil-move-cursor-back nil)
+;; make compilation buffer stick to the frame
+(push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
+(setq doom-private-dir "~/dotfiles/doom/.doom.d/")
+
 
 ;; (setq +doom-dashboard--width 100)
 ;; (defun doom-dashboard-widget-banner ()

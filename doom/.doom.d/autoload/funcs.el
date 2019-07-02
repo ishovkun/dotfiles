@@ -155,7 +155,8 @@ the right."
 
 ;;;###autodef
 (defun my-compilation-hook ()
-  (when (not (get-buffer-window "*compilation*"))
+  ;; the last 1 is to search all frames
+  (when (not (get-buffer-window "*compilation*" 1))
     (save-selected-window
       (save-excursion
         (let* ((w (if (> (length (window-list)) 1)
@@ -165,6 +166,7 @@ the right."
           (select-window w)
           (switch-to-buffer "*compilation*")
           )))))
+
 ;;;###autodef
 (defun rename-file-and-buffer ()
   "Rename the current buffer and file it is visiting."
