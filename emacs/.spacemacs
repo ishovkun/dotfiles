@@ -747,6 +747,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
                              ))
   (setq org-startup-with-inline-images t)
   (evil-define-key 'normal org-mode-map (kbd ", .") 'org-toggle-latex-fragment)
+  (evil-define-key 'normal latex-mode-map (kbd ", q") 'org-toggle-latex-fragment)
   (add-hook 'latex-mode-hook (lambda ()
                              (plist-put org-format-latex-options :scale 3.0)
                              ))
@@ -970,7 +971,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
 
   (define-key evil-hybrid-state-map (kbd "\C-o") 'insert-new-line-below)
   (define-key evil-hybrid-state-map (kbd "M-o") 'insert-new-line-above)
-  ; Set Alt-k to kill the line to the left
+  ;; Set Alt-k to kill the line to the left
   ;; set shortcut to interrupt FreeFem running
   (with-eval-after-load 'freefem++-mode
     '(define-key ffpp-mode-map "\C-c\C-k" 'freefempp-interrupt-process))
