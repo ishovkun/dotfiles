@@ -108,8 +108,10 @@ bindkey '\ee' sdn-navigate
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias gmsh="~/build/gmsh-4.1.4-Linux64/bin/gmsh"
+alias gmsh="~/build/gmsh/bin/gmsh"
 alias ssh="TERM=xterm-256color ssh"
+alias msh2="~/dev/msh2gprs/build/msh2gprs"
+alias doom="~/.emacs.d/bin/doom"
 
 
 PYTHONPATH="${PYTHONPATH}:/home/ishovkun/dev"
