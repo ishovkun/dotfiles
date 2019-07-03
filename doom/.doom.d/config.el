@@ -55,7 +55,6 @@
       :desc "Find references" :n "r" #'lsp-find-references)
     (:map override :desc "Copy and comment" :nv "y" #'duplicate-and-comment-line)
   ) ; end prefix g
-  ;; (:after projectile :map override :desc "Recompile" :nv "<C-return>" #'recompile)
   (:after projectile :map prog-mode-map :desc "Recompile" :nv "<C-return>" #'recompile)
 )
 (map! :leader
@@ -137,6 +136,11 @@
     :desc "align \\"        :v "\\"  #'align-repeat-backslash
     :desc "align |"        :v "|"    #'align-repeat-bar
    )
+  ;; projectile
+  (:prefix "p"
+    (:after projectile :map projectile-mode-map
+      :desc "Project ag" :nv "s" #'projectile-ag)
+    )
   ;; compile
   (:prefix "c"
     :desc "recompile" :n "r" #'recompile
