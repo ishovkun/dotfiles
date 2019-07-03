@@ -272,10 +272,6 @@
     (setq lsp-prefer-flymake nil)
     )
   )
-;; (after! company-lsp
-;;   (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
-;;   )
-
 
 ;; google-c-style
 (use-package google-c-style
@@ -302,17 +298,6 @@
       (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
   )))
 ;; --------------------------------- Compile ---------------------------------
-;; (defun my-compilation-hook ()
-;;   (when (not (get-buffer-window "*compilation*"))
-;;     (save-selected-window
-;;       (save-excursion
-;;         (let* ((w (if (> (length (window-list)) 1)
-;;                       (next-window)
-;;                     (split-window-horizontally))
-;;                ))
-;;           (select-window w)
-;;           (switch-to-buffer "*compilation*")
-;;           )))))
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
 ;; --------------------------------- Fixes ---------------------------------
 (setq evil-move-cursor-back nil)

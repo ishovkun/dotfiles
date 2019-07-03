@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name : title
+#key : title
+#contributor : Igor
+# --
+#+TITLE: $1
