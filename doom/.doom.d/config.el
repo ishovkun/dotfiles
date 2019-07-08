@@ -47,6 +47,8 @@
     :desc ":Increment at point" "M--" #'evil-numbers/dec-at-pt
     :i "C-y" #'evil-paste-after
     )
+  :desc "Detete character" :i "C-d" #'evil-delete-char
+  :desc "New line above&insert" :nv "M-o" #'+default/newline-above
   ;; mode-specific
   (:prefix "g"
     (:after projectile :map projectile-mode-map
