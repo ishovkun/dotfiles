@@ -139,7 +139,9 @@
   ;; projectile
   (:prefix "p"
     (:after projectile :map projectile-mode-map
-      :desc "Project ag" :nv "s" #'projectile-ag)
+      :desc "Project ag"        :nv "s" #'projectile-ag
+      :desc "Project find file" :nv "f" #'+ivy/projectile-find-file
+      )
     )
   ;; compile
   (:prefix "c"
