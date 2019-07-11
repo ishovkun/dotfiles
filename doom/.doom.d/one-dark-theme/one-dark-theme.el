@@ -12,7 +12,6 @@
       (fg3         (if (true-color-p) "#4da089" "#008787"))
       (fg4         (if (true-color-p) "#d66083" "#d75f87"))
       (key2        (if (true-color-p) "#728e25" "#87af00"))
-      (key3        (if (true-color-p) "#20db65" "#5fd75f"))      ;; bright green
       ;; colors with names
       (magenta     (if (true-color-p) "#c586d8" "#ff87ff"))
       (magenta2    (if (true-color-p) "#81aaff" "#d75faf"))
@@ -20,6 +19,7 @@
       (blue        (if (true-color-p) "#51afef" "#5fafff"))
       (bright-blue (if (true-color-p) "#46D9FF" "#5fd7ff"))
       ;; (cyan         (if (true-color-p) "#43e0c8" "#46D9FF"))
+      (bright-green (if (true-color-p) "#20db65" "#5fd75f"))
       (yellow      (if (true-color-p) "#ECBE7B" "#ecbe7b"))
       (orange      (if (true-color-p) "#da8548" "#dd8844"))
       (violet      (if (true-color-p) "#a9a1e1" "#8787d7"))
@@ -35,6 +35,7 @@
       (region  (if (true-color-p) "#3e4451" "#3a3a3a"))
       (var     lightgreen)
       (warning red)
+      (key3    bright-green)      ;; bright green
       )
   (custom-theme-set-faces
    'one-dark
@@ -64,6 +65,8 @@
    `(doom-modeline-evil-normal-state ((,class (:foreground ,bg-dark :background ,keyword ))))
    `(doom-modeline-evil-insert-state ((,class (:foreground ,bg-dark :background ,str ))))
    `(doom-modeline-evil-visual-state ((,class (:foreground ,bg-dark :background ,fg1 ))))
+   ;; modeline git branch color
+   `(doom-modeline-info  ((,class (:foreground ,key3 :weight bold))))
    ;; first thing on the right
    `(mode-line ((,class (:box (:line-width 1 :color ,bg) :bold t :foreground ,builtin :background ,bg-dark))))
    `(mode-line-inactive ((,class (:box (:line-width 1 :color ,bg-dark) :foreground ,fg1 :background ,bg-dark :weight bold))))
@@ -197,6 +200,8 @@
    `(magit-log-author             ((,class (:foreground ,fg3))))
    `(magit-hash                   ((,class (:foreground ,fg2))))
    `(magit-diff-file-header       ((,class (:foreground ,fg2 :background ,bg-dark))))
+   `(magit-branch-local           ((,class (:foreground ,blue :weight bold))))
+   `(magit-branch-remote          ((,class (:foreground ,key3 :weight bold))))
    `(git-gutter-fr:added          ((,class (:foreground ,lightgreen))))
    `(git-gutter-fr:modified       ((,class (:foreground ,builtin))))
    `(git-gutter:added             ((,class (:foreground ,lightgreen))))
