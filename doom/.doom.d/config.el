@@ -270,8 +270,8 @@
     (push 'company-lsp company-backends)
     (require 'cquery)
     ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
-    ;; maybe you want company-yasnippet too?
-    ;; (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
+    ;; without this line yasnippet is fucked up
+    (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
     (setq cquery-executable "/usr/bin/cquery")
     (setq lsp-prefer-flymake nil)
     )
