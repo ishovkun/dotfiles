@@ -38,7 +38,7 @@
     )
   ;; saving
   :desc "Save buffer" :nvi "C-s" #'save-buffer
-  (:after evil-surround :desc "Surround" :v "s" #'evil-surround-region)
+  (:after evil-surround :map override :desc "Surround" :v "s" #'evil-surround-region)
   ;; editing
   :desc "Append comment" :n "M-;" #'comment-dwim
   :desc "Delete word backward" :i "C-w" #'evil-delete-backward-word
