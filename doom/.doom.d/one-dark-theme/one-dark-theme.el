@@ -2,7 +2,7 @@
 
 (deftheme one-dark)
 (let* ((class '((class color) (min-colors 89)))
-      ;;                         GUI       TER
+      ;;                               GUI       TER
       (bg          (if (true-color-p) "#282c34" "#1c1c1c"))       ;; main background
       (bg-light    (if (true-color-p) "#2c323c" "#262626"))       ;; lighter than main
       (bg-dark     (if (true-color-p) "#21252b" "#121212"))       ;; darker than main background
@@ -39,26 +39,26 @@
       )
   (custom-theme-set-faces
    'one-dark
-   `(default ((,class (:background ,bg :foreground ,fg1))))
-   `(font-lock-builtin-face ((,class (:foreground ,builtin))))
-   `(font-lock-comment-face ((,class (:foreground ,comment :italic t))))
+   `(default                      ((,class (:background ,bg :foreground ,fg1))))
+   `(font-lock-builtin-face       ((,class (:foreground ,builtin))))
+   `(font-lock-comment-face       ((,class (:foreground ,comment :italic t))))
    `(font-lock-negation-char-face ((,class (:foreground ,const))))
-   `(font-lock-reference-face ((,class (:foreground ,const))))
-   `(font-lock-constant-face ((,class (:foreground ,const))))
-   `(font-lock-doc-face ((,class (:foreground ,comment))))
+   `(font-lock-reference-face     ((,class (:foreground ,const))))
+   `(font-lock-constant-face      ((,class (:foreground ,const))))
+   `(font-lock-doc-face           ((,class (:foreground ,comment))))
    `(font-lock-function-name-face ((,class (:foreground ,func :background ,bg))))
-   `(font-lock-keyword-face ((,class (:bold ,class :foreground ,keyword))))
-   `(font-lock-string-face ((,class (:foreground ,str))))
-   `(font-lock-type-face ((,class (:foreground ,type ))))
+   `(font-lock-keyword-face       ((,class (:foreground ,keyword :bold ,class ))))
+   `(font-lock-string-face        ((,class (:foreground ,str))))
+   `(font-lock-type-face          ((,class (:foreground ,type ))))
    `(font-lock-variable-name-face ((,class (:foreground ,var :background ,bg))))
-   `(font-lock-warning-face ((,class (:foreground ,warning :background ,bg-light))))
-   `(highlight ((,class (:foreground ,fg3 :background ,bg-dark))))
-   `(hl-line ((,class (:background  ,bg-light))))
-   `(fringe ((,class (:background ,bg :foreground ,fg4))))
-   `(window-divider ((,class (:background ,bg-dark :foreground ,bg-dark))))
-   `(region ((,class (:foreground nil :background ,region :distant-foreground ,comment))))
-   `(isearch ((,class (:bold t :foreground ,warning :background ,bg-dark))))
-   `(show-paren-match-face ((,class (:background ,warning))))
+   `(font-lock-warning-face       ((,class (:foreground ,warning :background ,bg-light))))
+   `(highlight                    ((,class (:foreground ,fg3 :background ,bg-dark))))
+   `(hl-line                      ((,class (:background  ,bg-light))))
+   `(fringe                       ((,class (:background ,bg :foreground ,fg4))))
+   `(window-divider               ((,class (:background ,bg-dark :foreground ,bg-dark))))
+   `(region                       ((,class (:foreground nil :background ,region :distant-foreground ,comment))))
+   `(isearch                      ((,class (:foreground ,warning :background ,bg-dark :bold t ))))
+   `(show-paren-match-face        ((,class (:background ,warning))))
    ;; poweline
    `(spaceline-evil-visual ((,class (:foreground ,fg1 :background ,bg))))
    `(doom-modeline-evil-operator-state ((,class (:foreground ,bg-dark :background ,keyword ))))
