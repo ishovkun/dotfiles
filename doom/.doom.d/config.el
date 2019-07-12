@@ -28,6 +28,7 @@
   :i  "C-f"         #'evil-forward-char
   :i  "C-b"         #'evil-backward-char
   :nv "g l "        #'goto-line
+  :nv "g s"         #'evil-avy-goto-char-timer
   ;; ranger
   (:after ranger :desc "Invoke deer" :n  "-"   #'deer)
   (:after ranger :map ranger-mode-map
