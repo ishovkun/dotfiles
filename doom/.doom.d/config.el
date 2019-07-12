@@ -51,7 +51,7 @@
   :desc "New line above&insert" :nv "M-o" #'+default/newline-above
   ;; mode-specific
   (:prefix "g"
-    (:after projectile :map projectile-mode-map
+    (:after projectile :map c++-mode-map
       :desc "Switch implementation/header" :nv "o" #'projectile-find-other-file)
     (:after lsp-ui :map prog-mode-map
       :desc "Find references" :n "r" #'lsp-find-references)
