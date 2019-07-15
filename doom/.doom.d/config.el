@@ -43,6 +43,7 @@
   ;; editing
   :desc "Append comment" :n "M-;" #'comment-dwim
   :desc "Delete word backward" :i "C-w" #'evil-delete-backward-word
+  :desc "Delete word backward" :i "<C-backspace>" #'evil-delete-backward-word
   (:after evil
     :desc ":Increment at point" "M-=" #'evil-numbers/inc-at-pt
     :desc ":Increment at point" "M--" #'evil-numbers/dec-at-pt
