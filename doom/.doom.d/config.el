@@ -43,10 +43,11 @@
   ;; editing
   :desc "Append comment" :n "M-;" #'comment-dwim
   :desc "Delete word backward" :i "C-w" #'evil-delete-backward-word
+  :desc "Delete word backward" :i "<C-backspace>" #'evil-delete-backward-word
   (:after evil
     :desc ":Increment at point" "M-=" #'evil-numbers/inc-at-pt
     :desc ":Increment at point" "M--" #'evil-numbers/dec-at-pt
-    :i "C-y" #'evil-paste-after
+    :i "C-y" #'evil-paste-before
     )
   :desc "Detete character" :i "C-d" #'evil-delete-char
   :desc "New line above&insert" :nv "M-o" #'+default/newline-above
@@ -58,12 +59,33 @@
       :desc "Find references" :n "r" #'lsp-find-references)
     (:map override :desc "Copy and comment" :nv "y" #'duplicate-and-comment-line)
   ) ; end prefix g
-  ;; (:after projectile :map override :desc "Recompile" :nv "<C-return>" #'recompile)
   (:after projectile :map prog-mode-map :desc "Recompile" :nv "<C-return>" #'recompile)
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
     (:prefix-map ("`" . "workspace")
+      :desc "Display tab bar"           "`"   #'+workspace/display
+      :desc "Switch workspace"          "."   #'+workspace/switch-to
+      :desc "New workspace"             "n"   #'+workspace/new
+      :desc "Load workspace from file"  "l"   #'+workspace/load
+      :desc "Save workspace to file"    "s"   #'+workspace/save
+      :desc "Delete session"            "x"   #'+workspace/kill-session
+      :desc "Delete this workspace"     "d"   #'+workspace/delete
+      :desc "Rename workspace"          "r"   #'+workspace/rename
+      :desc "Restore last session"      "R"   #'+workspace/restore-last-session
+      :desc "Next workspace"            "]"   #'+workspace/switch-right
+      :desc "Previous workspace"        "["   #'+workspace/switch-left
+      :desc "Switch to 1st workspace"   "1"   #'+workspace/switch-to-0
+      :desc "Switch to 2nd workspace"   "2"   #'+workspace/switch-to-1
+      :desc "Switch to 3rd workspace"   "3"   #'+workspace/switch-to-2
+      :desc "Switch to 4th workspace"   "4"   #'+workspace/switch-to-3
+      :desc "Switch to 5th workspace"   "5"   #'+workspace/switch-to-4
+      :desc "Switch to 6th workspace"   "6"   #'+workspace/switch-to-5
+      :desc "Switch to 7th workspace"   "7"   #'+workspace/switch-to-6
+      :desc "Switch to 8th workspace"   "8"   #'+workspace/switch-to-7
+      :desc "Switch to 9th workspace"   "9"   #'+workspace/switch-to-8
+      :desc "Switch to final workspace" "0"   #'+workspace/switch-to-final)
+    (:prefix-map ("-" . "workspace")
       :desc "Display tab bar"           "`"   #'+workspace/display
       :desc "Switch workspace"          "."   #'+workspace/switch-to
       :desc "New workspace"             "n"   #'+workspace/new
@@ -140,6 +162,13 @@
     :desc "align \\"        :v "\\"  #'align-repeat-backslash
     :desc "align |"        :v "|"    #'align-repeat-bar
    )
+  ;; projectile
+  (:prefix "p"
+    (:after projectile :map projectile-mode-map
+      :desc "Project ag"        :nv "s" #'projectile-ag
+      :desc "Project find file" :nv "f" #'+ivy/projectile-find-file
+      )
+    )
   ;; compile
   (:prefix "c"
     :desc "recompile" :n "r" #'recompile
@@ -268,8 +297,8 @@
     (push 'company-lsp company-backends)
     (require 'cquery)
     ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
-    ;; maybe you want company-yasnippet too?
-    ;; (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
+    ;; without this line yasnippet is fucked up
+    (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
     (setq cquery-executable "/usr/bin/cquery")
     (setq lsp-prefer-flymake nil)
     )
