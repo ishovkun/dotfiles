@@ -144,6 +144,8 @@
   (:prefix "c"
     :desc "recompile" :n "r" #'recompile
   )
+  (:prefix "p" (:after projectile
+    :desc "Find project file" :nv "f" #'+ivy/projectile-find-file))
 ) ; end map leader
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
@@ -229,8 +231,9 @@
 (after! evil-snipe
   (evil-snipe-mode -1))
 
-(add-to-list 'custom-theme-load-path "~/.doom.d/one-dark-theme/")
+(add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 (load-theme 'one-dark t)
+;; (load-theme 'lucario t)
 
 ;; postframe
 (if window-system (progn
@@ -298,7 +301,8 @@
   )))
 ;; --------------------------------- Compile ---------------------------------
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
-;; --------------------------------- Fixes ---------------------------------
+;; ----------------------------------- Shell ---------------------------------
+;; --------------------------------- Fixes -----------------------------------
 (setq evil-move-cursor-back nil)
 ;; make compilation buffer stick to the frame
 (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
