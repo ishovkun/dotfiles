@@ -86,6 +86,9 @@
    `(term-color-red ((,class (:bold t :foreground ,warning :background ,warning))))
    ;; term-color-black
    `(error ((t (:foreground ,warning :background ,bg))))
+   ;; vterm
+   `(vterm-color-default-fg ((,class (:foreground ,fg1))))
+   `(vterm-color-default-bg ((,class (:background ,bg))))
    ;; compilation
    `(compilation-error ((t (:foreground ,warning :background ,bg))))
    `(compilation-info ((t (:foreground ,keyword :background ,bg))))
@@ -261,7 +264,7 @@
    `(diredfl-file-name            ((,class (:foreground ,fg1 :background ,bg))))
    `(diredfl-file-suffix          ((,class (:foreground ,fg1 :background ,bg))))
    `(diredfl-dir-name             ((,class (:foreground ,blue :bold t))))
-   `(diredfl-symlink              ((,class (:foreground ,magenta :bold t))))
+   `(diredfl-symlink              ((,class (:foreground ,func :bold t))))
    ;; company
    `(company-echo-common ((,class (:foreground ,bg :background ,fg1))))
    `(company-preview ((,class (:background ,bg :foreground ,key2))))

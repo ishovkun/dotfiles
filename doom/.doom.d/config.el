@@ -28,6 +28,7 @@
   :i  "C-f"         #'evil-forward-char
   :i  "C-b"         #'evil-backward-char
   :nv "g l "        #'goto-line
+  (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   (:after avy :nv "g s"         #'evil-avy-goto-char-timer)
   ;; ranger
   (:after ranger :desc "Invoke deer" :n  "-"   #'deer)
@@ -262,8 +263,9 @@
 (after! evil-snipe
   (evil-snipe-mode -1))
 
-(add-to-list 'custom-theme-load-path "~/.doom.d/one-dark-theme/")
+(add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 (load-theme 'one-dark t)
+;; (load-theme 'lucario t)
 
 ;; postframe
 (if window-system (progn
@@ -331,7 +333,8 @@
   )))
 ;; --------------------------------- Compile ---------------------------------
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
-;; --------------------------------- Fixes ---------------------------------
+;; ----------------------------------- Shell ---------------------------------
+;; --------------------------------- Fixes -----------------------------------
 (setq evil-move-cursor-back nil)
 ;; make compilation buffer stick to the frame
 (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
