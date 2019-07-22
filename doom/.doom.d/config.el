@@ -173,6 +173,10 @@
   (:prefix "c"
     :desc "recompile" :n "r" #'recompile
   )
+  ;; toggles
+  (:prefix "t"
+    :desc "toggle line wrap" :n "l" #'toggle-truncate-lines
+  )
 ) ; end map leader
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
