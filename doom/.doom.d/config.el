@@ -174,8 +174,10 @@
   (:prefix "c"
     :desc "recompile" :n "r" #'recompile
   )
-  (:prefix "p" (:after projectile
-    :desc "Find project file" :nv "f" #'+ivy/projectile-find-file))
+  ;; toggles
+  (:prefix "t"
+    :desc "toggle line wrap" :n "l" #'toggle-truncate-lines
+  )
 ) ; end map leader
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
