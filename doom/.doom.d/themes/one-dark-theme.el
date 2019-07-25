@@ -3,9 +3,9 @@
 (deftheme one-dark)
 (let* ((class '((class color) (min-colors 89)))
       ;;                               GUI       TER
-      (bg          (if (true-color-p) "#282c34" "#1c1c1c"))       ;; main background
-      (bg-light    (if (true-color-p) "#2c323c" "#262626"))       ;; lighter than main
-      (bg-dark     (if (true-color-p) "#21252b" "#121212"))       ;; darker than main background
+      (bg          (if (true-color-p) "#282c34" "#1c1c1c")) ;; main background
+      (bg-light    (if (true-color-p) "#2c323c" "#262626")) ;; lighter than main
+      (bg-dark     (if (true-color-p) "#21252b" "#121212")) ;; darker than main background
       (bg4         (if (true-color-p) "#01657f" "#0087af"))
       (fg1         (if (true-color-p) "#abb2bf" "#bcbcbc"))
       (fg2         (if (true-color-p) "#ffffff" "#eeeeee"))
@@ -53,12 +53,14 @@
    `(font-lock-variable-name-face ((,class (:foreground ,var :background ,bg))))
    `(font-lock-warning-face       ((,class (:foreground ,warning :background ,bg-light))))
    `(highlight                    ((,class (:foreground ,fg3 :background ,bg-dark))))
-   `(hl-line                      ((,class (:background  ,bg-light))))
+   `(hl-line                      ((,class (:background ,bg-light))))
    `(fringe                       ((,class (:background ,bg :foreground ,fg4))))
    `(window-divider               ((,class (:background ,bg-dark :foreground ,bg-dark))))
    `(region                       ((,class (:foreground nil :background ,region :distant-foreground ,comment))))
    `(isearch                      ((,class (:foreground ,warning :background ,bg-dark :bold t ))))
    `(show-paren-match-face        ((,class (:background ,warning))))
+   `(whitespace-tab               ((,class (:background ,bg))))
+   `(trailing-whitespace          ((,class (:background ,region))))
    ;; poweline
    `(spaceline-evil-visual ((,class (:foreground ,fg1 :background ,bg))))
    `(doom-modeline-evil-operator-state ((,class (:foreground ,bg-dark :background ,keyword ))))
