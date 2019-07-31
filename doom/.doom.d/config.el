@@ -168,6 +168,7 @@
     (:after projectile :map projectile-mode-map
       :desc "Project ag"        :nv "s" #'projectile-ag
       :desc "Project find file" :nv "f" #'+ivy/projectile-find-file
+      :desc "Project replace"   :n  "R" #'projectile-replace
       )
     )
   ;; compile
@@ -316,6 +317,8 @@
     (when (string= (system-name) "space")
       (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
   )))
+;; ----------------------------------- LaTeX ---------------------------------
+(setq +latex-viewers '(okular))
 ;; --------------------------------- Compile ---------------------------------
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
 ;; ----------------------------------- Shell ---------------------------------
