@@ -321,6 +321,11 @@
 (setq +latex-viewers '(okular))
 ;; --------------------------------- Compile ---------------------------------
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
+;; truncate lines in compilation mode
+(defun compilation-mode-hook-trucate-lines ()
+  (setq truncate-lines nil) ;; automatically becomes buffer local
+  (set (make-local-variable 'truncate-partial-width-windows) nil))
+(add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 (setq evil-move-cursor-back nil)
