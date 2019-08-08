@@ -171,6 +171,10 @@
       :desc "Project replace"   :n  "R" #'projectile-replace
       )
     )
+  ;; browse functions
+  (:prefix "s"
+    (:desc "Browse functions" :nv "j" #'counsel-imenu)
+    )
   ;; compile
   (:prefix "c"
     :desc "recompile" :n "r" #'recompile
@@ -179,6 +183,10 @@
   (:prefix "t"
     :desc "toggle line wrap" :n "l" #'toggle-truncate-lines
   )
+  ;; debugging
+  (:prefix "o" (:after realgud
+   :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
+    )
 ) ; end map leader
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
