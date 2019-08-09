@@ -266,9 +266,11 @@
     (require 'ivy-posframe)
     ;; display at `ivy-posframe-style'
     (setq ivy-posframe-display-functions-alist
-          '((t . ivy-posframe-display-at-frame-center)))
-    ;; (setq ivy-posframe-display-functions-alist
-    ;; '((t . ivy-posframe-display-at-window-center)))
+      '((swiper          . nil)
+        (counsel-ag      . nil)
+        (complete-symbol . ivy-posframe-display-at-point)
+        (t               . ivy-posframe-display-at-frame-center))
+      )
     (ivy-posframe-mode 1)
     (setq ivy-posframe-border-width 2)
 ))
