@@ -61,6 +61,9 @@
     (:map override :desc "Copy and comment" :nv "y" #'duplicate-and-comment-line)
   ) ; end prefix g
   (:after projectile :map prog-mode-map :desc "Recompile" :nv "<C-return>" #'recompile)
+  ;; ivy
+  (:after ivy :map ivy-mode-map
+    :desc "Kill buffer" "C-d" #'ivy-switch-buffer-kill)
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -307,7 +310,8 @@
 (use-package google-c-style
   :config (progn (add-hook 'c-mode-common-hook 'google-set-c-style)
                  (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
-
+;; disable realgud confirmations
+(after! realgud (setq realgud-safe-mode 'nil))
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
