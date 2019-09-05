@@ -183,6 +183,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("7b71b8024fa7592a100866f333578dbf8b4cdfc0eeb5c9a10e18a20764fc70e0" "2cf241935b7bd1c014307c2477161277fcdee3503f5d81661a0bbd3052e19cc4" "6d589ac0e52375d311afaa745205abb6ccb3b21f6ba037104d71111e7e76a3fc" default)))
  '(safe-local-variable-values (quote ((helm-make-build-dir . "build/")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

@@ -259,7 +259,7 @@
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 (load-theme 'one-dark t)
-;; (load-theme 'lucario t)
+;; (load-theme 'nord t)
 
 ;; postframe
 (if window-system (progn
@@ -342,6 +342,21 @@
 ;; make compilation buffer stick to the frame
 (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
 (setq doom-private-dir "~/dotfiles/doom/.doom.d/")
+
+;; -------------------------------- Projectile -------------------------------
+;; (after! ivy
+;;       (setq counsel-find-file-ignore-regexp "\\.o\\'"))
+;; (after! ivy  (setq counsel-find-file-ignore-regexp
+;;                    (my-counsel-ignore-regexp-builder
+;;                     "\\`__pycache__/\\'"
+;;                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o"))))
+(after! ivy
+  (setq counsel-find-file-ignore-regexp
+                   (my-counsel-ignore-regexp-builder
+                    "\\`__pycache__/\\'"
+                    "^.cquery"
+                    (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
+  )
 
 
 ;; (setq +doom-dashboard--width 100)

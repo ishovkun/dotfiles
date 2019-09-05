@@ -180,3 +180,15 @@ the right."
          (t
           (rename-file filename new-name t)
           (set-visited-file-name new-name t t)))))))
+
+;;;###autodef
+(defun my-counsel-ignore-extensions (&rest extensions)
+  (format "\\`.*\\.\\(?:%s\\)\\'" (string-join extensions "\\|")))
+
+;;;###autodef
+(defun my-counsel-ignore-regexp-builder (&rest regexp-units)
+  (mapconcat
+   (lambda (unit)
+     (format "\\(?:%s\\)" unit))
+   regexp-units
+   "\\|"))
