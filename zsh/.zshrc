@@ -70,7 +70,7 @@ local ret_status="%(?:%{$fg_bold[green]%}❯ :%{$fg_bold[red]%}❯ )"
 
 sdn-navigate () {
   # ... possibly zle-line-init
-  eval `sdn`
+  eval `~/build/sdn/build/sdn`
   [ -z "$cd" ] || cd "$cd"
   [ -z "$insert" ] || LBUFFER="$LBUFFER$insert "
   zle reset-prompt
@@ -116,9 +116,6 @@ alias doom="~/.emacs.d/bin/doom"
 
 PYTHONPATH="${PYTHONPATH}:/home/ishovkun/dev"
 export PYTHONPATH
-
-# eval $(thefuck --alias)
-alias doom="~/.emacs.d/bin/doom"
 
 # color gcc output
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
