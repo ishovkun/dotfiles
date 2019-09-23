@@ -61,6 +61,7 @@
     (:map override :desc "Copy and comment" :nv "y" #'duplicate-and-comment-line)
   ) ; end prefix g
   (:after projectile :map prog-mode-map :desc "Recompile" :nv "<C-return>" #'recompile)
+  (:after tex :map LaTeX-mode-map :desc "Recompile" :nv "<C-return>" #'latex/build)
   ;; ivy
   (:after ivy :map ivy-mode-map
     :desc "Kill buffer" "C-d" #'ivy-switch-buffer-kill)

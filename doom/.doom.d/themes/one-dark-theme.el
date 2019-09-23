@@ -225,6 +225,11 @@
    `(term-color-cyan ((,class (:foreground ,str :background ,str))))
    `(term-color-white ((,class (:foreground ,fg2 :background ,fg2))))
    `(rainbow-delimiters-unmatched-face ((,class :foreground ,warning)))
+   ;; ediff
+   `(ediff-even-diff-A    ((,class (:background ,bg-light))))
+   `(ediff-even-diff-B    ((,class (:background ,bg-light))))
+   `(ediff-odd-diff-A    ((,class (:background ,bg-light))))
+   `(ediff-odd-diff-B    ((,class (:background ,bg-light))))
    ;; helm
    `(helm-header ((,class (:foreground ,fg2 :background ,bg :underline nil :box nil))))
    `(helm-source-header ((,class (:foreground ,fg2 :background ,bg4 :underline nil :weight bold :height 1.2))))

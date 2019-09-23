@@ -180,3 +180,14 @@ the right."
          (t
           (rename-file filename new-name t)
           (set-visited-file-name new-name t t)))))))
+;;;###autodef
+(defun latex/build ()
+  (interactive)
+  (progn
+    (let ((TeX-save-query nil))
+      (TeX-save-document (TeX-master-file)))
+    (TeX-command TeX-command-default 'TeX-master-file -1)))
+    ;; (setq build-proc (TeX-command latex-build-command 'TeX-master-file -1))
+    ;; ;; Sometimes, TeX-command returns nil causing an error in set-process-sentinel
+    ;; (when build-proc
+    ;;   (set-process-sentinel build-proc 'latex//build-sent
