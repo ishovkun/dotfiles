@@ -16,5 +16,6 @@
 (package! google-c-style) ; google c/c++ coding style
 ;; (package! company-box)
 (package! company-lsp)
+(package! evil-commentary)
 
 ;;; packages.el ends here

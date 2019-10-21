@@ -340,6 +340,8 @@
   (setq truncate-lines nil) ;; automatically becomes buffer local
   (set (make-local-variable 'truncate-partial-width-windows) nil))
 (add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
+;; ------------------------- evil-commentary ---------------------------------
+(require 'evil-commentary)
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 (setq evil-move-cursor-back nil)
