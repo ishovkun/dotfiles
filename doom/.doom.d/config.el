@@ -65,6 +65,9 @@
   ;; ivy
   (:after ivy :map ivy-mode-map
     :desc "Kill buffer" "C-d" #'ivy-switch-buffer-kill)
+  ;; org
+  (:after org :map org-mode-map
+    :desc "Preview LaTeX" :niv "<M-return>" #'org-latex-preview)
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -91,7 +94,7 @@
       :desc "Switch to 9th workspace"   "9"   #'+workspace/switch-to-8
       :desc "Switch to final workspace" "0"   #'+workspace/switch-to-final)
     (:prefix-map ("-" . "workspace")
-      :desc "Display tab bar"           "`"   #'+workspace/display
+      :desc "Display tab bar"           "-"   #'+workspace/display
       :desc "Switch workspace"          "."   #'+workspace/switch-to
       :desc "New workspace"             "n"   #'+workspace/new
       :desc "Load workspace from file"  "l"   #'+workspace/load
@@ -308,9 +311,13 @@
   )
 
 ;; google-c-style
-(use-package google-c-style
-  :config (progn (add-hook 'c-mode-common-hook 'google-set-c-style)
-                 (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
+(load "~/.doom.d/google-c-style.el")
+(require 'google-c-style)
+(add-hook 'c-mode-common-hook 'google-set-c-style)
+(add-hook 'c-mode-common-hook 'google-make-newline-indent)
+;; (use-package google-c-style
+;;   :config (progn (add-hook 'c-mode-common-hook 'google-set-c-style)
+;;                  (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
 ;; --------------------------------- autocomplete ----------------------------
