@@ -59,7 +59,7 @@
    `(region                       ((,class (:foreground nil :background ,region :distant-foreground ,comment))))
    `(isearch                      ((,class (:foreground ,warning :background ,bg-dark :bold t ))))
    `(show-paren-match-face        ((,class (:background ,warning))))
-   `(whitespace-tab               ((,class (:background ,bg))))
+   `(whitespace-tab               ((,class (:background ,bg :foreground ,comment))))
    `(trailing-whitespace          ((,class (:background ,region))))
    ;; poweline
    `(spaceline-evil-visual ((,class (:foreground ,fg1 :background ,bg))))

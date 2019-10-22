@@ -133,6 +133,7 @@
     :nv "SPC" #'ace-swap-window
     :nv "1"   #'delete-other-windows
     :n "f"    #'make-frame-command
+    :n "D"    #'delete-frame
     :nv "v"   #'split-window-right
     :nv "s"   #'split-window-below
     )
@@ -150,7 +151,9 @@
     )
   ;; files
   (:prefix "f"
-    (:desc "Rename file" :nv "R" #'rename-file-and-buffer))
+    (:desc "Rename file" :nv "R" #'rename-file-and-buffer)
+    (:desc "Save buffer" :nv "s" #'save-buffer))
+
   ;; align
   (:prefix "a"
     :desc "align region"   :v "a"    #'align
@@ -266,7 +269,7 @@
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 (load-theme 'one-dark t)
-;; (load-theme 'lucario t)
+;; (load-theme 'nord t)
 
 ;; postframe
 (if window-system (progn
@@ -309,7 +312,7 @@
     (setq lsp-prefer-flymake nil)
     )
   )
-
+(require 'dap-lldb)
 ;; google-c-style
 (load "~/.doom.d/google-c-style.el")
 (require 'google-c-style)
@@ -320,6 +323,10 @@
 ;;                  (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
+;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
+(setq dap--debug-template-configurations
+      '(("LLDB Run Configuration" :type "lldb" :request "launch" :name "LLDB::Run" :target nil :cwd nil)
+        ("GDB Run Configuration" :type "gdb" :request "launch" :name "GDB::Run" :target nil :cwd nil)))
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
@@ -348,12 +355,29 @@
   (setq truncate-lines nil) ;; automatically becomes buffer local
   (set (make-local-variable 'truncate-partial-width-windows) nil))
 (add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
+;; ------------------------- evil-commentary ---------------------------------
+(require 'evil-commentary)
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 (setq evil-move-cursor-back nil)
 ;; make compilation buffer stick to the frame
 (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
 (setq doom-private-dir "~/dotfiles/doom/.doom.d/")
+
+;; -------------------------------- Projectile -------------------------------
+;; (after! ivy
+;;       (setq counsel-find-file-ignore-regexp "\\.o\\'"))
+;; (after! ivy  (setq counsel-find-file-ignore-regexp
+;;                    (my-counsel-ignore-regexp-builder
+;;                     "\\`__pycache__/\\'"
+;;                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o"))))
+(after! ivy
+  (setq counsel-find-file-ignore-regexp
+                   (my-counsel-ignore-regexp-builder
+                    "\\`__pycache__/\\'"
+                    "^.cquery"
+                    (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
+  )
 
 
 ;; (setq +doom-dashboard--width 100)
