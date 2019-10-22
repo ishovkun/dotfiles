@@ -129,6 +129,7 @@
     :nv "SPC" #'ace-swap-window
     :nv "1"   #'delete-other-windows
     :n "f"    #'make-frame-command
+    :n "D"    #'delete-frame
     :nv "v"   #'split-window-right
     :nv "s"   #'split-window-below
     )
@@ -146,7 +147,9 @@
     )
   ;; files
   (:prefix "f"
-    (:desc "Rename file" :nv "R" #'rename-file-and-buffer))
+    (:desc "Rename file" :nv "R" #'rename-file-and-buffer)
+    (:desc "Save buffer" :nv "s" #'save-buffer))
+
   ;; align
   (:prefix "a"
     :desc "align region"   :v "a"    #'align
@@ -305,13 +308,17 @@
     (setq lsp-prefer-flymake nil)
     )
   )
-
+(require 'dap-lldb)
 ;; google-c-style
-(use-package google-c-style
-  :config (progn (add-hook 'c-mode-common-hook 'google-set-c-style)
-                 (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
+;; (use-package google-c-style
+;;   :config (progn (add-hook 'c-mode-common-hook 'google-set-c-style)
+;;                  (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
+;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
+(setq dap--debug-template-configurations
+      '(("LLDB Run Configuration" :type "lldb" :request "launch" :name "LLDB::Run" :target nil :cwd nil)
+        ("GDB Run Configuration" :type "gdb" :request "launch" :name "GDB::Run" :target nil :cwd nil)))
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
