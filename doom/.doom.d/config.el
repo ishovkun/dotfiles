@@ -28,6 +28,8 @@
   :i  "C-f"         #'evil-forward-char
   :i  "C-b"         #'evil-backward-char
   :nv "g l "        #'goto-line
+  :n  "f"           #'evil-snipe-s
+  :n  "F"           #'evil-snipe-S
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   (:after avy :nv "g s"         #'evil-avy-goto-char-timer)
   ;; ranger
@@ -265,7 +267,12 @@
 (setq evil-want-Y-yank-to-eol t)
 ;; regular behavior of s
 (after! evil-snipe
-  (evil-snipe-mode -1))
+  ;; (evil-snipe-mode 1)
+  (evil-snipe-mode -1)
+  (evil-snipe-override-mode 1)
+  (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-override-mode)
+  (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-mode)
+  (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode))
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 (load-theme 'one-dark t)
