@@ -282,12 +282,17 @@
 (if window-system (progn
     (require 'ivy-posframe)
     ;; display at `ivy-posframe-style'
+    (setq ivy-posframe-parameters
+      '((left-fringe . 20)
+        (right-fringe . 20)
+        ))
     (setq ivy-posframe-display-functions-alist
       '((swiper          . nil)
         (counsel-ag      . nil)
         (complete-symbol . ivy-posframe-display-at-point)
         (t               . ivy-posframe-display-at-frame-center))
       )
+
     (ivy-posframe-mode 1)
     (setq ivy-posframe-border-width 2)
 ))
