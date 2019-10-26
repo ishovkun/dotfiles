@@ -28,8 +28,6 @@
   :i  "C-f"         #'evil-forward-char
   :i  "C-b"         #'evil-backward-char
   :nv "g l "        #'goto-line
-  :n  "f"           #'evil-snipe-s
-  :n  "F"           #'evil-snipe-S
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   (:after avy :nv "g s"         #'evil-avy-goto-char-timer)
   ;; ranger
@@ -193,11 +191,12 @@
   )
   ;; toggles
   (:prefix "t"
-    :desc "toggle line wrap" :n "l" #'toggle-truncate-lines
+    :desc "toggle line wrap" :n "L" #'toggle-truncate-lines
   )
   ;; debugging
   (:prefix "o" (:after realgud
    :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
+   :desc "Open vterm" :n "t" #'+vterm/here
     )
 ) ; end map leader
 ;; ------------------------------ GUI -----------------------------------------
@@ -268,8 +267,8 @@
 ;; regular behavior of s
 (after! evil-snipe
   ;; (evil-snipe-mode 1)
-  (evil-snipe-mode -1)
-  (evil-snipe-override-mode 1)
+  (evil-snipe-mode)
+  ;; (evil-snipe-override-mode 1)
   (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-override-mode)
   (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-mode)
   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode))
