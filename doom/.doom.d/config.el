@@ -28,6 +28,7 @@
   :i  "C-f"         #'evil-forward-char
   :i  "C-b"         #'evil-backward-char
   :nv "g l "        #'goto-line
+  :nv "S"           #'evil-snipe-s
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   (:after avy :nv "g s"         #'evil-avy-goto-char-timer)
   ;; ranger
@@ -266,8 +267,8 @@
 (setq evil-want-Y-yank-to-eol t)
 ;; regular behavior of s
 (after! evil-snipe
-  ;; (evil-snipe-mode 1)
-  (evil-snipe-mode)
+  (evil-snipe-mode -1)
+  ;; (evil-snipe-mode)
   ;; (evil-snipe-override-mode 1)
   (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-override-mode)
   (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-mode)
