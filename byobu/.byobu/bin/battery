@@ -102,17 +102,17 @@ __battery() {
 	fi
 	if [ $rem -ge 0 ] && [ $full -gt 0 ]; then
 		percent=$(((100*$rem)/$full))
-    symbol=''
+		symbol=''
 		if [ "$percent" -lt 33 ]; then
-        color="colour161 colour237"
-			  bcolor="colour161 colour237"
-        symbol=''
+			color="colour161 colour237"
+			bcolor="colour161 colour237"
+			symbol=''
 		elif [ "$percent" -lt 67 ]; then
-        symbol=""
-        color="colour98 colour237"
-			  bcolor="colour98 colour237"
+			symbol=""
+			color="colour98 colour237"
+			bcolor="colour98 colour237"
 		else
-      color="colour36 colour237"
+	  color="colour36 colour237"
 			bcolor="colour36 colour237"
  		fi
 		percent="${symbol}  ${percent}${PCT}"
