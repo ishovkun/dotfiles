@@ -32,7 +32,7 @@
       (func    magenta)
       (str     lightgreen)
       (type    bright-blue)
-      (region  (if (true-color-p) "#3e4451" "#3a3a3a"))
+      (region  (if (true-color-p) "#3e4451" "#3a3a3a"))         ;; basically selection
       (var     lightgreen)
       (warning red)
       (success    bright-green)      ;; bright green
@@ -107,11 +107,11 @@
    ;; `(company-tooltip-selection ((,class (:box (:line-width 1 :color ,bg) :bold t :foreground ,fg3 :background ,bg-light))))
    ;; lsp
    '(cquery-sem-global-variable-face ((t (:underline t :weight extra-bold))))
-   '(lsp-face-highlight-read ((t (:distant-foreground nil :foreground nil :background "#234011"))))
-   '(lsp-face-highlight-textual ((t (:distant-foreground nil :foreground nil :background "gray25"))))
-   '(lsp-face-highlight-write ((t (:distant-foreground nil :foreground nil :background "#402311"))))
-   `(lsp-ui-sideline-symbol ((t (:foreground ,var :box nil))))
-   `(lsp-ui-sideline-current-symbol ((t (:foreground ,keyword :box nil))))
+   `(lsp-face-highlight-read         ((,class (:distant-foreground nil :foreground nil :background ,region))))
+   '(lsp-face-highlight-textual      ((t (:distant-foreground nil :foreground nil :background "gray25"))))
+   '(lsp-face-highlight-write        ((t (:distant-foreground nil :foreground nil :background "#402311"))))
+   `(lsp-ui-sideline-symbol          ((t (:foreground ,var :box nil))))
+   `(lsp-ui-sideline-current-symbol  ((t (:foreground ,keyword :box nil))))
    ;;
    `(vertical-border ((,class (:foreground ,bg :background ,bg))))
    `(minibuffer-prompt ((,class (:bold t :foreground ,keyword, :background ,bg))))
