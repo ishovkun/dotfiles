@@ -202,3 +202,16 @@ the right."
     ;; ;; Sometimes, TeX-command returns nil causing an error in set-process-sentinel
     ;; (when build-proc
     ;;   (set-process-sentinel build-proc 'latex//build-sent
+;;;###autodef
+(defun copy-buffer-file-name-to-clipboard ()
+  "Copies the buffer file name to the clipboard"
+  (interactive)
+  (let ((buf-name (buffer-file-name)))
+    (if buf-name
+        (with-temp-buffer
+          (insert buf-name)
+          (copy-region-as-kill (point-min) (point-max))
+          (message "Copied %s to clipboard" buf-name))
+      (message "Your buffer is not backed by a file"))))
+
+;; (copy-buffer-file-name-to-clipboard)
