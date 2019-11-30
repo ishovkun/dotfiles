@@ -29,6 +29,8 @@
   :i  "C-b"         #'evil-backward-char
   :nv "g l "        #'goto-line
   :nv "S"           #'evil-snipe-s
+  :nv "C-j"         #'scroll-up-line
+  :nv "C-k"         #'scroll-down-line
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   (:after avy :nv "g s"         #'evil-avy-goto-char-timer)
   ;; ranger
@@ -375,6 +377,8 @@
 ;; make compilation buffer stick to the frame
 (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
 (setq doom-private-dir "~/dotfiles/doom/.doom.d/")
+;; (after! evil
+;;   (add-to-list 'evil-emacs-state-modes 'flycheck-error-list-mode))
 
 ;; -------------------------------- Projectile -------------------------------
 ;; (after! ivy

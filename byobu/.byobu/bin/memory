@@ -67,12 +67,12 @@ __memory() {
 	fi
 	if [ $usage -gt 90 ]; then
 		# Change foreground to yellow, if usage over 90%
-		fg="Y"
+		fg="colour161"
 	else
 		fg="W"
 	fi
 	[ -n "$total" ] || return
-	color colour177 colour177 W; printf "   "; printf "%s" "$total"; color -; color colour177 W; printf "%s" "$unit"; color -; color b colour177 "$fg"; printf "%s" "$usage"; color -; color colour177 "$fg"; printf "%s" "$PCT "; color --
+	color colour177 colour177 W; printf "   "; printf "%s" "$total"; color -; color colour177 W; printf "%s" "$unit"; color -; color b colour177 "$fg"; printf "%s" " $usage"; color -; color colour177 "$fg"; printf "%s" "$PCT "; color --
 	# color b g W; printf "%s" "$total"; color -; color g W; printf "%s" "$unit"; color -; color b g "$fg"; printf "%s" "$usage"; color -; color g "$fg"; printf "%s" "$PCT"; color --
 }
 
