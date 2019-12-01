@@ -99,7 +99,8 @@
    `(compilation-error ((t (:foreground ,warning :background ,bg))))
    `(compilation-info ((t (:foreground ,keyword :background ,bg))))
    `(compilation-warning ((t (:foreground ,builtin :background ,bg))))
-
+   ;; evil
+   `(evil-ex-lazy-highlight ((t (:foreground ,builtin :background ,region))))
    ;; str
    ;; linum
    `(line-number ((,class (:box (:line-width 1 :color ,bg-light) :bold t :foreground ,comment :background ,bg-light))))
