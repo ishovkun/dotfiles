@@ -69,6 +69,7 @@
    `(doom-modeline-evil-visual-state ((,class (:foreground ,bg-dark :background ,fg1 ))))
    `(doom-modeline-urgent ((,class (:foreground ,warning :background ,bg-dark ))))
    `(doom-modeline-warning ((,class (:foreground ,warning :background ,bg-dark ))))
+   `(doom-modeline-buffer-modified ((,class (:foreground ,str :background ,bg-dark ))))
    `(success                ((,class (:foreground ,success))))
    ;; modeline git branch color
    `(doom-modeline-info  ((,class (:foreground ,success :weight bold))))
