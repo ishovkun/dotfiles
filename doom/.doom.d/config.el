@@ -12,7 +12,8 @@
   :nv "M-k"         #'evil-window-up
   :nv "M-j"         #'evil-window-down
   :nv "M-l"         #'evil-window-right
-  :nv "M-h"         #'evil-window-left)
+  :nv "M-h"         #'evil-window-left
+  )
   :nv "S-C-<left>"  #'shrink-window-horizontally
   :nv "S-C-<right>" #'enlarge-window-horizontally
   :nv "S-C-<down>"  #'shrink-window
@@ -28,13 +29,14 @@
   :i  "C-f"         #'evil-forward-char
   :i  "C-b"         #'evil-backward-char
   :nv "g l "        #'goto-line
-  :nv "S"           #'evil-snipe-s
   :nv "C-j"         #'scroll-up-line
   :nv "C-k"         #'scroll-down-line
-  :nv "z["          #'avy-goto-char-1
-  :nv "z]"          #'avy-goto-char-2
+  :nv "g s"       #'evil-avy-goto-char-timer
+  :nv "g["        #'avy-goto-char-2-above
+  :nv "g]"        #'avy-goto-char-2-below
+  :nv "S"           #'avy-goto-char-in-line
+  ;; :nv "S"           #'evil-snipe-s
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
-  (:after avy :nv "g s"         #'evil-avy-goto-char-timer)
   ;; ranger
   (:after ranger :desc "Invoke deer" :n  "-"   #'deer)
   (:after ranger :map ranger-mode-map
