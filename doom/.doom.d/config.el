@@ -31,6 +31,8 @@
   :nv "S"           #'evil-snipe-s
   :nv "C-j"         #'scroll-up-line
   :nv "C-k"         #'scroll-down-line
+  :nv "z["          #'avy-goto-char-1
+  :nv "z]"          #'avy-goto-char-2
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   (:after avy :nv "g s"         #'evil-avy-goto-char-timer)
   ;; ranger
@@ -71,6 +73,9 @@
   ;; org
   (:after org :map org-mode-map
     :desc "Preview LaTeX" :niv "<M-return>" #'org-latex-preview)
+  ;; c++
+  (:map c++-mode-map
+    :desc "Quick run" :niv "<M-return>" #'quickrun)
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
