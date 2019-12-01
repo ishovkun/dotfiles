@@ -162,6 +162,7 @@
   ;; files
   (:prefix "f"
     (:desc "Rename file" :nv "R" #'rename-file-and-buffer)
+    (:desc "Browse private config dir" :nv "p" #'doom/open-private-config)
     (:desc "Save buffer" :nv "s" #'save-buffer))
 
   ;; align
