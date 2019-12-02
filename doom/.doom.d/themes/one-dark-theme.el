@@ -69,7 +69,7 @@
    `(doom-modeline-evil-visual-state ((,class (:foreground ,bg-dark :background ,fg1 ))))
    `(doom-modeline-urgent ((,class (:foreground ,warning :background ,bg-dark ))))
    `(doom-modeline-warning ((,class (:foreground ,warning :background ,bg-dark ))))
-   `(doom-modeline-buffer-modified ((,class (:foreground ,str :background ,bg-dark ))))
+   `(doom-modeline-buffer-modified ((,class (:foreground ,warning :background ,bg-dark ))))
    `(success                ((,class (:foreground ,success))))
    ;; modeline git branch color
    `(doom-modeline-info  ((,class (:foreground ,success :weight bold))))
@@ -100,7 +100,7 @@
    `(compilation-info ((t (:foreground ,keyword :background ,bg))))
    `(compilation-warning ((t (:foreground ,builtin :background ,bg))))
    ;; evil
-   `(evil-ex-lazy-highlight ((t (:foreground ,builtin :background ,region))))
+   `(evil-ex-lazy-highlight ((t (:background ,region))))
    ;; str
    ;; linum
    `(line-number ((,class (:box (:line-width 1 :color ,bg-light) :bold t :foreground ,comment :background ,bg-light))))
