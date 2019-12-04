@@ -31,10 +31,10 @@
   :nv "g l "        #'goto-line
   :nv "C-j"         #'scroll-up-line
   :nv "C-k"         #'scroll-down-line
-  :nv "g s"       #'evil-avy-goto-char-timer
-  :nv "g["        #'avy-goto-char-2-above
-  :nv "g]"        #'avy-goto-char-2-below
-  :nv "S"           #'avy-goto-char-in-line
+  :nv "g s"         #'evil-avy-goto-char-timer
+  :nv "g["          #'avy-goto-char-2-above
+  :nv "g]"          #'avy-goto-char-2-below
+  :n  "S"           #'avy-goto-char-in-line
   ;; :nv "S"           #'evil-snipe-s
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   ;; ranger
