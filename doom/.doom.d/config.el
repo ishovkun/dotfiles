@@ -78,6 +78,9 @@
   ;; c++
   (:map c++-mode-map
     :desc "Quick run" :niv "<M-return>" #'quickrun)
+  ;; python
+  (:map python-mode-map
+    :desc "Quick run" :niv "<M-return>" #'quickrun)
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -387,7 +390,8 @@
 (setq doom-private-dir "~/dotfiles/doom/.doom.d/")
 ;; (after! evil
 ;;   (add-to-list 'evil-emacs-state-modes 'flycheck-error-list-mode))
-
+(after! quickrun
+  (setq quickrun-timeout-seconds 1000))
 ;; -------------------------------- Projectile -------------------------------
 ;; (after! ivy
 ;;       (setq counsel-find-file-ignore-regexp "\\.o\\'"))
