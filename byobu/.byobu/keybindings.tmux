@@ -32,3 +32,4 @@ bind-key -n M-S-Up resize-pane -U 15
 bind-key -n M-S-Down resize-pane -D 15
 bind-key -n M-S-Left resize-pane -L 25
 bind-key -n M-S-Right resize-pane -R 25
+unbind-key -n C-F9
