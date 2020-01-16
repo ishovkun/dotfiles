@@ -68,7 +68,10 @@
       :desc "Find references" :n "r" #'lsp-find-references)
     (:map override :desc "Copy and comment" :nv "y" #'duplicate-and-comment-line)
   ) ; end prefix g
-  (:after projectile :map prog-mode-map :desc "Recompile" :nv "<C-return>" #'recompile)
+  (:after projectile :map prog-mode-map
+    :desc "Recompile" :nv "<C-return>" #'recompile
+    :desc "Recompile" :nv "C-<f9>" #'recompile ; in terminal
+    )
   (:after tex :map LaTeX-mode-map :desc "Recompile" :nv "<C-return>" #'latex/build)
   ;; ivy
   (:after ivy :map ivy-mode-map

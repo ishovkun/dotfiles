@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: nsp
+# uuid:
+# key: nsp
+# condition: t
+# --
+namespace $1 {
+
+ $2
+
+}  // end namespace $1
