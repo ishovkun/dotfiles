@@ -328,14 +328,28 @@
 (after! lsp-ui (lsp-ui-doc-mode))
 (after! lsp
   (progn
-    (remhash 'clangd lsp-clients)
+    (after! lsp-clients (remhash 'clangd lsp-clients))
     (push 'company-lsp company-backends)
     (require 'cquery)
     ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
     ;; without this line yasnippet is fucked up
     (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
-    (setq cquery-executable "/usr/bin/cquery")
+    (setq cquery-executable "/bin/cquery")
     (setq lsp-prefer-flymake nil)
+    (with-eval-after-load 'projectile
+      (setq projectile-project-root-files-top-down-recurring
+            (append '("compile_commands.json"
+                      ".cquery")
+                    projectile-project-root-files-top-down-recurring)))
+    (defun cquery//enable ()
+  (condition-case nil
+      (lsp)
+    (user-error nil)))
+
+  (use-package cquery
+    :commands lsp
+    :init (add-hook 'c-mode-hook #'cquery//enable)
+          (add-hook 'c++-mode-hook #'cquery//enable))
     )
   )
 (require 'dap-lldb)
