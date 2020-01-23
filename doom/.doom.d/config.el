@@ -400,6 +400,16 @@
 (add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
 ;; ------------------------- evil-commentary ---------------------------------
 (require 'evil-commentary)
+;; ----------------------------------- Eclipse & GMSH ------------------------
+(add-to-list 'load-path "~/.doom.d/extra/")
+(autoload 'eclipse-mode "eclipse" "Enter ECLIPSE mode." t)
+(setq auto-mode-alist (cons '("\\.DATA\\'" . eclipse-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.data\\'" . eclipse-mode) auto-mode-alist))
+(autoload 'eclipse-shell "eclipse" "Interactive ECLIPSE mode." t)
+;; gmsh
+(autoload 'gmsh-mode "gmsh" "Enter GMSH mode." t)
+(setq auto-mode-alist (cons '("\\.geo\\'" . gmsh-mode) auto-mode-alist))
+
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 (setq evil-move-cursor-back nil)
