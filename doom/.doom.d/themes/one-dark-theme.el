@@ -71,6 +71,11 @@
    `(doom-modeline-warning ((,class (:foreground ,warning :background ,bg-dark ))))
    `(doom-modeline-buffer-modified ((,class (:foreground ,warning :background ,bg-dark ))))
    `(success                ((,class (:foreground ,success))))
+   `(doom-modeline-lsp-error   ((,class (:foreground ,warning :background ,bg-dark ))))
+   `(doom-modeline-lsp-warning ((,class (:foreground ,warning :background ,bg-dark ))))
+   `(compilation-mode-line-exit ((,class (:foreground ,success :background ,bg-dark ))))
+   `(compilation-mode-line-fail ((,class (:foreground ,warning :background ,bg-dark ))))
+   `(compilation-mode-line-run ((,class (:foreground ,builtin :background ,bg-dark ))))
    ;; modeline git branch color
    `(doom-modeline-info  ((,class (:foreground ,success :weight bold))))
    ;; first thing on the right
