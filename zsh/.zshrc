@@ -141,3 +141,6 @@ stty -ixon
 
 # trueccolor
 export TERM=xterm-24bit
+
+export PARDISO_LIC_PATH="$HOME/lic/pardiso.lic"
+#
