@@ -77,12 +77,37 @@ sdn-navigate () {
   # ... possibly zle-line-finish
 }
 zle -N sdn-navigate
-bindkey '\ee' sdn-navigate
+# bindkey '\ee' sdn-navigate
 
-# load zgen
-# source "${HOME}/.zgen/zgen.zsh"
+# nnn config
+n ()
+{
+    # Block nesting of nnn in subshells
+    if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
+        echo "nnn is already running"
+        return
+    fi
+    # so that I can cd on quit
+    export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+    # bookmarks
+    export NNN_BMS='D:~/Downloads;h:~/;b:~/build;d:~/dev'
+    # colors
+    export NNN_CONTEXT_COLORS='1234'
+    # run
+    nnn "$@"
+    if [ -f "$NNN_TMPFILE" ]; then
+            . "$NNN_TMPFILE"
+            rm -f "$NNN_TMPFILE" > /dev/null
+    fi
+}
 
-# export MANPATH="/usr/local/man:$MANPATH"
+nnn-navigate () {
+  n < /dev/tty;
+  zle reset-prompt
+}
+
+zle -N nnn-navigate
+bindkey '\ee' nnn-navigate
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
