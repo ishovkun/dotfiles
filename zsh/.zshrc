@@ -90,7 +90,7 @@ n ()
     # so that I can cd on quit
     export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
     # bookmarks
-    export NNN_BMS='D:~/Downloads;h:~/;b:~/build;d:~/dev'
+    export NNN_BMS='D:~/Downloads;h:~/;b:~/build;d:~/dev;s:~/sim'
     # colors
     export NNN_CONTEXT_COLORS='1234'
     # run
