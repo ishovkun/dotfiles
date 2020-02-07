@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
-# name: nsp
-# uuid:
-# key: nsp
+#name : nsp
+#key : nsp
+#contributor : Igor
 # --
 namespace $1 {
 

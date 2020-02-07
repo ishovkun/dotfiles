@@ -206,6 +206,8 @@
   ;; compile
   (:prefix "c"
     :desc "recompile" :n "r" #'recompile
+    (:map python-mode-map
+    :desc "Quick run" :n "r" #'compile)
   )
   ;; toggles
   (:prefix "t"
@@ -265,20 +267,20 @@
     (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
     ))
 
-;; add face for function call
-(defface font-lock-method-call-face
-  '((t . (:foreground "orangered" :bold t)))
-  "Face to display method calls in.")
-(font-lock-add-keywords 'c++-mode
-                        `((,(concat
-                              "\\<[_a-zA-Z][_a-zA-Z0-9]*\\>"       ; Object identifier
-                              "\\s *"                              ; Optional white space
-                              "\\(?:\\.\\|->\\)"                   ; Member access
-                              "\\s *"                              ; Optional white space
-                              "\\<\\([_a-zA-Z][_a-zA-Z0-9]*\\)\\>" ; Member identifier
-                              "\\s *"                              ; Optional white space
-                              "(")                                 ; Paren for method invocation
-                            1 'font-lock-method-call-face t)))
+;; ;; add face for function call
+;; (defface font-lock-method-call-face
+;;   '((t . (:foreground "orangered" :bold t)))
+;;   "Face to display method calls in.")
+;; (font-lock-add-keywords 'c++-mode
+;;                         `((,(concat
+;;                               "\\<[_a-zA-Z][_a-zA-Z0-9]*\\>"       ; Object identifier
+;;                               "\\s *"                              ; Optional white space
+;;                               "\\(?:\\.\\|->\\)"                   ; Member access
+;;                               "\\s *"                              ; Optional white space
+;;                               "\\<\\([_a-zA-Z][_a-zA-Z0-9]*\\)\\>" ; Member identifier
+;;                               "\\s *"                              ; Optional white space
+;;                               "(")                                 ; Paren for method invocation
+;;                             1 'font-lock-method-call-face t)))
 
 ;; evil yank to the end of line
 (setq evil-want-Y-yank-to-eol t)
@@ -331,14 +333,21 @@
 (after! lsp-ui (lsp-ui-doc-mode))
 (after! lsp
   (progn
-    (remhash 'clangd lsp-clients)
-    (push 'company-lsp company-backends)
-    (require 'cquery)
-    ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
-    ;; without this line yasnippet is fucked up
-    (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
-    (setq cquery-executable "/usr/bin/cquery")
-    (setq lsp-prefer-flymake nil)
+     (setq lsp-enable-file-watchers nil)
+     ;; (remhash 'clangd lsp-clients)
+     (push 'company-lsp company-backends)
+    ;; cquery
+    ;; (require 'cquery)
+    ;; ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
+    ;; ;; without this line yasnippet is fucked up
+    ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
+    ;; (setq cquery-executable "/usr/bin/cquery")
+    ;; (setq lsp-prefer-flymake nil)
+    ;; (require 'ccls)
+    ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
+    ;; (setq ccls-executable "/bin/ccls")
+    (setq ccls-executable "ccls")
+    ;; (setq ccls-args '("--log-file=/tmp/ccls.log"))
     )
   )
 (require 'dap-lldb)
