@@ -408,6 +408,15 @@
 (after! quickrun
   (setq quickrun-timeout-seconds 1000))
 ;; -------------------------------- Projectile -------------------------------
+(after! projectile
+  (setq compilation-read-command nil)  ; no prompt in projectile-compile-project
+  ;; . -> Build
+  (projectile-register-project-type 'cmake '("CMakeLists.txt")
+                                    :configure "cmake %s"
+                                    :compile "cmake --build Debug"
+                                    :test "ctest")
+  (add-to-list 'projectile-globally-ignored-directories ".ccls-cache")
+  )
 ;; (after! ivy
 ;;       (setq counsel-find-file-ignore-regexp "\\.o\\'"))
 ;; (after! ivy  (setq counsel-find-file-ignore-regexp
@@ -419,6 +428,7 @@
                    (my-counsel-ignore-regexp-builder
                     "\\`__pycache__/\\'"
                     "^.cquery"
+                    ".ccls-cache"
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )
 
