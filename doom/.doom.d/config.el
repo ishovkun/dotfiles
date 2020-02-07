@@ -372,6 +372,7 @@
 (after! org
   (progn
     (setq org-directory "~/Dropbox/enotes")
+     (setq org-agenda-files (list org-directory))
     (when (string= (system-name) "space")
       (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
   )))
