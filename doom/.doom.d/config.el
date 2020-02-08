@@ -348,6 +348,7 @@
      (setq ccls-sem-highlight-method 'font-lock)
      (setq ccls-executable "ccls")
     ;; (setq ccls-args '("--log-file=/tmp/ccls.log"))
+     ;; https://github.com/MaskRay/Config/blob/master/home/.config/doom/modules/private/my-cc/config.el
      (setq ccls-initialization-options
            `(:clang (:excludeArgs
                      ;; Linux's gcc options. See ccls/wiki
