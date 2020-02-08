@@ -237,15 +237,18 @@
     (winum-mode)
     ;; (doom-modeline-set-modeline 'minimal)
     (setq doom-modeline-height 10
-        ;; shorter buffer names
-        doom-modeline-buffer-file-name-style 'buffer-name
-        ;; show icons
-        doom-modeline-icon t
-        ;; Whether display color icons for `major-mode'. It respects
-        ;; `doom-modeline-icon' and `all-the-icons-color-icons'.
-        doom-modeline-major-mode-icon t
-        ;; If non-nil, a word count will be added to the selection-info modeline segment.
-        doom-modeline-enable-word-count nil
+          ;; shorter buffer names
+          doom-modeline-buffer-file-name-style 'buffer-name
+          ;; show icons
+          doom-modeline-icon t
+          ;; Whether display color icons for `major-mode'. It respects
+          ;; `doom-modeline-icon' and `all-the-icons-color-icons'.
+          doom-modeline-major-mode-icon t
+          doom-modeline-major-mode-color-icon nil
+          doom-modeline-modal-icon nil
+          doom-modeline-buffer-state-icon nil
+          ;; If non-nil, a word count will be added to the selection-info modeline segment.
+          doom-modeline-enable-word-count nil
     )
     (doom-modeline-def-segment window-number
       (let ((num (cond
@@ -271,7 +274,22 @@
           ))
     ; filesize in modeline
     (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
+    ;; my own modeline
+    (doom-modeline-def-modeline 'ishovkun-line
+      '(bar workspace-name window-number matches buffer-info remote-host buffer-position word-count parrot selection-info)
+      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs checker))
+
+    (defun setup-custom-doom-modeline ()
+      (doom-modeline-set-modeline 'ishovkun-line 'default))
+    (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline)
+
+  ;;   (doom-modeline-def-modeline 'main
+  ;; '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position word-count parrot selection-info)
+  ;; '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
+
     ))
+
+
 
 ;; ;; add face for function call
 ;; (defface font-lock-method-call-face
@@ -438,6 +456,7 @@
 ;;   (add-to-list 'evil-emacs-state-modes 'flycheck-error-list-mode))
 (after! quickrun
   (setq quickrun-timeout-seconds 1000))
+;; really close the buffer on kill-current-buffer
 ;; -------------------------------- Projectile -------------------------------
 (after! projectile
   (setq compilation-read-command nil)  ; no prompt in projectile-compile-project
