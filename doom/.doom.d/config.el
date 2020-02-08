@@ -85,6 +85,12 @@
   ;; python
   (:map python-mode-map
     :desc "Quick run" :niv "<M-return>" #'quickrun)
+  ;; vterm
+  ;; (:after vterm :map vterm-mode-map
+  ;;   :i "C-w" #'vterm--self-insert
+  ;;   :i "C-u" #'vterm--self-insert
+  ;;   :nv "p" #'vterm-yank
+  ;;   )
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -161,7 +167,7 @@
   :desc "Switch to previous buffer" :nv "<tab>" #'spacemacs/alternate-buffer
   (:after ivy :nv "SPC" #'+ivy/switch-workspace-buffer)
   (:prefix "b"
-    :desc "kill current buffer"          :nv "d" #'kill-current-buffer
+    :desc "kill current buffer"          :nv "d" #'kill-this-buffer
     :desc "switch to compilation buffer" :nv "c" #'switch-to-compilation-buffer
     :desc "switch to messages buffer"    :nv "m" #'switch-to-messages-buffer
     :desc "switch buffer"                :nv "b" #'+ivy/switch-buffer
