@@ -85,12 +85,6 @@
   ;; python
   (:map python-mode-map
     :desc "Quick run" :niv "<M-return>" #'quickrun)
-  ;; vterm
-  ;; (:after vterm :map vterm-mode-map
-  ;;   :i "C-w" #'vterm--self-insert
-  ;;   :i "C-u" #'vterm--self-insert
-  ;;   :nv "p" #'vterm-yank
-  ;;   )
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -219,10 +213,10 @@
   (:prefix "t"
     :desc "toggle line wrap" :n "L" #'toggle-truncate-lines
   )
-  ;; debugging
-  (:prefix "o" (:after realgud
-   :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
-   :desc "Open vterm" :n "t" #'+vterm/here
+  (:prefix "o"
+    ;; debugging
+    (:after realgud :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
+    :desc "Open vterm" :n "t" #'+vterm/here
     )
 ) ; end map leader
 ;; ------------------------------ GUI -----------------------------------------
@@ -289,8 +283,6 @@
 
     ))
 
-
-
 ;; ;; add face for function call
 ;; (defface font-lock-method-call-face
 ;;   '((t . (:foreground "orangered" :bold t)))
@@ -321,24 +313,25 @@
 (load-theme 'one-dark t)
 ;; (load-theme 'nord t)
 
-;; postframe
-(if window-system (progn
-    (require 'ivy-posframe)
-    ;; display at `ivy-posframe-style'
-    (setq ivy-posframe-parameters
-      '((left-fringe . 20)
-        (right-fringe . 20)
-        ))
-    (setq ivy-posframe-display-functions-alist
-      '((swiper          . nil)
-        (counsel-ag      . nil)
-        (complete-symbol . ivy-posframe-display-at-point)
-        (t               . ivy-posframe-display-at-frame-center))
-      )
+;; posframe
+(if window-system
+    (use-package! ivy-posframe
+      :config
+      (setq ivy-posframe-parameters
+            '((left-fringe . 20)
+              (right-fringe . 20)
+              ))
+      (setq ivy-posframe-display-functions-alist
+            '((swiper          . nil)
+              (counsel-ag      . nil)
+              (complete-symbol . ivy-posframe-display-at-point)
+              (t               . ivy-posframe-display-at-frame-center))
+            )
 
     (ivy-posframe-mode 1)
     (setq ivy-posframe-border-width 2)
 ))
+
 
 ;; ranger
 (setq ranger-deer-show-details nil)
@@ -390,15 +383,12 @@
                          ]))
                       ))
      ))
-(require 'dap-lldb)
+
 ;; google-c-style
-(load "~/.doom.d/google-c-style.el")
-(require 'google-c-style)
-(add-hook 'c-mode-common-hook 'google-set-c-style)
-(add-hook 'c-mode-common-hook 'google-make-newline-indent)
-;; (use-package google-c-style
-;;   :config (progn (add-hook 'c-mode-common-hook 'google-set-c-style)
-;;                  (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
+(use-package! google-c-style
+  :load-path "~/.doom.d/extra"
+  :config (add-hook 'c-mode-common-hook 'google-set-c-style)
+                 (add-hook 'c-mode-common-hook 'google-make-newline-indent))
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
 ;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
@@ -408,15 +398,17 @@
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
-(setq deft-directory "~/Dropbox/enotes")
-(setq deft-extensions '("org" "md"))
-(setq deft-auto-save-interval 60.0)
-(setq deft-use-filename-as-title nil)
-(setq deft-use-filter-string-for-filename t)
-(setq deft-file-naming-rules
-      '((noslash . "-")
-        (nospace . "-")
-        (case-fn . downcase)))
+(after! deft
+ (setq deft-directory "~/Dropbox/enotes")
+ (setq deft-extensions '("org" "md"))
+ (setq deft-auto-save-interval 60.0)
+ (setq deft-use-filename-as-title nil)
+ (setq deft-use-filter-string-for-filename t)
+ (setq deft-file-naming-rules
+       '((noslash . "-")
+         (nospace . "-")
+         (case-fn . downcase)))
+ )
 ;; ----------------------------------- Org ----------------------------------
 (after! org
   (progn
@@ -437,15 +429,18 @@
 ;; ------------------------- evil-commentary ---------------------------------
 (require 'evil-commentary)
 ;; ----------------------------------- Eclipse & GMSH ------------------------
-(add-to-list 'load-path "~/.doom.d/extra/")
-(autoload 'eclipse-mode "eclipse" "Enter ECLIPSE mode." t)
-(setq auto-mode-alist (cons '("\\.DATA\\'" . eclipse-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.data\\'" . eclipse-mode) auto-mode-alist))
-(autoload 'eclipse-shell "eclipse" "Interactive ECLIPSE mode." t)
+(use-package! eclipse
+  :load-path "~/.doom.d/extra/"
+  :config
+  (setq auto-mode-alist (cons '("\\.DATA\\'" . eclipse-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.data\\'" . eclipse-mode) auto-mode-alist))
+  )
 ;; gmsh
-(autoload 'gmsh-mode "gmsh" "Enter GMSH mode." t)
-(setq auto-mode-alist (cons '("\\.geo\\'" . gmsh-mode) auto-mode-alist))
-
+(use-package! gmsh
+  :load-path "~/.doom.d/extra/"
+  :config
+  (setq auto-mode-alist (cons '("\\.geo\\'" . gmsh-mode) auto-mode-alist))
+  )
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 (setq evil-move-cursor-back nil)
@@ -478,62 +473,7 @@
                    (my-counsel-ignore-regexp-builder
                     "\\`__pycache__/\\'"
                     "^.cquery"
-                    ".ccls-cache"
+                    "^.ccls-cache"
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )
 
-
-;; (setq +doom-dashboard--width 100)
-;; (defun doom-dashboard-widget-banner ()
-;;   (let ((point (point)))
-;;     (mapc (lambda (line)
-;;             (insert (propertize (+doom-dashboard--center +doom-dashboard--width line)
-;;                                 'face 'font-lock-comment-face) " ")
-;;             (insert "\n"))
-;;           '(
-;;             ;; "=================     ===============     ===============   ========  ========"
-;; "                                       ,"
-;; "                                      , `."
-;; "                                       |   `."
-;; "                                      `     `."
-;; "                                        \\___   \  "
-;; "                             ,---._   ,'   -`./"
-;; "                          ,-\"    \"-/ /    o `._"
-;; "                           `.         |  o ,-.  _ `"
-;; "                             `.       ,  , `-' ,'  `"
-;; "                               `----- | '`----\"    |"
-;; "                                      \\       /    |"
-;; "                                       \\           \""
-;; "                                        `.        /_"
-;; "                 .--,                     `._   _/| \ "
-;; "  .-.    __,,,__/    |                    (  \".  '  \ "
-;; "..  . /   \\-'`        `-./_                        \\   '.'.  . "
-;; ".. |    |               `)                    |`    \"  | \\ "
-;; " \\    `            `\\  ;                  | `.   `.,' ."
-;; ". /       ,       ,     |                    |   `.   \  |"
-;; ".  |      /     :   O /_                    |    ,`   | |"
-;; " |          O  .--;__      '.                  |    `-`-\"  ,"
-;; " |                (  )`.  |                 `          ,"
-;; "\\                 `-` /  |                 `.     _,'"
-;; " \\          ,_  _.-./`  /                     `.--\" |"
-;; " .  .  \\        \\''-.(    |                        | || |  .-."
-;; "..   |           '---'   /--.                      | |, `,'"
-;; " ,--\\___..__          _.'   /--.            ___,' \       ,"
-;; " \\          `-._  _`'/     '    '.         /      /------\" "
-;; " .-' ` ' .       ``     '                  \\____,'"
-;;      ))
-;;     (when (and (stringp +doom-dashboard-banner-file)
-;;                (display-graphic-p)
-;;                (file-exists-p! +doom-dashboard-banner-file +doom-dashboard-banner-dir))
-;;       (let* ((image (create-image (expand-file-name +doom-dashboard-banner-file
-;;                                                     +doom-dashboard-banner-dir)
-;;                                   'png nil))
-;;              (size (image-size image nil))
-;;              (margin (+ 1 (/ (- +doom-dashboard--width (car size)) 2))))
-;;         (add-text-properties
-;;          point (point) `(display ,image rear-nonsticky (display)))
-;;         (when (> margin 0)
-;;           (save-excursion
-;;             (goto-char point)
-;;             (insert (make-string (truncate margin) ? )))))
-;;       (insert (make-string (or (cdr +doom-dashboard-banner-padding) 0) ?\n)))))
