@@ -214,4 +214,18 @@ the right."
           (message "Copied %s to clipboard" buf-name))
       (message "Your buffer is not backed by a file"))))
 
-;; (copy-buffer-file-name-to-clipboard)
+;;;###autodef
+(defun centaur-tabs-select-visible-1st-tab ()
+  "Selects first centaur tab"
+  (interactive)
+  (centaur-tabs-select-visible-nth-tab 1))
+;;;###autodef
+(defun centaur-tabs-select-visible-2nd-tab ()
+  "Selects second centaur tab"
+  (interactive)
+  (centaur-tabs-select-visible-nth-tab 2))
+;;;###autodef
+(defun centaur-tabs-select-visible-3rd-tab ()
+  "Selects third centaur tab"
+  (interactive)
+  (centaur-tabs-select-visible-nth-tab 3))

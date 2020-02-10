@@ -219,6 +219,16 @@
     :desc "Open vterm" :n "t" #'+vterm/here
     )
 ) ; end map leader
+;; tab switching
+;; (when (string= (system-name) "space")
+;;   (map!
+;;    (:after centaur-tabs :map override
+;;     :nv "M-1"         #'centaur-tabs-select-visible-1st-tab
+;;     :nv "M-2"         #'centaur-tabs-select-visible-2nd-tab
+;;     :nv "M-3"         #'centaur-tabs-select-visible-3rd-tab
+;;     )
+;;    )  ;;
+;; )
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
 (setq display-line-numbers-type 'relative)
@@ -325,7 +335,8 @@
             '((swiper          . nil)
               (counsel-ag      . nil)
               (complete-symbol . ivy-posframe-display-at-point)
-              (t               . ivy-posframe-display-at-frame-center))
+              ;; (t               . ivy-posframe-display-at-frame-center))
+              (t               . ivy-posframe-display-at-frame-top-center))
             )
 
     (ivy-posframe-mode 1)
@@ -354,13 +365,12 @@
      ;; (remhash 'clangd lsp-clients)
      (push 'company-lsp company-backends)
     ;; cquery
-    ;; (require 'cquery)
     ;; ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
     ;; ;; without this line yasnippet is fucked up
     ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
     ;; (setq cquery-executable "/usr/bin/cquery")
     ;; (setq lsp-prefer-flymake nil)
-    ;; (require 'ccls)
+    ;; ccls
     ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
      (setq ccls-sem-highlight-method 'font-lock)
      (setq ccls-executable "ccls")
@@ -427,7 +437,7 @@
   (set (make-local-variable 'truncate-partial-width-windows) nil))
 (add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
 ;; ------------------------- evil-commentary ---------------------------------
-(require 'evil-commentary)
+(use-package! evil-commentary)
 ;; ----------------------------------- Eclipse & GMSH ------------------------
 (use-package! eclipse
   :load-path "~/.doom.d/extra/"
