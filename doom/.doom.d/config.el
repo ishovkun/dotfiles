@@ -206,6 +206,8 @@
   ;; compile
   (:prefix "c"
     :desc "recompile" :n "r" #'recompile
+    (:map python-mode-map
+    :desc "Quick run" :n "r" #'compile)
   )
   ;; toggles
   (:prefix "t"
@@ -265,20 +267,20 @@
     (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
     ))
 
-;; add face for function call
-(defface font-lock-method-call-face
-  '((t . (:foreground "orangered" :bold t)))
-  "Face to display method calls in.")
-(font-lock-add-keywords 'c++-mode
-                        `((,(concat
-                              "\\<[_a-zA-Z][_a-zA-Z0-9]*\\>"       ; Object identifier
-                              "\\s *"                              ; Optional white space
-                              "\\(?:\\.\\|->\\)"                   ; Member access
-                              "\\s *"                              ; Optional white space
-                              "\\<\\([_a-zA-Z][_a-zA-Z0-9]*\\)\\>" ; Member identifier
-                              "\\s *"                              ; Optional white space
-                              "(")                                 ; Paren for method invocation
-                            1 'font-lock-method-call-face t)))
+;; ;; add face for function call
+;; (defface font-lock-method-call-face
+;;   '((t . (:foreground "orangered" :bold t)))
+;;   "Face to display method calls in.")
+;; (font-lock-add-keywords 'c++-mode
+;;                         `((,(concat
+;;                               "\\<[_a-zA-Z][_a-zA-Z0-9]*\\>"       ; Object identifier
+;;                               "\\s *"                              ; Optional white space
+;;                               "\\(?:\\.\\|->\\)"                   ; Member access
+;;                               "\\s *"                              ; Optional white space
+;;                               "\\<\\([_a-zA-Z][_a-zA-Z0-9]*\\)\\>" ; Member identifier
+;;                               "\\s *"                              ; Optional white space
+;;                               "(")                                 ; Paren for method invocation
+;;                             1 'font-lock-method-call-face t)))
 
 ;; evil yank to the end of line
 (setq evil-want-Y-yank-to-eol t)
@@ -331,28 +333,43 @@
 (after! lsp-ui (lsp-ui-doc-mode))
 (after! lsp
   (progn
-    (after! lsp-clients (remhash 'clangd lsp-clients))
-    (push 'company-lsp company-backends)
-    (require 'cquery)
-    ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
-    ;; without this line yasnippet is fucked up
-    (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
-    (setq cquery-executable "/bin/cquery")
-    (setq lsp-prefer-flymake nil)
-    (with-eval-after-load 'projectile
-      (setq projectile-project-root-files-top-down-recurring
-            (append '("compile_commands.json"
-                      ".cquery")
-                    projectile-project-root-files-top-down-recurring)))
-    (defun cquery//enable ()
-  (condition-case nil
-      (lsp)
-    (user-error nil)))
+;;     (after! lsp-clients (remhash 'clangd lsp-clients))
+;;     (push 'company-lsp company-backends)
+;;     (require 'cquery)
+;;     ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
+;;     ;; without this line yasnippet is fucked up
+;;     (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
+;;     (setq cquery-executable "/bin/cquery")
+;;     (setq lsp-prefer-flymake nil)
+;;     (with-eval-after-load 'projectile
+;;       (setq projectile-project-root-files-top-down-recurring
+;;             (append '("compile_commands.json"
+;;                       ".cquery")
+;;                     projectile-project-root-files-top-down-recurring)))
+;;     (defun cquery//enable ()
+;;   (condition-case nil
+;;       (lsp)
+;;     (user-error nil)))
 
-  (use-package cquery
-    :commands lsp
-    :init (add-hook 'c-mode-hook #'cquery//enable)
-          (add-hook 'c++-mode-hook #'cquery//enable))
+;;   (use-package cquery
+;;     :commands lsp
+;;     :init (add-hook 'c-mode-hook #'cquery//enable)
+;;           (add-hook 'c++-mode-hook #'cquery//enable))
+     (setq lsp-enable-file-watchers nil)
+     ;; (remhash 'clangd lsp-clients)
+     (push 'company-lsp company-backends)
+    ;; cquery
+    ;; (require 'cquery)
+    ;; ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
+    ;; ;; without this line yasnippet is fucked up
+    ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
+    ;; (setq cquery-executable "/usr/bin/cquery")
+    ;; (setq lsp-prefer-flymake nil)
+    ;; (require 'ccls)
+    ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
+     (setq ccls-sem-highlight-method 'font-lock)
+     (setq ccls-executable "ccls")
+    ;; (setq ccls-args '("--log-file=/tmp/ccls.log"))
     )
   )
 (require 'dap-lldb)
@@ -386,6 +403,7 @@
 (after! org
   (progn
     (setq org-directory "~/Dropbox/enotes")
+     (setq org-agenda-files (list org-directory))
     (when (string= (system-name) "space")
       (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
   )))
@@ -421,6 +439,15 @@
 (after! quickrun
   (setq quickrun-timeout-seconds 1000))
 ;; -------------------------------- Projectile -------------------------------
+(after! projectile
+  (setq compilation-read-command nil)  ; no prompt in projectile-compile-project
+  ;; . -> Build
+  (projectile-register-project-type 'cmake '("CMakeLists.txt")
+                                    :configure "cmake %s"
+                                    :compile "cmake --build Debug"
+                                    :test "ctest")
+  (add-to-list 'projectile-globally-ignored-directories ".ccls-cache")
+  )
 ;; (after! ivy
 ;;       (setq counsel-find-file-ignore-regexp "\\.o\\'"))
 ;; (after! ivy  (setq counsel-find-file-ignore-regexp
@@ -432,6 +459,7 @@
                    (my-counsel-ignore-regexp-builder
                     "\\`__pycache__/\\'"
                     "^.cquery"
+                    ".ccls-cache"
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )
 
