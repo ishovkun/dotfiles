@@ -161,7 +161,7 @@
   :desc "Switch to previous buffer" :nv "<tab>" #'spacemacs/alternate-buffer
   (:after ivy :nv "SPC" #'+ivy/switch-workspace-buffer)
   (:prefix "b"
-    :desc "kill current buffer"          :nv "d" #'kill-current-buffer
+    :desc "kill current buffer"          :nv "d" #'kill-this-buffer
     :desc "switch to compilation buffer" :nv "c" #'switch-to-compilation-buffer
     :desc "switch to messages buffer"    :nv "m" #'switch-to-messages-buffer
     :desc "switch buffer"                :nv "b" #'+ivy/switch-buffer
@@ -213,12 +213,22 @@
   (:prefix "t"
     :desc "toggle line wrap" :n "L" #'toggle-truncate-lines
   )
-  ;; debugging
-  (:prefix "o" (:after realgud
-   :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
-   :desc "Open vterm" :n "t" #'+vterm/here
+  (:prefix "o"
+    ;; debugging
+    (:after realgud :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
+    :desc "Open vterm" :n "t" #'+vterm/here
     )
 ) ; end map leader
+;; tab switching
+;; (when (string= (system-name) "space")
+;;   (map!
+;;    (:after centaur-tabs :map override
+;;     :nv "M-1"         #'centaur-tabs-select-visible-1st-tab
+;;     :nv "M-2"         #'centaur-tabs-select-visible-2nd-tab
+;;     :nv "M-3"         #'centaur-tabs-select-visible-3rd-tab
+;;     )
+;;    )  ;;
+;; )
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
 (setq display-line-numbers-type 'relative)
@@ -231,15 +241,18 @@
     (winum-mode)
     ;; (doom-modeline-set-modeline 'minimal)
     (setq doom-modeline-height 10
-        ;; shorter buffer names
-        doom-modeline-buffer-file-name-style 'buffer-name
-        ;; show icons
-        doom-modeline-icon t
-        ;; Whether display color icons for `major-mode'. It respects
-        ;; `doom-modeline-icon' and `all-the-icons-color-icons'.
-        doom-modeline-major-mode-icon t
-        ;; If non-nil, a word count will be added to the selection-info modeline segment.
-        doom-modeline-enable-word-count nil
+          ;; shorter buffer names
+          doom-modeline-buffer-file-name-style 'buffer-name
+          ;; show icons
+          doom-modeline-icon t
+          ;; Whether display color icons for `major-mode'. It respects
+          ;; `doom-modeline-icon' and `all-the-icons-color-icons'.
+          doom-modeline-major-mode-icon t
+          doom-modeline-major-mode-color-icon nil
+          doom-modeline-modal-icon nil
+          doom-modeline-buffer-state-icon nil
+          ;; If non-nil, a word count will be added to the selection-info modeline segment.
+          doom-modeline-enable-word-count nil
     )
     (doom-modeline-def-segment window-number
       (let ((num (cond
@@ -265,6 +278,19 @@
           ))
     ; filesize in modeline
     (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
+    ;; my own modeline
+    (doom-modeline-def-modeline 'ishovkun-line
+      '(bar workspace-name window-number matches buffer-info remote-host buffer-position word-count parrot selection-info)
+      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs checker))
+
+    (defun setup-custom-doom-modeline ()
+      (doom-modeline-set-modeline 'ishovkun-line 'default))
+    (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline)
+
+  ;;   (doom-modeline-def-modeline 'main
+  ;; '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position word-count parrot selection-info)
+  ;; '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
+
     ))
 
 ;; ;; add face for function call
@@ -297,24 +323,26 @@
 (load-theme 'one-dark t)
 ;; (load-theme 'nord t)
 
-;; postframe
-(if window-system (progn
-    (require 'ivy-posframe)
-    ;; display at `ivy-posframe-style'
-    (setq ivy-posframe-parameters
-      '((left-fringe . 20)
-        (right-fringe . 20)
-        ))
-    (setq ivy-posframe-display-functions-alist
-      '((swiper          . nil)
-        (counsel-ag      . nil)
-        (complete-symbol . ivy-posframe-display-at-point)
-        (t               . ivy-posframe-display-at-frame-center))
-      )
+;; posframe
+(if window-system
+    (use-package! ivy-posframe
+      :config
+      (setq ivy-posframe-parameters
+            '((left-fringe . 20)
+              (right-fringe . 20)
+              ))
+      (setq ivy-posframe-display-functions-alist
+            '((swiper          . nil)
+              (counsel-ag      . nil)
+              (complete-symbol . ivy-posframe-display-at-point)
+              ;; (t               . ivy-posframe-display-at-frame-center))
+              (t               . ivy-posframe-display-at-frame-top-center))
+            )
 
     (ivy-posframe-mode 1)
     (setq ivy-posframe-border-width 2)
 ))
+
 
 ;; ranger
 (setq ranger-deer-show-details nil)
@@ -359,28 +387,40 @@
      ;; (remhash 'clangd lsp-clients)
      (push 'company-lsp company-backends)
     ;; cquery
-    ;; (require 'cquery)
     ;; ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
     ;; ;; without this line yasnippet is fucked up
     ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
     ;; (setq cquery-executable "/usr/bin/cquery")
     ;; (setq lsp-prefer-flymake nil)
-    ;; (require 'ccls)
+    ;; ccls
     ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
      (setq ccls-sem-highlight-method 'font-lock)
      (setq ccls-executable "ccls")
     ;; (setq ccls-args '("--log-file=/tmp/ccls.log"))
-    )
-  )
-(require 'dap-lldb)
+     ;; https://github.com/MaskRay/Config/blob/master/home/.config/doom/modules/private/my-cc/config.el
+     (setq ccls-initialization-options
+           `(:clang (:excludeArgs
+                     ;; Linux's gcc options. See ccls/wiki
+                     ["-falign-jumps=1" "-falign-loops=1" "-fconserve-stack" "-fmerge-constants" "-fno-code-hoisting" "-fno-schedule-insns"
+                      "-fno-var-tracking-assignments" "-fsched-pressure" "-mhard-float" "-mindirect-branch-register"
+                      "-mindirect-branch=thunk-inline" "-mpreferred-stack-boundary=2" "-mpreferred-stack-boundary=3"
+                      "-mpreferred-stack-boundary=4" "-mrecord-mcount" "-mindirect-branch=thunk-extern" "-mno-fp-ret-in-387" "-mskip-rax-setup"
+                      "--param=allow-store-data-races=0" "-Wa arch/x86/kernel/macros.s" "-Wa -"]
+                     :extraArgs [])
+                      :completion
+                      (:include
+                       (:blacklist
+                        ["^/usr/(local/)?include/c\\+\\+/[0-9\\.]+/(bits|tr1|tr2|profile|ext|debug)/"
+                         "^/usr/(local/)?include/c\\+\\+/v1/"
+                         ]))
+                      ))
+     ))
+
 ;; google-c-style
-(load "~/.doom.d/google-c-style.el")
-(require 'google-c-style)
-(add-hook 'c-mode-common-hook 'google-set-c-style)
-(add-hook 'c-mode-common-hook 'google-make-newline-indent)
-;; (use-package google-c-style
-;;   :config (progn (add-hook 'c-mode-common-hook 'google-set-c-style)
-;;                  (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
+(use-package! google-c-style
+  :load-path "~/.doom.d/extra"
+  :config (add-hook 'c-mode-common-hook 'google-set-c-style)
+                 (add-hook 'c-mode-common-hook 'google-make-newline-indent))
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
 ;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
@@ -390,15 +430,17 @@
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
-(setq deft-directory "~/Dropbox/enotes")
-(setq deft-extensions '("org" "md"))
-(setq deft-auto-save-interval 60.0)
-(setq deft-use-filename-as-title nil)
-(setq deft-use-filter-string-for-filename t)
-(setq deft-file-naming-rules
-      '((noslash . "-")
-        (nospace . "-")
-        (case-fn . downcase)))
+(after! deft
+ (setq deft-directory "~/Dropbox/enotes")
+ (setq deft-extensions '("org" "md"))
+ (setq deft-auto-save-interval 60.0)
+ (setq deft-use-filename-as-title nil)
+ (setq deft-use-filter-string-for-filename t)
+ (setq deft-file-naming-rules
+       '((noslash . "-")
+         (nospace . "-")
+         (case-fn . downcase)))
+ )
 ;; ----------------------------------- Org ----------------------------------
 (after! org
   (progn
@@ -417,17 +459,20 @@
   (set (make-local-variable 'truncate-partial-width-windows) nil))
 (add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
 ;; ------------------------- evil-commentary ---------------------------------
-(require 'evil-commentary)
+(use-package! evil-commentary)
 ;; ----------------------------------- Eclipse & GMSH ------------------------
-(add-to-list 'load-path "~/.doom.d/extra/")
-(autoload 'eclipse-mode "eclipse" "Enter ECLIPSE mode." t)
-(setq auto-mode-alist (cons '("\\.DATA\\'" . eclipse-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.data\\'" . eclipse-mode) auto-mode-alist))
-(autoload 'eclipse-shell "eclipse" "Interactive ECLIPSE mode." t)
+(use-package! eclipse
+  :load-path "~/.doom.d/extra/"
+  :config
+  (setq auto-mode-alist (cons '("\\.DATA\\'" . eclipse-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.data\\'" . eclipse-mode) auto-mode-alist))
+  )
 ;; gmsh
-(autoload 'gmsh-mode "gmsh" "Enter GMSH mode." t)
-(setq auto-mode-alist (cons '("\\.geo\\'" . gmsh-mode) auto-mode-alist))
-
+(use-package! gmsh
+  :load-path "~/.doom.d/extra/"
+  :config
+  (setq auto-mode-alist (cons '("\\.geo\\'" . gmsh-mode) auto-mode-alist))
+  )
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 (setq evil-move-cursor-back nil)
@@ -438,6 +483,7 @@
 ;;   (add-to-list 'evil-emacs-state-modes 'flycheck-error-list-mode))
 (after! quickrun
   (setq quickrun-timeout-seconds 1000))
+;; really close the buffer on kill-current-buffer
 ;; -------------------------------- Projectile -------------------------------
 (after! projectile
   (setq compilation-read-command nil)  ; no prompt in projectile-compile-project
@@ -459,62 +505,7 @@
                    (my-counsel-ignore-regexp-builder
                     "\\`__pycache__/\\'"
                     "^.cquery"
-                    ".ccls-cache"
+                    "^.ccls-cache"
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )
 
-
-;; (setq +doom-dashboard--width 100)
-;; (defun doom-dashboard-widget-banner ()
-;;   (let ((point (point)))
-;;     (mapc (lambda (line)
-;;             (insert (propertize (+doom-dashboard--center +doom-dashboard--width line)
-;;                                 'face 'font-lock-comment-face) " ")
-;;             (insert "\n"))
-;;           '(
-;;             ;; "=================     ===============     ===============   ========  ========"
-;; "                                       ,"
-;; "                                      , `."
-;; "                                       |   `."
-;; "                                      `     `."
-;; "                                        \\___   \  "
-;; "                             ,---._   ,'   -`./"
-;; "                          ,-\"    \"-/ /    o `._"
-;; "                           `.         |  o ,-.  _ `"
-;; "                             `.       ,  , `-' ,'  `"
-;; "                               `----- | '`----\"    |"
-;; "                                      \\       /    |"
-;; "                                       \\           \""
-;; "                                        `.        /_"
-;; "                 .--,                     `._   _/| \ "
-;; "  .-.    __,,,__/    |                    (  \".  '  \ "
-;; "..  . /   \\-'`        `-./_                        \\   '.'.  . "
-;; ".. |    |               `)                    |`    \"  | \\ "
-;; " \\    `            `\\  ;                  | `.   `.,' ."
-;; ". /       ,       ,     |                    |   `.   \  |"
-;; ".  |      /     :   O /_                    |    ,`   | |"
-;; " |          O  .--;__      '.                  |    `-`-\"  ,"
-;; " |                (  )`.  |                 `          ,"
-;; "\\                 `-` /  |                 `.     _,'"
-;; " \\          ,_  _.-./`  /                     `.--\" |"
-;; " .  .  \\        \\''-.(    |                        | || |  .-."
-;; "..   |           '---'   /--.                      | |, `,'"
-;; " ,--\\___..__          _.'   /--.            ___,' \       ,"
-;; " \\          `-._  _`'/     '    '.         /      /------\" "
-;; " .-' ` ' .       ``     '                  \\____,'"
-;;      ))
-;;     (when (and (stringp +doom-dashboard-banner-file)
-;;                (display-graphic-p)
-;;                (file-exists-p! +doom-dashboard-banner-file +doom-dashboard-banner-dir))
-;;       (let* ((image (create-image (expand-file-name +doom-dashboard-banner-file
-;;                                                     +doom-dashboard-banner-dir)
-;;                                   'png nil))
-;;              (size (image-size image nil))
-;;              (margin (+ 1 (/ (- +doom-dashboard--width (car size)) 2))))
-;;         (add-text-properties
-;;          point (point) `(display ,image rear-nonsticky (display)))
-;;         (when (> margin 0)
-;;           (save-excursion
-;;             (goto-char point)
-;;             (insert (make-string (truncate margin) ? )))))
-;;       (insert (make-string (or (cdr +doom-dashboard-banner-padding) 0) ?\n)))))
