@@ -327,20 +327,23 @@
 (if window-system
     (use-package! ivy-posframe
       :config
-      (setq ivy-posframe-parameters
-            '((left-fringe . 20)
-              (right-fringe . 20)
-              ))
+      ;; (setq ivy-posframe-parameters
+      ;;       '((left-fringe . 20)
+      ;;         (right-fringe . 20)
+      ;;         ))
       (setq ivy-posframe-display-functions-alist
             '((swiper          . nil)
               (counsel-ag      . nil)
               (complete-symbol . ivy-posframe-display-at-point)
               ;; (t               . ivy-posframe-display-at-frame-center))
               (t               . ivy-posframe-display-at-frame-top-center))
+            ivy-fixed-height-minibuffer nil
+            ivy-posframe-border-width 20
+            ivy-posframe-parameters `((min-width . 90)
+                                      (min-height . ,ivy-height))
             )
 
     (ivy-posframe-mode 1)
-    (setq ivy-posframe-border-width 2)
 ))
 
 
