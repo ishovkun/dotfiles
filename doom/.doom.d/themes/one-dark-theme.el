@@ -268,8 +268,10 @@
    `(helm-source-go-package-godoc-description ((,class (:foreground ,str))))
    `(helm-bookmark-w3m ((,class (:foreground ,type))))
    ;; ivy
-   `(ivy-posframe-border ((,class (:inherit highlight :background ,fg1))))
-   `(ivy-posframe        ((,class (:inherit default :background ,bg-dark))))
+   ;; `(ivy-posframe-border ((,class (:inherit highlight :background ,fg1))))
+   `(ivy-posframe-border ((,class (:inherit highlight :background ,bg-dark))))
+   ;; `(ivy-posframe        ((,class (:inherit default :background ,bg-dark))))
+   `(ivy-posframe        ((,t (:background ,bg-dark))))
    `(ivy-separator       ((,class (:background ,bg-dark))))
     ;;; modify minibuffer-prompt to change posframe top line color
    ;; dired
