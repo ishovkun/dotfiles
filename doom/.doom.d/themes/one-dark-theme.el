@@ -344,6 +344,8 @@
    ;; ---- Man
    `(Man-overstrike ((t (:foreground ,type))))
    `(Man-underline ((t (:foreground ,keyword :underline t))))
+   ;; --- pdf-view
+   `(pdf-view-region ((t (:foreground ,bg-dark :background ,keyword))))
    );; end custom-set-face
 
   (setq
