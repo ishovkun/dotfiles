@@ -373,9 +373,9 @@
     ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
     ;; (setq cquery-executable "/usr/bin/cquery")
     ;; (setq lsp-prefer-flymake nil)
+
     ;; ccls
-    ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
-     (setq ccls-sem-highlight-method 'font-lock)
+     ;; (setq ccls-sem-highlight-method 'font-lock)
      (setq ccls-executable "ccls")
     ;; (setq ccls-args '("--log-file=/tmp/ccls.log"))
      ;; https://github.com/MaskRay/Config/blob/master/home/.config/doom/modules/private/my-cc/config.el
