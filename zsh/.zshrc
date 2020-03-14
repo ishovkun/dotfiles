@@ -170,3 +170,5 @@ export TERM=xterm-24bit
 if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
     alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 fi
+
+export SSH_ASKPASS='/usr/bin/ksshaskpass'

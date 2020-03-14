@@ -4,7 +4,7 @@
 (setq doom-font (font-spec :family "Iosevka SS04" :size 15))
 (when (string= (system-name) "space")
   ;; different scaling
-  (setq doom-font (font-spec :family "Iosevka SS04" :size 31)))
+  (setq doom-font (font-spec :family "Iosevka SS04" :size 28)))
 
 (map!
   ;; window management
@@ -254,7 +254,7 @@
           ;; If non-nil, a word count will be added to the selection-info modeline segment.
           doom-modeline-enable-word-count nil
     )
-    (doom-modeline-def-segment window-number
+    (doom-modeline-def-segment window-number-evil
       (let ((num (cond
                   ((bound-and-true-p ace-window-display-mode)
                   (aw-update)
@@ -280,33 +280,35 @@
     (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
     ;; my own modeline
     (doom-modeline-def-modeline 'ishovkun-line
-      '(bar workspace-name window-number matches buffer-info remote-host buffer-position word-count parrot selection-info)
-      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs checker))
+      '(bar workspace-name window-number-evil matches buffer-info remote-host buffer-position word-count parrot selection-info)
+      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs lsp checker))
 
-    (defun setup-custom-doom-modeline ()
-      (doom-modeline-set-modeline 'ishovkun-line 'default))
     (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline)
 
   ;;   (doom-modeline-def-modeline 'main
   ;; '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position word-count parrot selection-info)
   ;; '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
-
     ))
 
-;; ;; add face for function call
-;; (defface font-lock-method-call-face
-;;   '((t . (:foreground "orangered" :bold t)))
-;;   "Face to display method calls in.")
-;; (font-lock-add-keywords 'c++-mode
-;;                         `((,(concat
-;;                               "\\<[_a-zA-Z][_a-zA-Z0-9]*\\>"       ; Object identifier
-;;                               "\\s *"                              ; Optional white space
-;;                               "\\(?:\\.\\|->\\)"                   ; Member access
-;;                               "\\s *"                              ; Optional white space
-;;                               "\\<\\([_a-zA-Z][_a-zA-Z0-9]*\\)\\>" ; Member identifier
-;;                               "\\s *"                              ; Optional white space
-;;                               "(")                                 ; Paren for method invocation
-;;                             1 'font-lock-method-call-face t)))
+(use-package! mini-modeline
+  :after doom-modeline
+  :config
+
+    ;; (setq doom-modeline-icon nil)
+
+  ;; (defun ivy-resize--minibuffer-setup-hook ()
+  ;;   "Minibuffer setup hook."
+  ;;   (add-hook 'post-command-hook #'ivy-resize--post-command-hook nil t))
+
+  ;; (defun ivy-resize--post-command-hook ()
+  ;;   "Hook run every command in minibuffer."
+  ;;   (when mini-modeline-mode
+  ;;     (shrink-window (1+ ivy-height))))  ; Plus 1 for the input field.
+
+  ;; (add-hook 'minibuffer-setup-hook 'ivy-resize--minibuffer-setup-hook)
+    (add-hook 'mini-modeline-mode-hook 'my-setup-mini-modeline)
+    ;; (mini-modeline-mode t)
+  )
 
 ;; evil yank to the end of line
 (setq evil-want-Y-yank-to-eol t)
@@ -345,6 +347,7 @@
 
     (ivy-posframe-mode 1)
 ))
+
 
 
 ;; ranger
@@ -454,16 +457,18 @@
   :config
   (setq auto-mode-alist (cons '("\\.geo\\'" . gmsh-mode) auto-mode-alist))
   )
+;; ----------------------------------- Octave ---------------------------------
+(setq auto-mode-alist (cons '("\\.m\\'" . octave-mode) auto-mode-alist))
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
+(setq evil-respect-visual-line-mode t)
 (setq evil-move-cursor-back nil)
 ;; make compilation buffer stick to the frame
-(push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
+;; (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
 (setq doom-private-dir "~/dotfiles/doom/.doom.d/")
 ;; (after! evil
 ;;   (add-to-list 'evil-emacs-state-modes 'flycheck-error-list-mode))
-(after! quickrun
-  (setq quickrun-timeout-seconds 1000))
+(after! quickrun (setq quickrun-timeout-seconds 1000))
 ;; really close the buffer on kill-current-buffer
 ;; -------------------------------- Projectile -------------------------------
 (after! projectile
