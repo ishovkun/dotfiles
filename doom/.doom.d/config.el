@@ -290,9 +290,9 @@
   ;; '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
     ))
 
-(use-package! mini-modeline
-  :after doom-modeline
-  :config
+;;(use-package! mini-modeline
+  ;;:after doom-modeline
+  ;;config
 
     ;; (setq doom-modeline-icon nil)
 
@@ -306,9 +306,9 @@
   ;;     (shrink-window (1+ ivy-height))))  ; Plus 1 for the input field.
 
   ;; (add-hook 'minibuffer-setup-hook 'ivy-resize--minibuffer-setup-hook)
-    (add-hook 'mini-modeline-mode-hook 'my-setup-mini-modeline)
+    ;;(add-hook 'mini-modeline-mode-hook 'my-setup-mini-modeline)
     ;; (mini-modeline-mode t)
-  )
+  ;;)
 
 ;; evil yank to the end of line
 (setq evil-want-Y-yank-to-eol t)
