@@ -65,8 +65,7 @@
   (:prefix "g"
     (:after projectile :map c++-mode-map
       :desc "Switch implementation/header" :nv "o" #'projectile-find-other-file)
-    (:after lsp-ui :map prog-mode-map
-      :desc "Find references" :n "r" #'lsp-find-references)
+    (:desc "Find references" :n "r" #'+lookup/references)
     (:map override :desc "Copy and comment" :nv "y" #'duplicate-and-comment-line)
   ) ; end prefix g
   (:after projectile :map prog-mode-map
@@ -434,15 +433,24 @@
     (when (string= (system-name) "space")
       (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
   )))
+  ;; ---------------------------- ORG calendar --------------------------------------
+;; (use-package! org-gcal
+;;   :config
+;;   (setq org-gcal-client-id "1046223883337-g5m0oj48ri3g0blvpiker752kd39qv43.apps.googleusercontent.com"
+;;         org-gcal-client-secret "zLRzWSYHzuQ4GG8qAJPFLjZY")
+;;   (setq org-gcal-file-alist '(("igshov@gmail.com" . "/home/ishovkun/Dropbox/enotes/gmail_cal.org")))
+;;   (setq org-agenda-files
+;;         (quote ("/home/ishovkun/Dropbox/enotes/gmail_cal.org")))
+;;   )
 ;; ----------------------------------- LaTeX ---------------------------------
 (setq +latex-viewers '(okular))
 ;; --------------------------------- Compile ---------------------------------
-(add-hook 'compilation-mode-hook 'my-compilation-hook)
-;; truncate lines in compilation mode
-(defun compilation-mode-hook-trucate-lines ()
-  (setq truncate-lines nil) ;; automatically becomes buffer local
-  (set (make-local-variable 'truncate-partial-width-windows) nil))
-(add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
+;; (add-hook 'compilation-mode-hook 'my-compilation-hook)
+;; ;; truncate lines in compilation mode
+;; (defun compilation-mode-hook-trucate-lines ()
+;;   (setq truncate-lines nil) ;; automatically becomes buffer local
+;;   (set (make-local-variable 'truncate-partial-width-windows) nil))
+;; (add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
 ;; ------------------------- evil-commentary ---------------------------------
 (use-package! evil-commentary)
 ;; ----------------------------------- Eclipse & GMSH ------------------------
