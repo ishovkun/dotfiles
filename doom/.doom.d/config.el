@@ -35,6 +35,7 @@
   :nv "g["          #'avy-goto-char-2-above
   :nv "g]"          #'avy-goto-char-2-below
   :n  "S"           #'avy-goto-char-in-line
+  :nvi "M-`"      #'+popup/toggle
   (:after swiper :desc "Swiper" :n "SPC /" #'counsel-grep-or-swiper)
   ;; :nv "S"           #'evil-snipe-s
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
