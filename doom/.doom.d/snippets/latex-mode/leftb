@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name:leftb
+# key:lb
+# --
+\left[ $1 \right]

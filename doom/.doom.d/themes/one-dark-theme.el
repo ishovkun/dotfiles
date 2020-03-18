@@ -27,9 +27,9 @@
       ;; elements
       (builtin magenta2)
       (keyword blue)
-      (const   violet)
+      (const   blue)
       (comment (if (true-color-p) "#5B6268" "#8a8a8a"))
-      (func    magenta)
+      (func    violet)
       (str     lightgreen)
       (type    bright-blue)
       (region  (if (true-color-p) "#3e4451" "#3a3a3a"))         ;; basically selection
@@ -44,7 +44,7 @@
    `(font-lock-comment-face       ((,class (:foreground ,comment :italic t))))
    `(font-lock-negation-char-face ((,class (:foreground ,const))))
    `(font-lock-reference-face     ((,class (:foreground ,const))))
-   `(font-lock-constant-face      ((,class (:foreground ,const))))
+   `(font-lock-constant-face      ((,class (:foreground ,const :bold ,class))))
    `(font-lock-doc-face           ((,class (:foreground ,comment))))
    `(font-lock-function-name-face ((,class (:foreground ,func :background ,bg))))
    `(font-lock-keyword-face       ((,class (:foreground ,keyword :bold ,class ))))
@@ -118,6 +118,7 @@
    '(lsp-face-highlight-textual      ((t (:distant-foreground nil :foreground nil :background "gray25"))))
    '(lsp-face-highlight-write        ((t (:distant-foreground nil :foreground nil :background "#402311"))))
    `(lsp-ui-sideline-symbol          ((t (:foreground ,var :box nil))))
+   `(lsp-ui-doc-background           ((t (:foreground ,var :background ,bg-dark :box nil))))
    `(lsp-ui-sideline-current-symbol  ((t (:foreground ,keyword :box nil))))
    ;;
    `(vertical-border ((,class (:foreground ,bg :background ,bg))))
@@ -275,9 +276,8 @@
    ;; ivy
    ;; `(ivy-posframe-border ((,class (:inherit highlight :background ,fg1))))
    `(ivy-posframe-border ((,class (:inherit highlight :background ,bg-dark))))
-   ;; `(ivy-posframe        ((,class (:inherit default :background ,bg-dark))))
    `(ivy-posframe        ((,t (:background ,bg-dark))))
-   `(ivy-separator       ((,class (:background ,bg-dark))))
+   ;; `(ivy-separator       ((,class (:background ,black))))
     ;;; modify minibuffer-prompt to change posframe top line color
    ;; dired
    `(diredp-dir-heading           ((,class (:foreground ,str :background ,bg))))

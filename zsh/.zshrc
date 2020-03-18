@@ -173,3 +173,4 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
 fi
 
 export PARDISO_LIC_PATH="$HOME/lic/pardiso.lic"
+export SSH_ASKPASS='/usr/bin/ksshaskpass'

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name:leftp
+# key:lp
+# --
+\left( $1 \right)
