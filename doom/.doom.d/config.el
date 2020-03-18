@@ -244,16 +244,22 @@
           ;; shorter buffer names
           doom-modeline-buffer-file-name-style 'buffer-name
           ;; show icons
-          doom-modeline-icon t
           ;; Whether display color icons for `major-mode'. It respects
           ;; `doom-modeline-icon' and `all-the-icons-color-icons'.
-          doom-modeline-major-mode-icon t
           doom-modeline-major-mode-color-icon nil
           doom-modeline-modal-icon nil
           doom-modeline-buffer-state-icon nil
           ;; If non-nil, a word count will be added to the selection-info modeline segment.
           doom-modeline-enable-word-count nil
     )
+
+(if window-system
+  (setq
+          doom-modeline-icon t
+          doom-modeline-major-mode-icon t
+    )
+  )
+
     (doom-modeline-def-segment window-number
       (let ((num (cond
                   ((bound-and-true-p ace-window-display-mode)
@@ -357,11 +363,15 @@
 (setq mouse-wheel-follow-mouse 't)                  ;; scroll window under mouse
 ;; ----------------------------- c/c++ ----------------------------------
 ;; lsp
-(setq lsp-ui-sideline-enable nil)
-(setq lsp-ui-doc-enable t)
-(setq lsp-ui-doc-position 'at-point)
-(setq lsp-ui-doc-max-width 150)
-(after! lsp-ui (lsp-ui-doc-mode))
+(after! lsp-ui
+  (progn
+    (setq lsp-ui-sideline-enable nil)
+    (setq lsp-ui-doc-enable t)
+    (setq lsp-ui-doc-position 'at-point)
+    (setq lsp-ui-doc-max-width 150)
+    (lsp-ui-doc-mode)
+    )
+  )
 (after! lsp
   (progn
 ;;     (after! lsp-clients (remhash 'clangd lsp-clients))
