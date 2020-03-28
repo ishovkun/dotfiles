@@ -235,6 +235,25 @@
 ;; (setq confirm-kill-emacs)
 (setq confirm-kill-emacs nil)
 
+;; (use-package! ivy-rich
+(after! ivy-rich
+  (setq ivy-rich-display-transformers-list
+        '(ivy-switch-buffer
+          (:columns
+           (;;(+ivy-rich-buffer-icon)
+            (+ivy-rich-buffer-name (:width 30))
+            (ivy-rich-switch-buffer-size (:width 7))
+            (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
+            (ivy-rich-switch-buffer-major-mode (:width 12 :face font-lock-variable-name-face))
+            (ivy-rich-switch-buffer-project (:width 15 :face font-lock-keyword-face))
+            (ivy-rich-switch-buffer-path (:width (lambda (x)
+                                                   (ivy-rich-switch-buffer-shorten-path x
+                                                   (ivy-rich-minibuffer-width 0.3))))))
+           )))
+  ;; (ivy-rich-mode nil)
+  ;; (ivy-rich-mode +1)
+)
+
 ;; set modes
 (after! doom-modeline
   (progn

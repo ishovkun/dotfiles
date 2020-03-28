@@ -50,14 +50,14 @@
    `(font-lock-keyword-face       ((,class (:foreground ,keyword :bold ,class ))))
    `(font-lock-string-face        ((,class (:foreground ,str))))
    `(font-lock-type-face          ((,class (:foreground ,type ))))
-   `(font-lock-variable-name-face ((,class (:foreground ,var :background ,bg))))
+   `(font-lock-variable-name-face ((,class (:foreground ,var))))
    `(font-lock-warning-face       ((,class (:foreground ,warning :background ,bg-light))))
    `(highlight                    ((,class (:foreground ,fg3 :background ,bg-dark))))
    `(hl-line                      ((,class (:background ,bg-light))))
    `(fringe                       ((,class (:background ,bg :foreground ,fg4))))
    `(window-divider               ((,class (:background ,bg-dark :foreground ,bg-dark))))
-   `(region                       ((,class (:foreground nil :background ,region :distant-foreground ,comment))))
-   `(isearch                      ((,class (:foreground ,warning :background ,bg-dark :bold t ))))
+   `(region                       ((,class (:foreground nil :background ,region :distant-foreground ,comment :extend t))))
+   `(isearch                      ((,class (:foreground ,yellow :background ,region :bold t ))))
    `(show-paren-match-face        ((,class (:background ,warning))))
    `(whitespace-tab               ((,class (:background ,bg :foreground ,comment))))
    `(trailing-whitespace          ((,class (:background ,region))))
@@ -96,7 +96,8 @@
    `(term-color-yellow ((,class (:bold t :foreground ,warning :background ,bg))))
    `(term-color-red ((,class (:bold t :foreground ,warning :background ,warning))))
    ;; term-color-black
-   `(error ((t (:foreground ,warning :background ,bg))))
+   ;; `(error ((t (:foreground ,warning :background ,bg))))
+   `(error ((t (:foreground ,warning))))
    ;; vterm
    `(vterm-color-default-fg ((,class (:foreground ,fg1))))
    `(vterm-color-default-bg ((,class (:background ,bg))))
@@ -273,13 +274,12 @@
    `(helm-moccur-buffer ((,class (:foreground ,func :background ,bg))))
    `(helm-source-go-package-godoc-description ((,class (:foreground ,str))))
    `(helm-bookmark-w3m ((,class (:foreground ,type))))
+
    ;; ivy
-   ;; `(ivy-posframe-border ((,class (:inherit highlight :background ,fg1))))
-   `(ivy-posframe-border ((,class (:inherit highlight :background ,bg-dark))))
-   `(ivy-posframe        ((,t (:background ,bg-dark))))
-   ;; `(ivy-current-match ((,class (:inherit region))))
-   `(ivy-current-match ((,class (:background ,region))))
-   ;; region
+   `(ivy-current-match   ((,class (:background ,region :distant-foreground nil :extend t))))
+   `(ivy-posframe-border ((,class (:background ,bg-dark))))
+   `(ivy-posframe        ((,class (:background ,bg-dark))))
+
    ;; `(ivy-separator       ((,class (:background ,black))))
     ;;; modify minibuffer-prompt to change posframe top line color
    ;; dired
@@ -287,7 +287,7 @@
    `(diredp-dir-name              ((,class (:foreground ,keyword :background ,bg :weight 'bold))))
    `(dired-directory              ((,class (:foreground ,keyword :background ,bg))))
    `(all-the-icons-dired-dir-face ((,class (:foreground ,keyword :background ,bg))))
-   `(diredp-file-name             ((,class (:foreground ,fg1 :b-ackground ,bg))))
+   `(diredp-file-name             ((,class (:foreground ,fg1 :background ,bg))))
    `(diredp-file-suffix           ((,class (:foreground ,fg1 :background ,bg))))
    `(neo-file-link-face           ((,class (:foreground ,fg1 :background ,bg))))
    `(diredfl-file-name            ((,class (:foreground ,fg1 :background ,bg))))
