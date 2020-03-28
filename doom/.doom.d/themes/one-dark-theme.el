@@ -238,6 +238,11 @@
    `(ediff-even-diff-B    ((,class (:background ,bg-light))))
    `(ediff-odd-diff-A    ((,class (:background ,bg-light))))
    `(ediff-odd-diff-B    ((,class (:background ,bg-light))))
+   ;; eclipse
+   `(eclipse-font-lock-keyword-face ((,class (:foreground ,keyword :bold ,class ))))
+   `(eclipse-font-lock-import-face ((,class (:foreground ,builtin :bold ,class ))))
+   `(eclipse-font-lock-comment-face ((,class (:foreground ,comment :bold ,class ))))
+   `(eclipse-font-lock-function-name-face ((,class (:foreground ,func :bold ,class ))))
    ;; helm
    `(helm-header ((,class (:foreground ,fg2 :background ,bg :underline nil :box nil))))
    `(helm-source-header ((,class (:foreground ,fg2 :background ,bg4 :underline nil :weight bold :height 1.2))))

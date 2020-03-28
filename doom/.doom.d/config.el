@@ -241,8 +241,6 @@
     (winum-mode)
     (setq doom-modeline-height 10
           doom-modeline-buffer-file-name-style 'buffer-name ;; shorter buffer names
-          doom-modeline-icon t
-          doom-modeline-major-mode-icon t
           doom-modeline-major-mode-color-icon nil
           doom-modeline-modal-icon nil
           doom-modeline-buffer-state-icon nil
@@ -255,6 +253,12 @@
           doom-modeline-percent-position nil
           doom-modeline-unicode-fallback t
           )
+
+    (if window-system
+        (setq
+         doom-modeline-icon t
+         doom-modeline-major-mode-icon t
+         ))
 
     (doom-modeline-def-segment window-number-evil
       (let ((num (cond
@@ -376,13 +380,39 @@
 (setq mouse-wheel-follow-mouse 't)                  ;; scroll window under mouse
 ;; ----------------------------- c/c++ ----------------------------------
 ;; lsp
-(setq lsp-ui-sideline-enable nil)
-(setq lsp-ui-doc-enable t)
-(setq lsp-ui-doc-position 'at-point)
-(setq lsp-ui-doc-max-width 150)
-(after! lsp-ui (lsp-ui-doc-mode))
+(after! lsp-ui
+  (progn
+    (setq lsp-ui-sideline-enable nil)
+    (setq lsp-ui-doc-enable t)
+    (setq lsp-ui-doc-position 'at-point)
+    (setq lsp-ui-doc-max-width 150)
+    (lsp-ui-doc-mode)
+    )
+  )
 (after! lsp
   (progn
+;;     (after! lsp-clients (remhash 'clangd lsp-clients))
+;;     (push 'company-lsp company-backends)
+;;     (require 'cquery)
+;;     ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
+;;     ;; without this line yasnippet is fucked up
+;;     (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
+;;     (setq cquery-executable "/bin/cquery")
+;;     (setq lsp-prefer-flymake nil)
+;;     (with-eval-after-load 'projectile
+;;       (setq projectile-project-root-files-top-down-recurring
+;;             (append '("compile_commands.json"
+;;                       ".cquery")
+;;                     projectile-project-root-files-top-down-recurring)))
+;;     (defun cquery//enable ()
+;;   (condition-case nil
+;;       (lsp)
+;;     (user-error nil)))
+
+;;   (use-package cquery
+;;     :commands lsp
+;;     :init (add-hook 'c-mode-hook #'cquery//enable)
+;;           (add-hook 'c++-mode-hook #'cquery//enable))
      (setq lsp-enable-file-watchers nil)
      ;; (remhash 'clangd lsp-clients)
      (push 'company-lsp company-backends)

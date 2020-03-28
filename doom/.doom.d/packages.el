@@ -9,7 +9,6 @@
 ;;; Code:
 ;; (package! doom-themes :ignore t)
 (package! winum)
-; (package! ivy-posframe :recipe (:fetcher git :url "https://github.com/tumashu/ivy-posframe.git"))
 (package! ivy-posframe :recipe (:host github :repo "tumashu/ivy-posframe"))
 (disable-packages! irony rtags)
 (package! cquery)

@@ -3,4 +3,4 @@
 #key : fori
 #contributor : Igor
 # --
-for (std::size_t $1=0; $1<$2; ++$1)
+for (size_t $1=0; $1<$2; ++$1)
