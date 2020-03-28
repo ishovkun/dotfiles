@@ -35,7 +35,7 @@
       (region  (if (true-color-p) "#3e4451" "#3a3a3a"))         ;; basically selection
       (var     lightgreen)
       (warning red)
-      (success    bright-green)      ;; bright green
+      (success bright-green)      ;; bright green
       )
   (custom-theme-set-faces
    'one-dark
@@ -272,6 +272,9 @@
    ;; `(ivy-posframe-border ((,class (:inherit highlight :background ,fg1))))
    `(ivy-posframe-border ((,class (:inherit highlight :background ,bg-dark))))
    `(ivy-posframe        ((,t (:background ,bg-dark))))
+   ;; `(ivy-current-match ((,class (:inherit region))))
+   `(ivy-current-match ((,class (:background ,region))))
+   ;; region
    ;; `(ivy-separator       ((,class (:background ,black))))
     ;;; modify minibuffer-prompt to change posframe top line color
    ;; dired
@@ -329,6 +332,9 @@
    `(w3m-form ((,class (:foreground ,str))))
    `(w3m-error ((,class (:foreground ,warning))))
    `(w3m-tab-selected-retrieving ((,class (:foreground ,const))))
+   ;; ---- yascroll
+   ;; `(yascroll:thumb-fringe ((,class (:background ,builtin :foreground ,builtin))))
+   `(yascroll:thumb-fringe ((,class (:background ,region :foreground ,region))))
    ;; ----
    `(jde-java-font-lock-package-face ((t (:foreground ,var))))
    `(jde-java-font-lock-public-face ((t (:foreground ,keyword))))
