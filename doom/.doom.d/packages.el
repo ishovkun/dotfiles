@@ -18,5 +18,6 @@
 ;; (package! company-box)
 (package! company-lsp)
 (package! evil-commentary)
+(package! yascroll)
 
 ;;; packages.el ends here

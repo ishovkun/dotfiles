@@ -35,7 +35,7 @@
   :nv "g["          #'avy-goto-char-2-above
   :nv "g]"          #'avy-goto-char-2-below
   :n  "S"           #'avy-goto-char-in-line
-  :nvi "M-`"      #'+popup/toggle
+  :nvi "M-`"        #'+popup/toggle
   (:after swiper :desc "Swiper" :n "SPC /" #'counsel-grep-or-swiper)
   ;; :nv "S"           #'evil-snipe-s
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
@@ -239,21 +239,23 @@
 (after! doom-modeline
   (progn
     (winum-mode)
-    ;; (doom-modeline-set-modeline 'minimal)
     (setq doom-modeline-height 10
-          ;; shorter buffer names
-          doom-modeline-buffer-file-name-style 'buffer-name
-          ;; show icons
+          doom-modeline-buffer-file-name-style 'buffer-name ;; shorter buffer names
           doom-modeline-icon t
-          ;; Whether display color icons for `major-mode'. It respects
-          ;; `doom-modeline-icon' and `all-the-icons-color-icons'.
           doom-modeline-major-mode-icon t
           doom-modeline-major-mode-color-icon nil
           doom-modeline-modal-icon nil
           doom-modeline-buffer-state-icon nil
-          ;; If non-nil, a word count will be added to the selection-info modeline segment.
-          doom-modeline-enable-word-count nil
-    )
+          doom-modeline-buffer-encoding nil
+          doom-modeline-enable-word-count nil ; added to the selection-info segment.
+          doom-modeline-number-limit 99
+          doom-modeline-indent-info t
+          doom-modeline-persp-name t
+          doom-modeline-display-default-persp-name t
+          doom-modeline-percent-position nil
+          doom-modeline-unicode-fallback t
+          )
+
     (doom-modeline-def-segment window-number-evil
       (let ((num (cond
                   ((bound-and-true-p ace-window-display-mode)
@@ -281,7 +283,14 @@
     ;; my own modeline
     (doom-modeline-def-modeline 'ishovkun-line
       '(bar workspace-name window-number-evil matches buffer-info remote-host buffer-position word-count parrot selection-info)
-      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs lsp checker))
+      '(misc-info persp-name buffer-encoding major-mode indent-info process vcs lsp checker))
+
+    ;; (doom-modeline-def-modeline 'ishovkun-line
+    ;;   '(workspace-name window-number-evil matches buffer-info remote-host buffer-position word-count parrot selection-info)
+    ;;   '(misc-info minor-modes buffer-encoding major-mode indent-info process vcs lsp checker))
+
+    (defun setup-custom-doom-modeline ()
+      (doom-modeline-set-modeline 'ishovkun-line 'default))
 
     (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline)
 
@@ -323,7 +332,14 @@
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 (load-theme 'one-dark t)
-;; (load-theme 'nord t)
+;; (load-theme 'doom-nord t)
+;;
+(if window-system
+    (use-package! yascroll
+      :config
+      (setq yascroll:delay-to-hide nil)
+      (add-hook 'prog-mode-hook 'yascroll-bar-mode)
+      ))
 
 ;; posframe
 (if window-system
@@ -341,7 +357,7 @@
               (t               . ivy-posframe-display-at-frame-top-center))
             ivy-fixed-height-minibuffer nil
             ivy-posframe-border-width 20
-            ivy-posframe-parameters `((min-width . 90)
+            ivy-posframe-parameters `((min-width . 50)
                                       (min-height . ,ivy-height))
             )
 
