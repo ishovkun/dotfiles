@@ -510,7 +510,7 @@
 ;; ----------------------------------- LaTeX ---------------------------------
 (setq +latex-viewers '(okular))
 ;; --------------------------------- Compile ---------------------------------
-(unless (or (string= (system-name) "space") (window-system))
+(unless (or (string= (system-name) "space") (if window-system))
   (add-hook 'compilation-mode-hook 'my-compilation-hook)
   ;; truncate lines in compilation mode
   (defun compilation-mode-hook-trucate-lines ()
