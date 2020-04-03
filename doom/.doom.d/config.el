@@ -408,7 +408,7 @@
     (lsp-ui-doc-mode)
     )
   )
-(after! lsp
+(after! lsp-mode
   (progn
 ;;     (after! lsp-clients (remhash 'clangd lsp-clients))
 ;;     (push 'company-lsp company-backends)
@@ -510,12 +510,14 @@
 ;; ----------------------------------- LaTeX ---------------------------------
 (setq +latex-viewers '(okular))
 ;; --------------------------------- Compile ---------------------------------
-;; (add-hook 'compilation-mode-hook 'my-compilation-hook)
-;; ;; truncate lines in compilation mode
-;; (defun compilation-mode-hook-trucate-lines ()
-;;   (setq truncate-lines nil) ;; automatically becomes buffer local
-;;   (set (make-local-variable 'truncate-partial-width-windows) nil))
-;; (add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
+(unless (or (string= (system-name) "space") (window-system))
+  (add-hook 'compilation-mode-hook 'my-compilation-hook)
+  ;; truncate lines in compilation mode
+  (defun compilation-mode-hook-trucate-lines ()
+    (setq truncate-lines nil) ;; automatically becomes buffer local
+    (set (make-local-variable 'truncate-partial-width-windows) nil))
+  (add-hook 'compilation-mode-hook 'compilation-mode-hook-trucate-lines)
+)
 ;; ------------------------- evil-commentary ---------------------------------
 (use-package! evil-commentary)
 ;; ----------------------------------- Eclipse & GMSH ------------------------
