@@ -202,6 +202,7 @@
   ;; browse functions
   (:prefix "s"
     (:desc "Browse functions" :nv "j" #'counsel-imenu)
+    (:desc "Browse evil marks" :nv "m" #'counsel-evil-marks)
     )
   ;; compile
   (:prefix "c"
@@ -254,12 +255,19 @@
   ;; (ivy-rich-mode +1)
 )
 
+(if window-system
+  (setq window-divider-default-bottom-width 4 ; in pixels
+        window-divider-default-right-width  4)
+  (window-divider-mode +1)
+)
+
 ;; set modes
 (after! doom-modeline
   (progn
     (winum-mode)
     (setq doom-modeline-height 10
-          doom-modeline-buffer-file-name-style 'buffer-name ;; shorter buffer names
+          ;; doom-modeline-buffer-file-name-style 'buffer-name ;; just the buffer name
+          doom-modeline-buffer-file-name-style 'relative-from-project ;; name start from root
           doom-modeline-major-mode-color-icon nil
           doom-modeline-modal-icon nil
           doom-modeline-buffer-state-icon nil
@@ -354,7 +362,8 @@
   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode))
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
-(load-theme 'one-dark t)
+;; (load-theme 'one-dark t)
+(load-theme 'nord t)
 ;; (load-theme 'doom-nord t)
 ;;
 (if window-system
