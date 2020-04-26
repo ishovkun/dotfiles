@@ -56,6 +56,8 @@
    `(hl-line                      ((,class (:background ,bg-light))))
    `(fringe                       ((,class (:background ,bg :foreground ,fg4))))
    `(window-divider               ((,class (:background ,bg-dark :foreground ,bg-dark))))
+   `(window-divider-first-pixel   ((,class (:background ,bg-dark :foreground ,bg-dark))))
+   `(window-divider-last-pixel    ((,class (:background ,bg-dark :foreground ,bg-dark))))
    `(region                       ((,class (:foreground nil :background ,region :distant-foreground ,comment :extend t))))
    `(isearch                      ((,class (:foreground ,yellow :background ,region :bold t ))))
    `(show-paren-match-face        ((,class (:background ,warning))))
