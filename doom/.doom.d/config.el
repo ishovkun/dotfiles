@@ -190,6 +190,7 @@
     :desc "align ]"        :v "]"    #'align-repeat-right-square-brace
     :desc "align \\"        :v "\\"  #'align-repeat-backslash
     :desc "align |"        :v "|"    #'align-repeat-bar
+    :desc "justify"        :nv "j"      #'set-justification-full
    )
   ;; projectile
   (:prefix "p"
@@ -268,6 +269,7 @@
     (setq doom-modeline-height 10
           ;; doom-modeline-buffer-file-name-style 'buffer-name ;; just the buffer name
           doom-modeline-buffer-file-name-style 'relative-from-project ;; name start from root
+          doom-modeline-buffer-file-name-style 'auto ;; name start from root
           doom-modeline-major-mode-color-icon nil
           doom-modeline-modal-icon nil
           doom-modeline-buffer-state-icon nil
@@ -546,7 +548,8 @@
 (setq auto-mode-alist (cons '("\\.m\\'" . octave-mode) auto-mode-alist))
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
-(setq evil-respect-visual-line-mode t)
+;; (setq evil-respect-visual-line-mode t)
+(setq evil-respect-visual-line-mode 0) ;; otherwise  deletes line on cc
 (setq evil-move-cursor-back nil)
 ;; make compilation buffer stick to the frame
 ;; (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
