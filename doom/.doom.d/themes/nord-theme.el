@@ -29,9 +29,9 @@
       (bg-light    polar-night-light) ;; lighter than main
       (bg-lighter  polar-night-lighter) ;; lighter than main
       (bg-dark     polar-night-dark) ;; darker than main background
-      (fg         snow-storm-dark)
+      (fg          snow-storm-dark)
       (fg-dim      polar-night-lightest) ;; comments
-      (fg-bright         snow-storm)
+      (fg-bright   snow-storm)
       ;; elements
       (builtin frost-green)
       (keyword frost-dark-blue)
@@ -174,6 +174,14 @@
    `(org-ellipsis ((,class (:foreground ,builtin))))
    `(org-verbatim ((,class (:foreground ,const))))
    `(org-document-info-keyword ((,class (:foreground ,func))))
+   ;; LaTeX
+   `(font-latex-sectioning-0-face ((,class (:foreground ,misc))))
+   `(font-latex-sectioning-1-face ((,class (:foreground ,misc))))
+   `(font-latex-sectioning-2-face ((,class (:foreground ,type :weight bold :height 1.8))))
+   `(font-latex-sectioning-3-face ((,class (:foreground ,type :weight bold :height 1.5))))
+   `(font-latex-sectioning-4-face ((,class (:foreground ,fg-bright :weight bold :height 1.3))))
+   `(font-latex-sectioning-4-face ((,class (:foreground ,fg-bright :weight bold))))
+   `(font-latex-warning-face ((,class (:foreground ,warning :weight bold))))
    `(font-latex-bold-face ((,class (:foreground ,type))))
    `(font-latex-italic-face ((,class (:foreground ,success :italic t))))
    `(font-latex-string-face ((,class (:foreground ,str))))

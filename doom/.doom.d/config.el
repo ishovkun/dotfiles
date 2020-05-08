@@ -85,6 +85,10 @@
   ;; python
   (:map python-mode-map
     :desc "Quick run" :niv "<M-return>" #'quickrun)
+  ;; pd-view
+  (:map pdf-view-mode-map
+   :desc "Page down" :nv "e" #'pdf-view-scroll-down-or-previous-page
+   :desc "Page down" :nv "d" #'pdf-view-scroll-up-or-next-page)
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
