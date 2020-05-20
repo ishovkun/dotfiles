@@ -14,6 +14,10 @@
   :nv "M-l"         #'evil-window-right
   :nv "M-h"         #'evil-window-left
   )
+ (:map TeX-mode-map
+  :nv "j"           #'evil-next-visual-line
+  :nv "k"           #'evil-previous-visual-line
+  )
   :nv "S-C-<left>"  #'shrink-window-horizontally
   :nv "S-C-<right>" #'enlarge-window-horizontally
   :nv "S-C-<down>"  #'shrink-window
@@ -535,6 +539,12 @@
 )
 ;; ------------------------- evil-commentary ---------------------------------
 (use-package! evil-commentary)
+;; --------------------------------- Evil-swap ---------------------------------
+(use-package! evil-swap-keys
+  :config
+  (global-evil-swap-keys-mode)
+  (add-hook 'prog-mode-hook #'evil-swap-keys-swap-number-row)
+  )
 ;; ----------------------------------- Eclipse & GMSH ------------------------
 (use-package! eclipse
   :load-path "~/.doom.d/extra/"
