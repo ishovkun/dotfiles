@@ -1,5 +1,6 @@
 # -*- mode: snippet -*-
-# name:leftp
-# key:lp
+#name : leftp
+#key : lp
+#contributor : Igor
 # --
 \left( $1 \right)
