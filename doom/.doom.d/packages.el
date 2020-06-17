@@ -18,5 +18,4 @@
 (package! company-lsp)
 (package! evil-commentary)
 (package! yascroll)
-(package! evil-swap-keys :recipe (:host github :repo "wbolster/evil-swap-keys"))
 ;;; packages.el ends here
