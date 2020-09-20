@@ -72,7 +72,13 @@
       nil)
     (defmacro defface (&rest args) nil)
     (defmacro defcustom (var value doc &rest args)
-      (` (defvar (, var) (, value) (, doc))))))
+      ;; (` (defvar (, var) (, value) (, doc))))))
+      ;; (` (defvar ,var ,value ,doc))
+      (defvar var nil)
+      (defvar value nil)
+      (defvar doc nil)
+      )
+    ))
 ;; compatibility
 (if (string-match "X[Ee]macs" emacs-version)
     (progn
