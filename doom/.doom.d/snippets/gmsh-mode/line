@@ -2,4 +2,4 @@
 # name : line
 # key : line
 # --
-Line($1) = {$2};
+Line(${1:newl}) = {$2};

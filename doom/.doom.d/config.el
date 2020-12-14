@@ -4,7 +4,7 @@
 (setq doom-font (font-spec :family "Iosevka SS04" :size 14))
 (when (string= (system-name) "space")
   ;; different scaling
-  (setq doom-font (font-spec :family "Iosevka SS04" :size 28)))
+  (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
 
 (map!
   ;; window management
@@ -13,6 +13,10 @@
   :nv "M-j"         #'evil-window-down
   :nv "M-l"         #'evil-window-right
   :nv "M-h"         #'evil-window-left
+  )
+ (:map TeX-mode-map
+  :nv "j"           #'evil-next-visual-line
+  :nv "k"           #'evil-previous-visual-line
   )
   :nv "S-C-<left>"  #'shrink-window-horizontally
   :nv "S-C-<right>" #'enlarge-window-horizontally
@@ -85,6 +89,10 @@
   ;; python
   (:map python-mode-map
     :desc "Quick run" :niv "<M-return>" #'quickrun)
+  ;; pd-view
+  (:map pdf-view-mode-map
+   :desc "Page down" :nv "e" #'pdf-view-scroll-down-or-previous-page
+   :desc "Page down" :nv "d" #'pdf-view-scroll-up-or-next-page)
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -190,6 +198,7 @@
     :desc "align ]"        :v "]"    #'align-repeat-right-square-brace
     :desc "align \\"        :v "\\"  #'align-repeat-backslash
     :desc "align |"        :v "|"    #'align-repeat-bar
+    :desc "justify"        :nv "j"      #'set-justification-full
    )
   ;; projectile
   (:prefix "p"
@@ -268,6 +277,7 @@
     (setq doom-modeline-height 10
           ;; doom-modeline-buffer-file-name-style 'buffer-name ;; just the buffer name
           doom-modeline-buffer-file-name-style 'relative-from-project ;; name start from root
+          doom-modeline-buffer-file-name-style 'auto ;; name start from root
           doom-modeline-major-mode-color-icon nil
           doom-modeline-modal-icon nil
           doom-modeline-buffer-state-icon nil
@@ -529,6 +539,12 @@
 )
 ;; ------------------------- evil-commentary ---------------------------------
 (use-package! evil-commentary)
+;; --------------------------------- Evil-swap ---------------------------------
+(use-package! evil-swap-keys
+  :config
+  (global-evil-swap-keys-mode)
+  (add-hook 'prog-mode-hook #'evil-swap-keys-swap-number-row)
+  )
 ;; ----------------------------------- Eclipse & GMSH ------------------------
 (use-package! eclipse
   :load-path "~/.doom.d/extra/"
@@ -546,7 +562,8 @@
 (setq auto-mode-alist (cons '("\\.m\\'" . octave-mode) auto-mode-alist))
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
-(setq evil-respect-visual-line-mode t)
+;; (setq evil-respect-visual-line-mode t)
+(setq evil-respect-visual-line-mode 0) ;; otherwise  deletes line on cc
 (setq evil-move-cursor-back nil)
 ;; make compilation buffer stick to the frame
 ;; (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)

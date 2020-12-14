@@ -14,7 +14,6 @@
       (frost-dark-blue  (if (true-color-p) "#5e81ac" "#5fafff"))
       ;; dark background colors
       (polar-night  (if (true-color-p) "#2e3440" "#2e3440")) ; main bg
-      ;; (polar-night-light  (if (true-color-p) "#3b4252" "#3b4252")) ; hl-line
       (polar-night-light  (if (true-color-p) "#3b4252" "#3b4252")) ; hl-line
       (polar-night-lighter (if (true-color-p) "#434c5e" "#434c5e")) ; selection
       (polar-night-lightest (if (true-color-p) "#616e87" "#616e87")) ; comments
@@ -30,9 +29,9 @@
       (bg-light    polar-night-light) ;; lighter than main
       (bg-lighter  polar-night-lighter) ;; lighter than main
       (bg-dark     polar-night-dark) ;; darker than main background
-      (fg         snow-storm-dark)
+      (fg          snow-storm-dark)
       (fg-dim      polar-night-lightest) ;; comments
-      (fg-bright         snow-storm)
+      (fg-bright   snow-storm)
       ;; elements
       (builtin frost-green)
       (keyword frost-dark-blue)
@@ -106,9 +105,14 @@
    `(spacemacs-hybrid-face ((t (:foreground ,bg :background ,str :inherit 'mode-line))))
    `(spacemacs-normal-face ((t (:foreground ,bg :background ,keyword :inherit 'mode-line))))
    ;; term
-   `(term-color-black ((,class (:bold t :foreground ,bg :background ,str))))
-   `(term-color-yellow ((,class (:bold t :foreground ,warning :background ,bg))))
-   `(term-color-red ((,class (:bold t :foreground ,warning :background ,warning))))
+   `(term-color-black            ((t (:foreground ,bg :background ,bg))))
+   `(term-color-red              ((t (:foreground ,warning :background ,warning))))
+   `(term-color-green            ((t (:foreground ,str :background ,str))))
+   `(term-color-yellow           ((t (:foreground ,misc :background ,misc))))
+   `(term-color-blue             ((t (:foreground ,type :background ,type))))
+   `(term-color-magenta          ((t (:foreground ,const :background ,const))))
+   `(term-color-cyan             ((t (:foreground ,builtin :background ,builtin))))
+   `(term-color-white            ((t (:foreground ,fg-bright :background ,fg-bright))))
    ;; term-color-black
    ;; `(error ((t (:foreground ,warning :background ,bg))))
    `(error ((t (:foreground ,warning))))
@@ -119,6 +123,9 @@
    `(compilation-error ((t (:foreground ,warning :background ,bg))))
    `(compilation-info ((t (:foreground ,keyword :background ,bg))))
    `(compilation-warning ((t (:foreground ,builtin :background ,bg))))
+   ;; `(compilation-column-number ((t (:inherit ,comment))))
+   ;; `(compilation-mode-line-exit ((t (:inherit ,keyword))))
+   ;; `(compilation-mode-line-fail ((t (:inherit ,warning))))
    ;; evil
    `(evil-ex-lazy-highlight ((t (:background ,frost-light-blue :foreground ,bg))))
    ;; str
@@ -167,6 +174,14 @@
    `(org-ellipsis ((,class (:foreground ,builtin))))
    `(org-verbatim ((,class (:foreground ,const))))
    `(org-document-info-keyword ((,class (:foreground ,func))))
+   ;; LaTeX
+   `(font-latex-sectioning-0-face ((,class (:foreground ,misc))))
+   `(font-latex-sectioning-1-face ((,class (:foreground ,misc))))
+   `(font-latex-sectioning-2-face ((,class (:foreground ,type :weight bold :height 1.8))))
+   `(font-latex-sectioning-3-face ((,class (:foreground ,type :weight bold :height 1.5))))
+   `(font-latex-sectioning-4-face ((,class (:foreground ,fg-bright :weight bold :height 1.3))))
+   `(font-latex-sectioning-4-face ((,class (:foreground ,fg-bright :weight bold))))
+   `(font-latex-warning-face ((,class (:foreground ,warning :weight bold))))
    `(font-latex-bold-face ((,class (:foreground ,type))))
    `(font-latex-italic-face ((,class (:foreground ,success :italic t))))
    `(font-latex-string-face ((,class (:foreground ,str))))
@@ -389,8 +404,14 @@
    evil-visual-state-cursor       `(,keyword box)
    ;; fci-rule-color                 `(,bg-light)
    fci-rule-color                 `,comment
-   pdf-view-midnight-colors       `(,fg . ,bg)
-   )  ;; end set cursors
+   pdf-view-midnight-colors       `(,fg . ,bg))
+
+  (custom-theme-set-variables
+   'nord
+   `(ansi-color-names-vector (vector "black" ,warning ,str ,misc ,func ,aurora-pink ,builtin ,fg-bright))
+  ;;  ;; ["black" "red" "green" "yellow" "blue" "magenta" "cyan" "white"]
+   )
+
   )
 
 
