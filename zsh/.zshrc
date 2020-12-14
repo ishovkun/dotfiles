@@ -174,3 +174,5 @@ fi
 
 export PARDISO_LIC_PATH="$HOME/lic/pardiso.lic"
 export SSH_ASKPASS='/usr/bin/ksshaskpass'
+# export SVD_LICENSE_FILE="$HOME/lic/SAMG.lic"
+export SVD_LICENSE_FILE='27001@cees-download'
