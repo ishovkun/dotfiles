@@ -45,7 +45,6 @@
   :nv "g]"          #'avy-goto-char-2-below
   :n  "S"           #'avy-goto-char-in-line
   :nvi "M-`"        #'+popup/toggle
-  (:after swiper :map prog-mode-map :desc "Swiper" :n "SPC /" #'counsel-grep-or-swiper)
   ;; :nv "S"           #'evil-snipe-s
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   ;; ranger
@@ -167,6 +166,8 @@
     :nv "v"   #'split-window-right
     :nv "s"   #'split-window-below
     )
+
+  (:after swiper :desc "Swiper" :nv "/" #'counsel-grep-or-swiper)
   ;; commenting
   :desc "comment single line" :n ";" #'evil-commentary-line
   :desc "comment block"       :v ";" #'evil-commentary
