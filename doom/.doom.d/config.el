@@ -35,12 +35,16 @@
   :nv "g l "        #'goto-line
   :nv "C-j"         #'scroll-up-line
   :nv "C-k"         #'scroll-down-line
+  (:map lsp-mode-map
+   :nv "C-j"         #'scroll-up-line
+   :nv "C-k"         #'scroll-down-line
+   )
   :nv "g s"         #'evil-avy-goto-char-timer
   :nv "g["          #'avy-goto-char-2-above
   :nv "g]"          #'avy-goto-char-2-below
   :n  "S"           #'avy-goto-char-in-line
   :nvi "M-`"        #'+popup/toggle
-  (:after swiper :desc "Swiper" :n "SPC /" #'counsel-grep-or-swiper)
+  (:after swiper :map prog-mode-map :desc "Swiper" :n "SPC /" #'counsel-grep-or-swiper)
   ;; :nv "S"           #'evil-snipe-s
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   ;; ranger
