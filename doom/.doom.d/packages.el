@@ -18,4 +18,5 @@
 (package! company-lsp)
 (package! evil-commentary)
 (package! yascroll)
+(package! dap-lldb :recipe (:host github :repo "emacs-lsp/dap-mode"))
 ;;; packages.el ends here

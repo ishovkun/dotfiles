@@ -492,9 +492,20 @@
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
 ;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
+(after! lsp-mode
+  (defcustom dap-lldb-debug-program `(,(expand-file-name "lldb-vscode"))
+  "The path to the LLDB debugger."
+  :group 'dap-lldb
+  :type '(repeat string))
+(use-package! dap-lldb)
+(use-package! dap-cpptools)
+(use-package! dap-gdb-lldb)
 (setq dap--debug-template-configurations
-      '(("LLDB Run Configuration" :type "lldb" :request "launch" :name "LLDB::Run" :target nil :cwd nil)
-        ("GDB Run Configuration" :type "gdb" :request "launch" :name "GDB::Run" :target nil :cwd nil)))
+      '(("LLDB Run Configuration" :type "lldb" :request "launch" :name "LLDB::Run"
+         :target "/home/ishovkun/dev/AD-GPRS/bin/ADGPRS/ADGPRS" :cwd nil)
+        ("GDB Run Configuration" :type "gdb" :request "launch" :name "GDB::Run"
+         :target "/home/ishovkun/dev/AD-GPRS/bin/ADGPRS/ADGPRS" :cwd nil)))
+  )
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
@@ -565,7 +576,8 @@
 ;; (after! evil
 ;;   (add-to-list 'evil-emacs-state-modes 'flycheck-error-list-mode))
 (after! quickrun (setq quickrun-timeout-seconds 1000))
-;; really close the buffer on kill-current-buffer
+;; -------------------------------- authentify -------------------------------
+(setq auth-sources '("~/.authinfo"))
 ;; -------------------------------- Projectile -------------------------------
 (after! projectile
   (setq compilation-read-command nil)  ; no prompt in projectile-compile-project
