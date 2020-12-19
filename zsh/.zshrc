@@ -68,17 +68,6 @@ local ret_status="%(?:%{$fg_bold[green]%}❯ :%{$fg_bold[red]%}❯ )"
 # zle -N deer
 # bindkey '\ee' deer
 
-sdn-navigate () {
-  # ... possibly zle-line-init
-  eval `~/build/sdn/build/sdn`
-  [ -z "$cd" ] || cd "$cd"
-  [ -z "$insert" ] || LBUFFER="$LBUFFER$insert "
-  zle reset-prompt
-  # ... possibly zle-line-finish
-}
-zle -N sdn-navigate
-# bindkey '\ee' sdn-navigate
-
 # nnn config
 n ()
 {
@@ -92,7 +81,11 @@ n ()
     # bookmarks
     export NNN_BMS='D:~/Downloads;h:~/;b:~/build;d:~/dev;s:~/sim'
     # colors
-    export NNN_CONTEXT_COLORS='1234'
+    export NNN_COLORS="2136"
+    # required for previews
+    export NNN_FIFO=/tmp/nnn.fifo
+    # plugins
+    export NNN_PLUG='f:finder;o:fzopen;p:preview-tui;d:diffs;t:nmount;v:imgview'
     # run
     nnn "$@"
     if [ -f "$NNN_TMPFILE" ]; then
@@ -114,7 +107,7 @@ bindkey '\ee' nnn-navigate
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
+export EDITOR='vim'
 # else
 #   export EDITOR='mvim'
 # fi
