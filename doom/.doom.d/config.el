@@ -36,10 +36,12 @@
   :nv "g l "        #'goto-line
   :nv "C-j"         #'scroll-up-line
   :nv "C-k"         #'scroll-down-line
-  (:map lsp-mode-map
-   :nv "C-j"         #'scroll-up-line
-   :nv "C-k"         #'scroll-down-line
-   )
+  ;; just list all modes, it's freaking me out
+  (:after lsp :map lsp-mode-map :nv "C-j" #'scroll-up-line :nv "C-k" #'scroll-down-line)
+  (:after ccls :map (c-mode-map c++-mode-map)
+   :nv "C-j" #'scroll-up-line
+   :nv "C-k" #'scroll-down-line)
+
   :nv "g s"         #'evil-avy-goto-char-timer
   :nv "g["          #'avy-goto-char-2-above
   :nv "g]"          #'avy-goto-char-2-below
