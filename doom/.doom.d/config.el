@@ -4,7 +4,8 @@
 (setq doom-font (font-spec :family "Iosevka SS04" :size 15))
 (when (string= (system-name) "space")
   ;; different scaling
-  (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
+  ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
+  (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
 
 (map!
   ;; window management
