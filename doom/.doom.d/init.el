@@ -57,6 +57,7 @@
         )
        electric          ; smarter, keyword-based electric-indent
        vc                ; version-control and Emacs, sitting in a tree
+       undo             ; emacs-fu
 
        :term
        ;;eshell            ; a consistent, cross-platform shell (WIP)
