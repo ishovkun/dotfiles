@@ -19,4 +19,5 @@
 (package! evil-commentary)
 (package! yascroll)
 (package! evil-swap-keys :recipe (:host github :repo "wbolster/evil-swap-keys"))
+(package! evil-terminal-cursor-changer)
 ;;; packages.el ends here
