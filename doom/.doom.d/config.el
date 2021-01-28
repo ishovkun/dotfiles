@@ -246,7 +246,6 @@
 ;; (setq confirm-kill-emacs)
 (setq confirm-kill-emacs nil)
 
-;; (use-package! ivy-rich
 (after! ivy-rich
   (setq ivy-rich-display-transformers-list
         '(ivy-switch-buffer
