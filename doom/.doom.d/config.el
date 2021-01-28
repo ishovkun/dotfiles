@@ -167,6 +167,7 @@
   :desc "comment block"       :v ";" #'evil-commentary
   ;; buffers
   :desc "Switch to previous buffer" :nv "<tab>" #'spacemacs/alternate-buffer
+  :desc "Switch to previous buffer" :nv "TAB" #'spacemacs/alternate-buffer ; duplicated for terminal behavior
   (:after ivy :nv "SPC" #'+ivy/switch-workspace-buffer)
   (:prefix "b"
     :desc "kill current buffer"          :nv "d" #'kill-this-buffer
