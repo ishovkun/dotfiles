@@ -546,11 +546,11 @@
 ;; ------------------------- evil-commentary ---------------------------------
 (use-package! evil-commentary)
 ;; --------------------------------- Evil-swap ---------------------------------
-(use-package! evil-swap-keys
-  :config
-  (global-evil-swap-keys-mode)
-  (add-hook 'prog-mode-hook #'evil-swap-keys-swap-number-row)
-  )
+;; (use-package! evil-swap-keys
+;;   :config
+;;   (global-evil-swap-keys-mode)
+;;   (add-hook 'prog-mode-hook #'evil-swap-keys-swap-number-row)
+;;   )
 ;; ----------------------------------- Eclipse & GMSH ------------------------
 (use-package! eclipse
   :load-path "~/.doom.d/extra/"
