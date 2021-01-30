@@ -14,7 +14,6 @@
 (package! cquery)
 (package! ccls)
 (package! google-c-style) ; google c/c++ coding style
-;; (package! company-box)
 (package! company-lsp)
 (package! evil-commentary)
 (package! yascroll)
