@@ -99,6 +99,8 @@
   (:map pdf-view-mode-map
    :desc "Page down" :nv "e" #'pdf-view-scroll-down-or-previous-page
    :desc "Page down" :nv "d" #'pdf-view-scroll-up-or-next-page)
+  (:map magit-mode-map
+   :desc "Toggle visibility of the body of current section" :nvi "<tab>" #'magit-section-toggle)
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -437,43 +439,10 @@
   )
 (after! lsp-mode
   (progn
-;;     (after! lsp-clients (remhash 'clangd lsp-clients))
-;;     (push 'company-lsp company-backends)
-;;     (require 'cquery)
-;;     ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
-;;     ;; without this line yasnippet is fucked up
-;;     (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
-;;     (setq cquery-executable "/bin/cquery")
-;;     (setq lsp-prefer-flymake nil)
-;;     (with-eval-after-load 'projectile
-;;       (setq projectile-project-root-files-top-down-recurring
-;;             (append '("compile_commands.json"
-;;                       ".cquery")
-;;                     projectile-project-root-files-top-down-recurring)))
-;;     (defun cquery//enable ()
-;;   (condition-case nil
-;;       (lsp)
-;;     (user-error nil)))
-
-;;   (use-package cquery
-;;     :commands lsp
-;;     :init (add-hook 'c-mode-hook #'cquery//enable)
-;;           (add-hook 'c++-mode-hook #'cquery//enable))
      (setq lsp-enable-file-watchers nil)
      ;; (remhash 'clangd lsp-clients)
      (push 'company-lsp company-backends)
-    ;; cquery
-    ;; ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
-    ;; ;; without this line yasnippet is fucked up
-    ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
-    ;; (setq cquery-executable "/usr/bin/cquery")
-    ;; (setq lsp-prefer-flymake nil)
-
-    ;; ccls
-     ;; (setq ccls-sem-highlight-method 'font-lock)
      (setq ccls-executable "ccls")
-    ;; (setq ccls-args '("--log-file=/tmp/ccls.log"))
-     ;; https://github.com/MaskRay/Config/blob/master/home/.config/doom/modules/private/my-cc/config.el
      (setq ccls-initialization-options
            `(:clang (:excludeArgs
                      ;; Linux's gcc options. See ccls/wiki
@@ -490,8 +459,21 @@
                          "^/usr/(local/)?include/c\\+\\+/v1/"
                          ]))
                       ))
-     ))
+     ;; tramp lsp (ccls)
+     (lsp-register-client
+      (make-lsp-client :new-connection (lsp-tramp-connection "/usr/bin/ccls")
+                       :major-modes '(c++-mode c-mode)
+                       :remote? t
+                       :server-id 'ccls-remote))
 
+     ))
+;; -----------------------------------------------------------------
+
+;; enable dir-locals in tramp
+(after! tramp
+  (setq tramp-shell-prompt-pattern "^[^$>\n]*[#$%>] *\\(\[[0-9;]*[a-zA-Z] *\\)*")
+  )
+(setq enable-remote-dir-locals t)
 ;; google-c-style
 (use-package! google-c-style
   :load-path "~/.doom.d/extra"
@@ -573,6 +555,44 @@
   )
 ;; ----------------------------------- Octave ---------------------------------
 (setq auto-mode-alist (cons '("\\.m\\'" . octave-mode) auto-mode-alist))
+;; ----------------------------------- EAF -----------------------------------
+(when (display-graphic-p)
+  (use-package! eaf
+    ;; :if (eq system-type 'gnu/linux)
+    :custom
+    (eaf-find-alternate-file-in-dired t)
+    ;; :config
+    ;; (add-hook! 'eaf-mode-hook 'xah-fly-keys-off)
+
+    ;; (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
+    ;; (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
+
+    ;; (defun eaf-open-google ()
+    ;;   "Open Google using EAF."
+    ;;   (interactive)
+    ;;   (eaf-open-browser "https://www.google.com"))
+  )
+  (use-package! eaf-evil ;; FIXME
+    ;; :after eaf
+    :defer t
+    :config
+    ;; (setq eaf-evil-leader-keymap doom-leader-map)
+    ;; (setq eaf-evil-leader-key "SPC")
+    ;; )
+    (eaf-setq eaf-browser-enable-adblocker "true")
+    (define-key key-translation-map (kbd "SPC")
+      (lambda (prompt)
+        (if (derived-mode-p 'eaf-mode)
+            (pcase eaf--buffer-app-name
+              ("browser" (if (eaf-call "call_function" eaf--buffer-id "is_focus")
+                             (kbd "SPC")
+                           (kbd eaf-evil-leader-key)))
+              ("pdf-viewer" (kbd eaf-evil-leader-key))
+              ("image-viewer" (kbd eaf-evil-leader-key))
+              (_  (kbd "SPC")))
+          (kbd "SPC"))))
+    )
+  )
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 ;; (setq evil-respect-visual-line-mode t)
@@ -584,6 +604,9 @@
 ;; (after! evil
 ;;   (add-to-list 'evil-emacs-state-modes 'flycheck-error-list-mode))
 (after! quickrun (setq quickrun-timeout-seconds 1000))
+(after! persp-mode
+;; show all buffers from workspace
+(remove-hook 'persp-add-buffer-on-after-change-major-mode-filter-functions #'doom-unreal-buffer-p))
 ;; -------------------------------- authentify -------------------------------
 (setq auth-sources '("~/.authinfo"))
 ;; -------------------------------- Projectile -------------------------------
@@ -595,6 +618,16 @@
                                     :compile "cmake --build Debug"
                                     :test "ctest")
   (add-to-list 'projectile-globally-ignored-directories ".ccls-cache")
+  (defadvice projectile-on (around exlude-tramp activate)
+  "This should disable projectile when visiting a remote file"
+  (unless  (--any? (and it (file-remote-p it))
+                   (list
+                    (buffer-file-name)
+                    list-buffers-directory
+                    default-directory
+                    dired-directory))
+    ad-do-it))
+
   )
 ;; (after! ivy
 ;;       (setq counsel-find-file-ignore-regexp "\\.o\\'"))
