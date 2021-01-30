@@ -4,7 +4,8 @@
 (setq doom-font (font-spec :family "Iosevka SS04" :size 14))
 (when (string= (system-name) "space")
   ;; different scaling
-  (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
+  ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
+  (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
 
 (map!
   ;; window management
@@ -35,12 +36,17 @@
   :nv "g l "        #'goto-line
   :nv "C-j"         #'scroll-up-line
   :nv "C-k"         #'scroll-down-line
+  ;; just list all modes, it's freaking me out
+  (:after lsp :map lsp-mode-map :nv "C-j" #'scroll-up-line :nv "C-k" #'scroll-down-line)
+  (:after ccls :map (c-mode-map c++-mode-map)
+   :nv "C-j" #'scroll-up-line
+   :nv "C-k" #'scroll-down-line)
+
   :nv "g s"         #'evil-avy-goto-char-timer
   :nv "g["          #'avy-goto-char-2-above
   :nv "g]"          #'avy-goto-char-2-below
   :n  "S"           #'avy-goto-char-in-line
   :nvi "M-`"        #'+popup/toggle
-  (:after swiper :desc "Swiper" :n "SPC /" #'counsel-grep-or-swiper)
   ;; :nv "S"           #'evil-snipe-s
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
   ;; ranger
@@ -93,6 +99,8 @@
   (:map pdf-view-mode-map
    :desc "Page down" :nv "e" #'pdf-view-scroll-down-or-previous-page
    :desc "Page down" :nv "d" #'pdf-view-scroll-up-or-next-page)
+  (:map magit-mode-map
+   :desc "Toggle visibility of the body of current section" :nvi "<tab>" #'magit-section-toggle)
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -162,6 +170,8 @@
     :nv "v"   #'split-window-right
     :nv "s"   #'split-window-below
     )
+
+  (:after swiper :desc "Swiper" :nv "/" #'counsel-grep-or-swiper)
   ;; commenting
   :desc "comment single line" :n ";" #'evil-commentary-line
   :desc "comment block"       :v ";" #'evil-commentary
@@ -435,43 +445,10 @@
   )
 (after! lsp-mode
   (progn
-;;     (after! lsp-clients (remhash 'clangd lsp-clients))
-;;     (push 'company-lsp company-backends)
-;;     (require 'cquery)
-;;     ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
-;;     ;; without this line yasnippet is fucked up
-;;     (set-company-backend! '(c-mode c++-mode objc-mode) '(company-lsp company-yasnippet))
-;;     (setq cquery-executable "/bin/cquery")
-;;     (setq lsp-prefer-flymake nil)
-;;     (with-eval-after-load 'projectile
-;;       (setq projectile-project-root-files-top-down-recurring
-;;             (append '("compile_commands.json"
-;;                       ".cquery")
-;;                     projectile-project-root-files-top-down-recurring)))
-;;     (defun cquery//enable ()
-;;   (condition-case nil
-;;       (lsp)
-;;     (user-error nil)))
-
-;;   (use-package cquery
-;;     :commands lsp
-;;     :init (add-hook 'c-mode-hook #'cquery//enable)
-;;           (add-hook 'c++-mode-hook #'cquery//enable))
      (setq lsp-enable-file-watchers nil)
      ;; (remhash 'clangd lsp-clients)
      (push 'company-lsp company-backends)
-    ;; cquery
-    ;; ;; (set-company-backend! '(c-mode c++-mode objc-mode) 'company-lsp)
-    ;; ;; without this line yasnippet is fucked up
-    ;; (set-company-backend! '(c-mode c++-mode) '(company-lsp company-yasnippet))
-    ;; (setq cquery-executable "/usr/bin/cquery")
-    ;; (setq lsp-prefer-flymake nil)
-
-    ;; ccls
-     ;; (setq ccls-sem-highlight-method 'font-lock)
      (setq ccls-executable "ccls")
-    ;; (setq ccls-args '("--log-file=/tmp/ccls.log"))
-     ;; https://github.com/MaskRay/Config/blob/master/home/.config/doom/modules/private/my-cc/config.el
      (setq ccls-initialization-options
            `(:clang (:excludeArgs
                      ;; Linux's gcc options. See ccls/wiki
@@ -488,8 +465,21 @@
                          "^/usr/(local/)?include/c\\+\\+/v1/"
                          ]))
                       ))
-     ))
+     ;; tramp lsp (ccls)
+     (lsp-register-client
+      (make-lsp-client :new-connection (lsp-tramp-connection "/usr/bin/ccls")
+                       :major-modes '(c++-mode c-mode)
+                       :remote? t
+                       :server-id 'ccls-remote))
 
+     ))
+;; -----------------------------------------------------------------
+
+;; enable dir-locals in tramp
+(after! tramp
+  (setq tramp-shell-prompt-pattern "^[^$>\n]*[#$%>] *\\(\[[0-9;]*[a-zA-Z] *\\)*")
+  )
+(setq enable-remote-dir-locals t)
 ;; google-c-style
 (use-package! google-c-style
   :load-path "~/.doom.d/extra"
@@ -498,9 +488,20 @@
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
 ;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
+(after! lsp-mode
+  (defcustom dap-lldb-debug-program `(,(expand-file-name "lldb-vscode"))
+  "The path to the LLDB debugger."
+  :group 'dap-lldb
+  :type '(repeat string))
+(use-package! dap-lldb)
+(use-package! dap-cpptools)
+(use-package! dap-gdb-lldb)
 (setq dap--debug-template-configurations
-      '(("LLDB Run Configuration" :type "lldb" :request "launch" :name "LLDB::Run" :target nil :cwd nil)
-        ("GDB Run Configuration" :type "gdb" :request "launch" :name "GDB::Run" :target nil :cwd nil)))
+      '(("LLDB Run Configuration" :type "lldb" :request "launch" :name "LLDB::Run"
+         :target "/home/ishovkun/dev/AD-GPRS/bin/ADGPRS/ADGPRS" :cwd nil)
+        ("GDB Run Configuration" :type "gdb" :request "launch" :name "GDB::Run"
+         :target "/home/ishovkun/dev/AD-GPRS/bin/ADGPRS/ADGPRS" :cwd nil)))
+  )
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
@@ -545,12 +546,6 @@
 )
 ;; ------------------------- evil-commentary ---------------------------------
 (use-package! evil-commentary)
-;; --------------------------------- Evil-swap ---------------------------------
-;; (use-package! evil-swap-keys
-;;   :config
-;;   (global-evil-swap-keys-mode)
-;;   (add-hook 'prog-mode-hook #'evil-swap-keys-swap-number-row)
-;;   )
 ;; ----------------------------------- Eclipse & GMSH ------------------------
 (use-package! eclipse
   :load-path "~/.doom.d/extra/"
@@ -566,6 +561,44 @@
   )
 ;; ----------------------------------- Octave ---------------------------------
 (setq auto-mode-alist (cons '("\\.m\\'" . octave-mode) auto-mode-alist))
+;; ----------------------------------- EAF -----------------------------------
+(when (display-graphic-p)
+  (use-package! eaf
+    ;; :if (eq system-type 'gnu/linux)
+    :custom
+    (eaf-find-alternate-file-in-dired t)
+    ;; :config
+    ;; (add-hook! 'eaf-mode-hook 'xah-fly-keys-off)
+
+    ;; (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
+    ;; (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
+
+    ;; (defun eaf-open-google ()
+    ;;   "Open Google using EAF."
+    ;;   (interactive)
+    ;;   (eaf-open-browser "https://www.google.com"))
+  )
+  (use-package! eaf-evil ;; FIXME
+    ;; :after eaf
+    :defer t
+    :config
+    ;; (setq eaf-evil-leader-keymap doom-leader-map)
+    ;; (setq eaf-evil-leader-key "SPC")
+    ;; )
+    (eaf-setq eaf-browser-enable-adblocker "true")
+    (define-key key-translation-map (kbd "SPC")
+      (lambda (prompt)
+        (if (derived-mode-p 'eaf-mode)
+            (pcase eaf--buffer-app-name
+              ("browser" (if (eaf-call "call_function" eaf--buffer-id "is_focus")
+                             (kbd "SPC")
+                           (kbd eaf-evil-leader-key)))
+              ("pdf-viewer" (kbd eaf-evil-leader-key))
+              ("image-viewer" (kbd eaf-evil-leader-key))
+              (_  (kbd "SPC")))
+          (kbd "SPC"))))
+    )
+  )
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 ;; (setq evil-respect-visual-line-mode t)
@@ -577,7 +610,11 @@
 ;; (after! evil
 ;;   (add-to-list 'evil-emacs-state-modes 'flycheck-error-list-mode))
 (after! quickrun (setq quickrun-timeout-seconds 1000))
-;; really close the buffer on kill-current-buffer
+(after! persp-mode
+;; show all buffers from workspace
+(remove-hook 'persp-add-buffer-on-after-change-major-mode-filter-functions #'doom-unreal-buffer-p))
+;; -------------------------------- authentify -------------------------------
+(setq auth-sources '("~/.authinfo"))
 ;; -------------------------------- Projectile -------------------------------
 (after! projectile
   (setq compilation-read-command nil)  ; no prompt in projectile-compile-project
@@ -587,6 +624,16 @@
                                     :compile "cmake --build Debug"
                                     :test "ctest")
   (add-to-list 'projectile-globally-ignored-directories ".ccls-cache")
+  (defadvice projectile-on (around exlude-tramp activate)
+  "This should disable projectile when visiting a remote file"
+  (unless  (--any? (and it (file-remote-p it))
+                   (list
+                    (buffer-file-name)
+                    list-buffers-directory
+                    default-directory
+                    dired-directory))
+    ad-do-it))
+
   )
 ;; (after! ivy
 ;;       (setq counsel-find-file-ignore-regexp "\\.o\\'"))

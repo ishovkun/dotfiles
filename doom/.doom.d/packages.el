@@ -20,4 +20,9 @@
 (package! yascroll)
 (package! evil-swap-keys :recipe (:host github :repo "wbolster/evil-swap-keys"))
 (package! evil-terminal-cursor-changer)
+(package! dap-lldb :recipe (:host github :repo "emacs-lsp/dap-mode"))
+(package! eaf :recipe (:host github
+                       :repo "manateelazycat/emacs-application-framework"
+                       :files ("*")
+                       :no-byte-compile t))
 ;;; packages.el ends here
