@@ -1,6 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# do not do fancy terminal prompts while connecting through tramp
+[[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
+
 # Path to your oh-my-zsh installation.
 export ZSH=/home/ishovkun/.oh-my-zsh
 
@@ -167,3 +170,5 @@ fi
 
 export PARDISO_LIC_PATH="$HOME/lic/pardiso.lic"
 export SSH_ASKPASS='/usr/bin/ksshaskpass'
+# export SVD_LICENSE_FILE="$HOME/lic/SAMG.lic"
+export SVD_LICENSE_FILE='27001@cees-download'

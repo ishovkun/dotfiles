@@ -63,6 +63,7 @@
        electric          ; smarter, keyword-based electric-indent
        undo              ; persistent, smarter undo for your inevitable mistakes
        vc                ; version-control and Emacs, sitting in a tree
+       undo             ; emacs-fu
 
        :term
        ;;eshell            ; a consistent, cross-platform shell (WIP)

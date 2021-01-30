@@ -1,7 +1,7 @@
 ;;; ~/.doom.d/config.el -*- lexical-binding: t; -*-
 
 ;; place your private configuration here
-(setq doom-font (font-spec :family "Iosevka SS04" :size 15))
+(setq doom-font (font-spec :family "Iosevka SS04" :size 14))
 (when (string= (system-name) "space")
   ;; different scaling
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
