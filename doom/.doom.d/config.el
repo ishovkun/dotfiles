@@ -266,9 +266,10 @@
             (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
             (ivy-rich-switch-buffer-major-mode (:width 12 :face font-lock-variable-name-face))
             (ivy-rich-switch-buffer-project (:width 15 :face font-lock-keyword-face))
-            (ivy-rich-switch-buffer-path (:width (lambda (x)
-                                                   (ivy-rich-switch-buffer-shorten-path x
-                                                   (ivy-rich-minibuffer-width 0.3))))))
+            ;; (ivy-rich-switch-buffer-path (:width (lambda (x)
+            ;;                                        (ivy-rich-switch-buffer-shorten-path x
+            ;;                                                                             (ivy-rich-minibuffer-width 0.3)))))
+            )
            )))
   ;; (ivy-rich-mode nil)
   ;; (ivy-rich-mode +1)
@@ -440,7 +441,6 @@
 (after! lsp-mode
   (progn
      (setq lsp-enable-file-watchers nil)
-     ;; (remhash 'clangd lsp-clients)
      (push 'company-lsp company-backends)
      (setq ccls-executable "ccls")
      (setq ccls-initialization-options
@@ -556,43 +556,43 @@
 ;; ----------------------------------- Octave ---------------------------------
 (setq auto-mode-alist (cons '("\\.m\\'" . octave-mode) auto-mode-alist))
 ;; ----------------------------------- EAF -----------------------------------
-(when (display-graphic-p)
-  (use-package! eaf
-    ;; :if (eq system-type 'gnu/linux)
-    :custom
-    (eaf-find-alternate-file-in-dired t)
-    ;; :config
-    ;; (add-hook! 'eaf-mode-hook 'xah-fly-keys-off)
+;; (when (display-graphic-p)
+;;   (use-package! eaf
+;;     ;; :if (eq system-type 'gnu/linux)
+;;     :custom
+;;     (eaf-find-alternate-file-in-dired t)
+;;     ;; :config
+;;     ;; (add-hook! 'eaf-mode-hook 'xah-fly-keys-off)
 
-    ;; (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
-    ;; (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
+;;     ;; (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
+;;     ;; (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
 
-    ;; (defun eaf-open-google ()
-    ;;   "Open Google using EAF."
-    ;;   (interactive)
-    ;;   (eaf-open-browser "https://www.google.com"))
-  )
-  (use-package! eaf-evil ;; FIXME
-    ;; :after eaf
-    :defer t
-    :config
-    ;; (setq eaf-evil-leader-keymap doom-leader-map)
-    ;; (setq eaf-evil-leader-key "SPC")
-    ;; )
-    (eaf-setq eaf-browser-enable-adblocker "true")
-    (define-key key-translation-map (kbd "SPC")
-      (lambda (prompt)
-        (if (derived-mode-p 'eaf-mode)
-            (pcase eaf--buffer-app-name
-              ("browser" (if (eaf-call "call_function" eaf--buffer-id "is_focus")
-                             (kbd "SPC")
-                           (kbd eaf-evil-leader-key)))
-              ("pdf-viewer" (kbd eaf-evil-leader-key))
-              ("image-viewer" (kbd eaf-evil-leader-key))
-              (_  (kbd "SPC")))
-          (kbd "SPC"))))
-    )
-  )
+;;     ;; (defun eaf-open-google ()
+;;     ;;   "Open Google using EAF."
+;;     ;;   (interactive)
+;;     ;;   (eaf-open-browser "https://www.google.com"))
+;;   )
+;;   (use-package! eaf-evil ;; FIXME
+;;     ;; :after eaf
+;;     :defer t
+;;     :config
+;;     ;; (setq eaf-evil-leader-keymap doom-leader-map)
+;;     ;; (setq eaf-evil-leader-key "SPC")
+;;     ;; )
+;;     (eaf-setq eaf-browser-enable-adblocker "true")
+;;     (define-key key-translation-map (kbd "SPC")
+;;       (lambda (prompt)
+;;         (if (derived-mode-p 'eaf-mode)
+;;             (pcase eaf--buffer-app-name
+;;               ("browser" (if (eaf-call "call_function" eaf--buffer-id "is_focus")
+;;                              (kbd "SPC")
+;;                            (kbd eaf-evil-leader-key)))
+;;               ("pdf-viewer" (kbd eaf-evil-leader-key))
+;;               ("image-viewer" (kbd eaf-evil-leader-key))
+;;               (_  (kbd "SPC")))
+;;           (kbd "SPC"))))
+;;     )
+;;   )
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 ;; (setq evil-respect-visual-line-mode t)
@@ -629,12 +629,6 @@
     ad-do-it))
 
   )
-;; (after! ivy
-;;       (setq counsel-find-file-ignore-regexp "\\.o\\'"))
-;; (after! ivy  (setq counsel-find-file-ignore-regexp
-;;                    (my-counsel-ignore-regexp-builder
-;;                     "\\`__pycache__/\\'"
-;;                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o"))))
 (after! ivy
   (setq counsel-find-file-ignore-regexp
                    (my-counsel-ignore-regexp-builder
