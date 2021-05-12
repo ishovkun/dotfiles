@@ -10,30 +10,30 @@
 
 (doom! :input
        :completion
-       company           ; the ultimate code completion backend
-       ;;helm              ; the *other* search engine for love and life
-       ;;ido               ; the other *other* search engine...
-       ;;layout            ; auie,ctsrnm is the superior home row
-       (ivy +icons)        ; a search engine for love and life
+       company              ; the ultimate code completion backend
+                            ;;helm        ; the *other* search engine for love and life
+                            ;;ido         ; the other *other* search engine...
+                            ;;layout      ; auie,ctsrnm is the superior home row
+       (ivy +icons)         ; a search engine for love and life
        :ui
-       deft              ; notational velocity for Emacs
-       doom              ; what makes DOOM look the way it does
-       doom-dashboard    ; a nifty splash screen for Emacs
-       ;; doom-quit         ; DOOM quit-message prompts when you quit Emacs
-       ;;fill-column       ; a `fill-column' indicator
-       hl-todo           ; highlight TODO/FIXME/NOTE tags
-       ;;hydra
+       deft                 ; notational velocity for Emacs
+       doom                 ; what makes DOOM look the way it does
+       doom-dashboard       ; a nifty splash screen for Emacs
+                            ; doom-quit  ; DOOM quit-message prompts when you quit Emacs
+                            ; fill-column ; a `fill-column' indicator
+       hl-todo              ; highlight TODO/FIXME/NOTE tags
+                            ;;hydra
        ;; (ligatures +iosevka) ; ligatures and symbols to make your code pretty again
-       indent-guides     ; highlighted indent columns
-       modeline          ; snazzy, Atom-inspired modeline, plus API
-       nav-flash         ; blink the current line after jumping
-       ;;neotree           ; a project drawer, like NERDTree for vim
-       ophints           ; highlight the region an operation acts on
-       (popup            ; tame sudden yet inevitable temporary windows
-       ;;  +all             ; catch all popups that start with an asterix
-        +defaults)       ; default popup rules
-       ;; tabs              ; an tab bar for Emacs
-       treemacs          ; a project drawer, like neotree but cooler
+       indent-guides        ; highlighted indent columns
+       modeline             ; snazzy, Atom-inspired modeline, plus API
+       nav-flash            ; blink the current line after jumping
+                            ; neotree           ; a project drawer, like NERDTree for vim
+       ophints              ; highlight the region an operation acts on
+       (popup               ; tame sudden yet inevitable temporary windows
+                            ; +all             ; catch all popups that start with an asterix
+        +defaults)          ; default popup rules
+                            ;; tabs              ; an tab bar for Emacs
+       treemacs             ; a project drawer, like neotree but cooler
        ;;unicode           ; extended unicode support for various languages
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
@@ -44,7 +44,7 @@
        :editor
        (evil +everywhere); come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
-       fold              ; (nigh) universal code folding
+       ;; fold              ; (nigh) universal code folding
        ;;(format +onsave)  ; automated prettiness
        ;;god               ; run Emacs commands without modifier keys
        ;;lispy             ; vim for lisp, for people who dont like vim
@@ -170,6 +170,8 @@
        ;; should be loaded late.
        :app
        calendar
+       ;; emms
+       ;; everywhere        ; *leave* Emacs!? You must be joking (works only on X)
        ;;irc              ; how neckbeards socialize
        ;;(rss +org)        ; emacs as an RSS reader
        ;;twitter           ; twitter client https://twitter.com/vnought

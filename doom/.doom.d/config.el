@@ -5,7 +5,8 @@
 (when (string= (system-name) "space")
   ;; different scaling
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
-  (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
+  (setq doom-font (font-spec :family "Iosevka" :size 14)))
+  ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
 
 (map!
   ;; window management
@@ -85,7 +86,10 @@
   (:after tex :map LaTeX-mode-map :desc "Recompile" :nv "<C-return>" #'latex/build)
   ;; ivy
   (:after ivy :map ivy-mode-map
-    :desc "Kill buffer" "C-d" #'ivy-switch-buffer-kill)
+   :desc "Kill buffer" "C-d" #'ivy-switch-buffer-kill
+   :desc "ivy next" "C-j" #'ivy-next-line
+   :desc "ivy previous" "C-k" #'ivy-previous-line
+   )
   ;; org
   (:after org :map org-mode-map
     :desc "Preview LaTeX" :niv "<M-return>" #'org-latex-preview)
@@ -214,7 +218,8 @@
   (:prefix "p"
     (:after projectile :map projectile-mode-map
       :desc "Project ag"        :nv "s" #'projectile-ag
-      :desc "Project find file" :nv "f" #'+ivy/projectile-find-file
+      ;; :desc "Project find file" :nv "f" #'+ivy/projectile-find-file
+      :desc "Project find file" :nv "f" #'projectile-find-file
       :desc "Project replace"   :n  "R" #'projectile-replace
       )
     )
@@ -255,7 +260,6 @@
 ;; (setq confirm-kill-emacs)
 (setq confirm-kill-emacs nil)
 
-;; (use-package! ivy-rich
 (after! ivy-rich
   (setq ivy-rich-display-transformers-list
         '(ivy-switch-buffer
@@ -375,9 +379,7 @@
 (setq evil-want-Y-yank-to-eol t)
 ;; regular behavior of s
 (after! evil-snipe
-  (evil-snipe-mode -1)
-  ;; (evil-snipe-mode)
-  ;; (evil-snipe-override-mode 1)
+  ;; (evil-snipe-mode -1)
   (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-override-mode)
   (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-mode)
   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode))
@@ -392,6 +394,9 @@
       :config
       (setq yascroll:delay-to-hide nil)
       (add-hook 'prog-mode-hook 'yascroll-bar-mode)
+      ;; (after! ligatures
+      ;;   (add-hook 'prog-mode-hook 'prettify-symbols-mode)
+      ;;   )
       ))
 
 ;; posframe
@@ -433,15 +438,25 @@
   (progn
     (setq lsp-ui-sideline-enable nil)
     (setq lsp-ui-doc-enable t)
-    (setq lsp-ui-doc-position 'at-point)
+    (setq lsp-ui-doc-position 'bottom) ; top, bottom, at-point
     (setq lsp-ui-doc-max-width 150)
+    (setq lsp-ui-doc-max-height 150)
     (lsp-ui-doc-mode)
+    ;; (set-face-attribute 'lsp-ui-doc-global nil :height 0.75)
     )
   )
 (after! lsp-mode
   (progn
      (setq lsp-enable-file-watchers nil)
      (push 'company-lsp company-backends)
+     ;; clangd
+     (setq lsp-clients-clangd-args '("-j=3"
+                                     "--background-index"
+                                     ;; "--clang-tidy"
+                                     "--completion-style=detailed"
+                                     "--header-insertion=never"))
+     (after! lsp-clangd (set-lsp-priority! 'clangd 3))
+
      (setq ccls-executable "ccls")
      (setq ccls-initialization-options
            `(:clang (:excludeArgs
@@ -459,12 +474,13 @@
                          "^/usr/(local/)?include/c\\+\\+/v1/"
                          ]))
                       ))
-     ;; tramp lsp (ccls)
-     (lsp-register-client
-      (make-lsp-client :new-connection (lsp-tramp-connection "/usr/bin/ccls")
-                       :major-modes '(c++-mode c-mode)
-                       :remote? t
-                       :server-id 'ccls-remote))
+     (after! ccls (set-lsp-priority! 'ccls 2))
+     ;; ;; tramp lsp (ccls)
+     ;; (lsp-register-client
+     ;;  (make-lsp-client :new-connection (lsp-tramp-connection "/usr/bin/ccls")
+     ;;                   :major-modes '(c++-mode c-mode)
+     ;;                   :remote? t
+     ;;                   :server-id 'ccls-remote))
 
      ))
 ;; -----------------------------------------------------------------
@@ -477,8 +493,10 @@
 ;; google-c-style
 (use-package! google-c-style
   :load-path "~/.doom.d/extra"
-  :config (add-hook 'c-mode-common-hook 'google-set-c-style)
-                 (add-hook 'c-mode-common-hook 'google-make-newline-indent))
+  :config
+  (add-hook 'c-mode-common-hook 'google-set-c-style)
+  (add-hook 'c-mode-common-hook 'google-make-newline-indent)
+  )
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
 ;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
@@ -531,7 +549,7 @@
 (setq +latex-viewers '(okular))
 ;; --------------------------------- Compile ---------------------------------
 (unless (or (string= (system-name) "space") (window-system))
-  (add-hook 'compilation-mode-hook 'my-compilation-hook)
+  ;; (add-hook 'compilation-mode-hook 'my-compilation-hook)
   ;; truncate lines in compilation mode
   (defun compilation-mode-hook-trucate-lines ()
     (setq truncate-lines nil) ;; automatically becomes buffer local
