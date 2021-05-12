@@ -5,7 +5,8 @@
 (when (string= (system-name) "space")
   ;; different scaling
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
-  (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
+  (setq doom-font (font-spec :family "Iosevka" :size 14)))
+  ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
 
 (map!
   ;; window management
@@ -85,7 +86,10 @@
   (:after tex :map LaTeX-mode-map :desc "Recompile" :nv "<C-return>" #'latex/build)
   ;; ivy
   (:after ivy :map ivy-mode-map
-    :desc "Kill buffer" "C-d" #'ivy-switch-buffer-kill)
+   :desc "Kill buffer" "C-d" #'ivy-switch-buffer-kill
+   :desc "ivy next" "C-j" #'ivy-next-line
+   :desc "ivy previous" "C-k" #'ivy-previous-line
+   )
   ;; org
   (:after org :map org-mode-map
     :desc "Preview LaTeX" :niv "<M-return>" #'org-latex-preview)
@@ -215,7 +219,8 @@
   (:prefix "p"
     (:after projectile :map projectile-mode-map
       :desc "Project ag"        :nv "s" #'projectile-ag
-      :desc "Project find file" :nv "f" #'+ivy/projectile-find-file
+      ;; :desc "Project find file" :nv "f" #'+ivy/projectile-find-file
+      :desc "Project find file" :nv "f" #'projectile-find-file
       :desc "Project replace"   :n  "R" #'projectile-replace
       )
     )
@@ -266,9 +271,10 @@
             (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
             (ivy-rich-switch-buffer-major-mode (:width 12 :face font-lock-variable-name-face))
             (ivy-rich-switch-buffer-project (:width 15 :face font-lock-keyword-face))
-            (ivy-rich-switch-buffer-path (:width (lambda (x)
-                                                   (ivy-rich-switch-buffer-shorten-path x
-                                                   (ivy-rich-minibuffer-width 0.3))))))
+            ;; (ivy-rich-switch-buffer-path (:width (lambda (x)
+            ;;                                        (ivy-rich-switch-buffer-shorten-path x
+            ;;                                                                             (ivy-rich-minibuffer-width 0.3)))))
+            )
            )))
   ;; (ivy-rich-mode nil)
   ;; (ivy-rich-mode +1)
@@ -380,9 +386,7 @@
 (setq evil-want-Y-yank-to-eol t)
 ;; regular behavior of s
 (after! evil-snipe
-  (evil-snipe-mode -1)
-  ;; (evil-snipe-mode)
-  ;; (evil-snipe-override-mode 1)
+  ;; (evil-snipe-mode -1)
   (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-override-mode)
   (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-mode)
   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode))
@@ -397,6 +401,9 @@
       :config
       (setq yascroll:delay-to-hide nil)
       (add-hook 'prog-mode-hook 'yascroll-bar-mode)
+      ;; (after! ligatures
+      ;;   (add-hook 'prog-mode-hook 'prettify-symbols-mode)
+      ;;   )
       ))
 
 ;; posframe
@@ -438,16 +445,25 @@
   (progn
     (setq lsp-ui-sideline-enable nil)
     (setq lsp-ui-doc-enable t)
-    (setq lsp-ui-doc-position 'at-point)
+    (setq lsp-ui-doc-position 'bottom) ; top, bottom, at-point
     (setq lsp-ui-doc-max-width 150)
+    (setq lsp-ui-doc-max-height 150)
     (lsp-ui-doc-mode)
+    ;; (set-face-attribute 'lsp-ui-doc-global nil :height 0.75)
     )
   )
 (after! lsp-mode
   (progn
      (setq lsp-enable-file-watchers nil)
-     ;; (remhash 'clangd lsp-clients)
      (push 'company-lsp company-backends)
+     ;; clangd
+     (setq lsp-clients-clangd-args '("-j=3"
+                                     "--background-index"
+                                     ;; "--clang-tidy"
+                                     "--completion-style=detailed"
+                                     "--header-insertion=never"))
+     (after! lsp-clangd (set-lsp-priority! 'clangd 3))
+
      (setq ccls-executable "ccls")
      (setq ccls-initialization-options
            `(:clang (:excludeArgs
@@ -465,12 +481,13 @@
                          "^/usr/(local/)?include/c\\+\\+/v1/"
                          ]))
                       ))
-     ;; tramp lsp (ccls)
-     (lsp-register-client
-      (make-lsp-client :new-connection (lsp-tramp-connection "/usr/bin/ccls")
-                       :major-modes '(c++-mode c-mode)
-                       :remote? t
-                       :server-id 'ccls-remote))
+     (after! ccls (set-lsp-priority! 'ccls 2))
+     ;; ;; tramp lsp (ccls)
+     ;; (lsp-register-client
+     ;;  (make-lsp-client :new-connection (lsp-tramp-connection "/usr/bin/ccls")
+     ;;                   :major-modes '(c++-mode c-mode)
+     ;;                   :remote? t
+     ;;                   :server-id 'ccls-remote))
 
      ))
 ;; -----------------------------------------------------------------
@@ -483,8 +500,10 @@
 ;; google-c-style
 (use-package! google-c-style
   :load-path "~/.doom.d/extra"
-  :config (add-hook 'c-mode-common-hook 'google-set-c-style)
-                 (add-hook 'c-mode-common-hook 'google-make-newline-indent))
+  :config
+  (add-hook 'c-mode-common-hook 'google-set-c-style)
+  (add-hook 'c-mode-common-hook 'google-make-newline-indent)
+  )
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
 ;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
@@ -537,7 +556,7 @@
 (setq +latex-viewers '(okular))
 ;; --------------------------------- Compile ---------------------------------
 (unless (or (string= (system-name) "space") (window-system))
-  (add-hook 'compilation-mode-hook 'my-compilation-hook)
+  ;; (add-hook 'compilation-mode-hook 'my-compilation-hook)
   ;; truncate lines in compilation mode
   (defun compilation-mode-hook-trucate-lines ()
     (setq truncate-lines nil) ;; automatically becomes buffer local
@@ -562,43 +581,43 @@
 ;; ----------------------------------- Octave ---------------------------------
 (setq auto-mode-alist (cons '("\\.m\\'" . octave-mode) auto-mode-alist))
 ;; ----------------------------------- EAF -----------------------------------
-(when (display-graphic-p)
-  (use-package! eaf
-    ;; :if (eq system-type 'gnu/linux)
-    :custom
-    (eaf-find-alternate-file-in-dired t)
-    ;; :config
-    ;; (add-hook! 'eaf-mode-hook 'xah-fly-keys-off)
+;; (when (display-graphic-p)
+;;   (use-package! eaf
+;;     ;; :if (eq system-type 'gnu/linux)
+;;     :custom
+;;     (eaf-find-alternate-file-in-dired t)
+;;     ;; :config
+;;     ;; (add-hook! 'eaf-mode-hook 'xah-fly-keys-off)
 
-    ;; (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
-    ;; (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
+;;     ;; (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
+;;     ;; (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
 
-    ;; (defun eaf-open-google ()
-    ;;   "Open Google using EAF."
-    ;;   (interactive)
-    ;;   (eaf-open-browser "https://www.google.com"))
-  )
-  (use-package! eaf-evil ;; FIXME
-    ;; :after eaf
-    :defer t
-    :config
-    ;; (setq eaf-evil-leader-keymap doom-leader-map)
-    ;; (setq eaf-evil-leader-key "SPC")
-    ;; )
-    (eaf-setq eaf-browser-enable-adblocker "true")
-    (define-key key-translation-map (kbd "SPC")
-      (lambda (prompt)
-        (if (derived-mode-p 'eaf-mode)
-            (pcase eaf--buffer-app-name
-              ("browser" (if (eaf-call "call_function" eaf--buffer-id "is_focus")
-                             (kbd "SPC")
-                           (kbd eaf-evil-leader-key)))
-              ("pdf-viewer" (kbd eaf-evil-leader-key))
-              ("image-viewer" (kbd eaf-evil-leader-key))
-              (_  (kbd "SPC")))
-          (kbd "SPC"))))
-    )
-  )
+;;     ;; (defun eaf-open-google ()
+;;     ;;   "Open Google using EAF."
+;;     ;;   (interactive)
+;;     ;;   (eaf-open-browser "https://www.google.com"))
+;;   )
+;;   (use-package! eaf-evil ;; FIXME
+;;     ;; :after eaf
+;;     :defer t
+;;     :config
+;;     ;; (setq eaf-evil-leader-keymap doom-leader-map)
+;;     ;; (setq eaf-evil-leader-key "SPC")
+;;     ;; )
+;;     (eaf-setq eaf-browser-enable-adblocker "true")
+;;     (define-key key-translation-map (kbd "SPC")
+;;       (lambda (prompt)
+;;         (if (derived-mode-p 'eaf-mode)
+;;             (pcase eaf--buffer-app-name
+;;               ("browser" (if (eaf-call "call_function" eaf--buffer-id "is_focus")
+;;                              (kbd "SPC")
+;;                            (kbd eaf-evil-leader-key)))
+;;               ("pdf-viewer" (kbd eaf-evil-leader-key))
+;;               ("image-viewer" (kbd eaf-evil-leader-key))
+;;               (_  (kbd "SPC")))
+;;           (kbd "SPC"))))
+;;     )
+;;   )
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 ;; (setq evil-respect-visual-line-mode t)
@@ -635,12 +654,6 @@
     ad-do-it))
 
   )
-;; (after! ivy
-;;       (setq counsel-find-file-ignore-regexp "\\.o\\'"))
-;; (after! ivy  (setq counsel-find-file-ignore-regexp
-;;                    (my-counsel-ignore-regexp-builder
-;;                     "\\`__pycache__/\\'"
-;;                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o"))))
 (after! ivy
   (setq counsel-find-file-ignore-regexp
                    (my-counsel-ignore-regexp-builder

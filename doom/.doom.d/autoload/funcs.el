@@ -229,6 +229,3 @@ the right."
   "Selects third centaur tab"
   (interactive)
   (centaur-tabs-select-visible-nth-tab 3))
-;; ;;;###autodef
-;; (defun setup-custom-doom-modeline ()
-;;       (doom-modeline-set-modeline 'ishovkun-line 'default))

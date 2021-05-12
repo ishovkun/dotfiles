@@ -141,6 +141,7 @@
    '(lsp-face-highlight-write        ((t (:distant-foreground nil :foreground nil :background "#402311"))))
    `(lsp-ui-sideline-symbol          ((t (:foreground ,var :box nil))))
    `(lsp-ui-doc-background           ((t (:foreground ,var :background ,bg-dark :box nil))))
+   `(lsp-ui-doc-border               ((t (:foreground ,keyword))))
    `(lsp-ui-sideline-current-symbol  ((t (:foreground ,keyword :box nil))))
    ;;
    `(vertical-border ((,class (:foreground ,bg :background ,bg))))
