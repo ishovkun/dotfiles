@@ -459,33 +459,35 @@
   (progn
      (setq lsp-enable-file-watchers nil)
      (push 'company-lsp company-backends)
+     ;; ccls
+     (after! ccls
+       (setq ccls-executable "ccls")
+       (set-lsp-priority! 'ccls 2)
+       (setq ccls-initialization-options
+             `(:clang (:excludeArgs
+                       ;; Linux's gcc options. See ccls/wiki
+                       ["-falign-jumps=1" "-falign-loops=1" "-fconserve-stack" "-fmerge-constants" "-fno-code-hoisting" "-fno-schedule-insns"
+                        "-fno-var-tracking-assignments" "-fsched-pressure" "-mhard-float" "-mindirect-branch-register"
+                        "-mindirect-branch=thunk-inline" "-mpreferred-stack-boundary=2" "-mpreferred-stack-boundary=3"
+                        "-mpreferred-stack-boundary=4" "-mrecord-mcount" "-mindirect-branch=thunk-extern" "-mno-fp-ret-in-387" "-mskip-rax-setup"
+                        "--param=allow-store-data-races=0" "-Wa arch/x86/kernel/macros.s" "-Wa -"]
+                       :extraArgs [])
+               :completion
+               (:include
+                (:blacklist
+                 ["^/usr/(local/)?include/c\\+\\+/[0-9\\.]+/(bits|tr1|tr2|profile|ext|debug)/"
+                  "^/usr/(local/)?include/c\\+\\+/v1/"
+                  ]))
+                      ))
+       )
+
      ;; clangd
      (setq lsp-clients-clangd-args '("-j=3"
                                      "--background-index"
                                      ;; "--clang-tidy"
                                      "--completion-style=detailed"
                                      "--header-insertion=never"))
-     (after! lsp-clangd (set-lsp-priority! 'clangd 3))
-
-     (setq ccls-executable "ccls")
-     (setq ccls-initialization-options
-           `(:clang (:excludeArgs
-                     ;; Linux's gcc options. See ccls/wiki
-                     ["-falign-jumps=1" "-falign-loops=1" "-fconserve-stack" "-fmerge-constants" "-fno-code-hoisting" "-fno-schedule-insns"
-                      "-fno-var-tracking-assignments" "-fsched-pressure" "-mhard-float" "-mindirect-branch-register"
-                      "-mindirect-branch=thunk-inline" "-mpreferred-stack-boundary=2" "-mpreferred-stack-boundary=3"
-                      "-mpreferred-stack-boundary=4" "-mrecord-mcount" "-mindirect-branch=thunk-extern" "-mno-fp-ret-in-387" "-mskip-rax-setup"
-                      "--param=allow-store-data-races=0" "-Wa arch/x86/kernel/macros.s" "-Wa -"]
-                     :extraArgs [])
-                      :completion
-                      (:include
-                       (:blacklist
-                        ["^/usr/(local/)?include/c\\+\\+/[0-9\\.]+/(bits|tr1|tr2|profile|ext|debug)/"
-                         "^/usr/(local/)?include/c\\+\\+/v1/"
-                         ]))
-                      ))
-     (after! ccls (set-lsp-priority! 'ccls 2))
-     ;; ;; tramp lsp (ccls)
+     (after! lsp-clangd (set-lsp-priority! 'clangd 1))  ; ccls has priority 0
      ;; (lsp-register-client
      ;;  (make-lsp-client :new-connection (lsp-tramp-connection "/usr/bin/ccls")
      ;;                   :major-modes '(c++-mode c-mode)
@@ -546,6 +548,28 @@
     (when (string= (system-name) "space")
       (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
   )))
+;; ---------------------------------- Calendar ------------------------------
+(defun =calendar ()
+  (interactive)
+  (cfw:open-calendar-buffer
+   :contents-sources
+   (list
+    (cfw:org-create-source "gainsboro")  ; org-agenda source
+    ;; (cfw:org-create-file-source "cal" "/path/to/cal.org" "Cyan")  ; other org source
+    ;; (cfw:org-create-file-source "cal" "~/Downloads/cal.org" "snow1")  ; other org source
+    ;; (cfw:howm-create-source "Blue")  ; howm source
+    ;; (cfw:cal-create-source "Orange") ; diary source
+    ;; (cfw:ical-create-source "Moon" "~/moon.ics" "Gray")  ; ICS source1
+    (cfw:ical-create-source "Stanford" "https://calendar.google.com/calendar/ical/50425a5bg9h9admh36h3rsfnj4%40group.calendar.google.com/public/basic.ics" "brown") ; google calendar ICS
+    (cfw:ical-create-source "Google" "https://calendar.google.com/calendar/ical/igshov%40gmail.com/public/basic.ics" "medium sea green") ; google calendar ICS
+   )))
+;; ---------------------------------- Notifications --------------------------------
+;; (use-package! alert :config (setq alert-default-style 'notifications))
+(use-package! org-wild-notifier
+  :config
+  (setq alert-default-style 'notifications)
+  (org-wild-notifier-mode t)
+  )
   ;; ---------------------------- ORG calendar --------------------------------------
 ;; (use-package! org-gcal
 ;;   :config
