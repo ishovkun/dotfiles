@@ -19,6 +19,8 @@
 (package! evil-commentary)
 (package! yascroll)
 (package! dap-lldb :recipe (:host github :repo "emacs-lsp/dap-mode"))
+(package! alert)
+(package! org-wild-notifier)
 ;; (package! eaf :recipe (:host github
 ;;                        :repo "manateelazycat/emacs-application-framework"
 ;;                        :files ("*")

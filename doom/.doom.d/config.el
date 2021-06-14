@@ -105,6 +105,15 @@
    :desc "Page down" :nv "d" #'pdf-view-scroll-up-or-next-page)
   (:map magit-mode-map
    :desc "Toggle visibility of the body of current section" :nvi "<tab>" #'magit-section-toggle)
+  (:after cfw :map cfw:calendar-mode-map
+   :desc "Next item"      :nv "M-j" #'cfw:navi-next-item-command
+   :desc "Previous item"  :nv "M-k" #'cfw:navi-prev-item-command
+   :desc "Show details"   :nv "TAB" #'cfw:show-details-command
+   :desc "Digit argument" :nv "0"   #'digit-argument
+   :desc "Two week view"  :nv "T"   #'cfw:change-view-two-weeks
+   :desc "Goto date"      :nv "g"   #'cfw:navi-goto-date-command
+   :desc "Goto today"     :nv "t"   #'cfw:navi-goto-today-command
+   )
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -242,6 +251,7 @@
     ;; debugging
     (:after realgud :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
     :desc "Open vterm" :n "t" #'+vterm/here
+    :desc "Open calendar" :n "c" #'=calendar
     )
 ) ; end map leader
 ;; tab switching

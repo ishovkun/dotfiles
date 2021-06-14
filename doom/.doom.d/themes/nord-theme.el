@@ -25,10 +25,10 @@
       (aurora-yellow    (if (true-color-p) "#ebcb8b" "#5fafff"))
       (aurora-pink    (if (true-color-p) "#b48dac" "#5fafff"))
       ;;
-      (bg          polar-night) ;; main background
-      (bg-light    polar-night-light) ;; lighter than main
+      (bg          polar-night)         ;; main background
+      (bg-light    polar-night-light)   ;; lighter than main
       (bg-lighter  polar-night-lighter) ;; lighter than main
-      (bg-dark     polar-night-dark) ;; darker than main background
+      (bg-dark     polar-night-dark)    ;; darker than main background
       (fg          snow-storm-dark)
       (fg-dim      polar-night-lightest) ;; comments
       (fg-bright   snow-storm)
@@ -384,6 +384,25 @@
    `(eclipse-font-lock-comment-face ((t (:foreground ,comment))))
    `(eclipse-font-lock-import-face ((t (:foreground ,builtin))))
    `(eclipse-font-lock-fnutt-face ((t (:foreground ,func))))
+   ;; ------ cfw calendar
+   `(cfw:face-title              ((t (:foreground ,keyword :background ,bg-dark :weight bold :height 2.0 :inherit variable-pitch))))
+   `(cfw:face-header             ((t (:foreground ,fg-bright :background ,bg-dark :weight bold))))
+   `(cfw:face-sunday             ((t :foreground ,comment :background ,bg-dark :weight bold)))
+   `(cfw:face-saturday           ((t :foreground ,comment :background ,bg-dark :weight bold)))
+   `(cfw:face-holiday            ((t :foreground ,builtin :weight bold :background ,bg-dark)))
+   `(cfw:face-grid               ((t :foreground ,bg-light)))
+   `(cfw:face-default-content    ((t :foreground ,fg)))
+   `(cfw:face-periods            ((t :foreground ,str)))
+   `(cfw:face-day-title          ((t :background ,bg-dark)))
+   `(cfw:face-default-day        ((t :weight bold :inherit cfw:face-day-title)))
+   `(cfw:face-annotation         ((t :foreground ,func :inherit cfw:face-day-title)))
+   `(cfw:face-disable            ((t :foreground ,const :inherit cfw:face-day-title)))
+   `(cfw:face-today-title        ((t :background ,type :weight bold)))
+   `(cfw:face-today              ((t :background ,bg-lighter :weight bold)))
+   `(cfw:face-select             ((t :background ,bg-light)))
+   `(cfw:face-toolbar            ((t :foreground ,fg-dim :background ,bg)))
+   `(cfw:face-toolbar-button-off ((t :foreground ,fg-dim :weight bold)))
+   `(cfw:face-toolbar-button-on  ((t :foreground ,type :weight bold)))
    ;; ---- Man
    `(Man-overstrike ((t (:foreground ,type))))
    `(Man-underline ((t (:foreground ,keyword :underline t))))

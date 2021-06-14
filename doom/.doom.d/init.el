@@ -129,18 +129,22 @@
         +latexmk)
        ;;ledger            ; an accounting system in Emacs
        ;;lua               ; one-based indices? one-based indices
-       markdown          ; writing docs for people to ignore
+       markdown            ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org              ; organize your plain life in plain text
-        +dragndrop       ; drag & drop files/images into org buffers
+       (org                ; organize your plain life in plain text
+        +dragndrop         ; drag & drop files/images into org buffers
+        ;; +brain          ; Enables integration [[https://github.com/Kungsgeten/org-brain][org-brain]].
+        ;; + jupyter       ; Enables Jupyter integration for babel.
+        ;;
         +attach          ; custom attachment system
         +babel           ; running code in org
         +capture         ; org-capture in and outside of Emacs
         +export          ; Exporting org to whatever you want
         +habit           ; Keep track of your habits
         +present         ; Emacs for presentations
+        +pretty         ; Enables pretty unicode symbols for bullets and priorities
         +protocol)       ; Support for org-protocol:// links
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
