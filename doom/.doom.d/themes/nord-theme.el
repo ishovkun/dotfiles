@@ -63,7 +63,7 @@
    `(font-lock-variable-name-face ((,class (:foreground ,var))))
    `(font-lock-warning-face       ((,class (:foreground ,warning :background ,bg-light))))
    `(highlight                    ((,class (:foreground ,fg-bright :background ,bg-dark))))
-   `(hl-line                      ((,class (:background ,bg-light))))
+   `(hl-line                      ((t      (:background ,bg-light))))
    `(fringe                       ((,class (:background ,bg :foreground ,const))))
    `(window-divider               ((,class (:background ,bg-dark :foreground ,bg-dark))))
    `(window-divider-first-pixel   ((,class (:background ,bg-dark :foreground ,bg-dark))))

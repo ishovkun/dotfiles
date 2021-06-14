@@ -14,10 +14,11 @@
 (package! cquery)
 (package! ccls)
 (package! google-c-style) ; google c/c++ coding style
-;; (package! company-box)
 (package! company-lsp)
 (package! evil-commentary)
 (package! yascroll)
+(package! evil-swap-keys :recipe (:host github :repo "wbolster/evil-swap-keys"))
+(package! evil-terminal-cursor-changer)
 (package! dap-lldb :recipe (:host github :repo "emacs-lsp/dap-mode"))
 (package! alert)
 (package! org-wild-notifier)

@@ -101,6 +101,10 @@
        spell             ; tasing you for misspelling mispelling
        grammar           ; tasing grammar mistake every you make
 
+       :os
+       ;; (:if IS-MAC macos)  ; improve compatibility with macOS
+       tty               ; improve the terminal Emacs experience
+
        :lang
        ;;agda              ; types of types of types of types...
        ;;assembly          ; assembly for fun or debugging

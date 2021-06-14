@@ -190,6 +190,7 @@
   :desc "comment block"       :v ";" #'evil-commentary
   ;; buffers
   :desc "Switch to previous buffer" :nv "<tab>" #'spacemacs/alternate-buffer
+  :desc "Switch to previous buffer" :nv "TAB" #'spacemacs/alternate-buffer ; duplicated for terminal behavior
   (:after ivy :nv "SPC" #'+ivy/switch-workspace-buffer)
   (:prefix "b"
     :desc "kill current buffer"          :nv "d" #'kill-this-buffer
@@ -365,6 +366,12 @@
   ;; '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
     ))
 
+
+;; Cursor shape in emacs terminal
+(unless (display-graphic-p)
+          (require 'evil-terminal-cursor-changer)
+          (evil-terminal-cursor-changer-activate) ; or (etcc-on)
+          )
 ;;(use-package! mini-modeline
   ;;:after doom-modeline
   ;;config
