@@ -5,7 +5,7 @@
 (when (string= (system-name) "space")
   ;; different scaling
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
-  (setq doom-font (font-spec :family "Iosevka" :size 14)))
+  (setq doom-font (font-spec :family "Iosevka" :size 13 :width 'normal)))
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
 
 (map!
@@ -60,7 +60,7 @@
     )
   ;; saving
   :desc "Save buffer" :nvi "C-s" #'save-buffer
-  (:after evil-surround :map override :desc "Surround" :v "s" #'evil-surround-region)
+  ;; (:after evil-surround :map override :desc "Surround" :v "s" #'evil-surround-region)
   ;; editing
   :desc "Append comment" :n "M-;" #'comment-dwim
   :desc "Delete word backward" :i "C-w" #'evil-delete-backward-word
@@ -203,7 +203,6 @@
     (:desc "Rename file" :nv "R" #'rename-file-and-buffer)
     (:desc "Browse private config dir" :nv "p" #'doom/open-private-config)
     (:desc "Save buffer" :nv "s" #'save-buffer))
-
   ;; align
   (:prefix "a"
     :desc "align region"   :v "a"    #'align
@@ -227,7 +226,7 @@
   ;; projectile
   (:prefix "p"
     (:after projectile :map projectile-mode-map
-      :desc "Project ag"        :nv "s" #'projectile-ag
+      :desc "Project grep"        :nv "s" #'counsel-projectile-grep
       ;; :desc "Project find file" :nv "f" #'+ivy/projectile-find-file
       :desc "Project find file" :nv "f" #'projectile-find-file
       :desc "Project replace"   :n  "R" #'projectile-replace
@@ -253,8 +252,13 @@
     (:after realgud :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
     :desc "Open vterm" :n "t" #'+vterm/here
     :desc "Open calendar" :n "c" #'=calendar
+    (:after dap-mode :map c++-mode-map
+     :desc "Edit default dap config" :nv "j" #'dap-debug-create-or-edit-json-template)
     )
 ) ; end map leader
+;; hack, make cic change text inside curlies
+(define-key evil-inner-text-objects-map "c" 'evil-inner-curly)
+
 ;; tab switching
 ;; (when (string= (system-name) "space")
 ;;   (map!
@@ -519,19 +523,17 @@
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
 ;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
-(after! lsp-mode
-  (defcustom dap-lldb-debug-program `(,(expand-file-name "lldb-vscode"))
-  "The path to the LLDB debugger."
-  :group 'dap-lldb
-  :type '(repeat string))
-(use-package! dap-lldb)
-(use-package! dap-cpptools)
-(use-package! dap-gdb-lldb)
-(setq dap--debug-template-configurations
-      '(("LLDB Run Configuration" :type "lldb" :request "launch" :name "LLDB::Run"
-         :target "/home/ishovkun/dev/AD-GPRS/bin/ADGPRS/ADGPRS" :cwd nil)
-        ("GDB Run Configuration" :type "gdb" :request "launch" :name "GDB::Run"
-         :target "/home/ishovkun/dev/AD-GPRS/bin/ADGPRS/ADGPRS" :cwd nil)))
+
+(use-package! dap-mode
+  :config
+   ;;; set the debugger executable (c++)
+  (setq dap-lldb-debug-program '("/usr/bin/lldb-vscode"))
+  ;; (dap-register-debug-template "LLDB::Run"
+  ;; (list :type "lldb"
+  ;;       :request "launch"
+  ;;       :name "LLDB::Run"
+  ;;       :target nil
+        ;; :cwd nil))
   )
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))

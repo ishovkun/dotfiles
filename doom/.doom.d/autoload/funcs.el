@@ -229,3 +229,12 @@ the right."
   "Selects third centaur tab"
   (interactive)
   (centaur-tabs-select-visible-nth-tab 3))
+;;;###autodef
+(defun dap-debug-create-or-edit-json-template ()
+    "Edit the C++ debugging configuration or create + edit if none exists yet."
+    (interactive)
+    (let ((filename (concat (lsp-workspace-root) "/launch.json"))
+	  (default "~/.doom.d/extra/dap_default.json"))
+      (unless (file-exists-p filename)
+	(copy-file default filename))
+      (find-file-existing filename)))
