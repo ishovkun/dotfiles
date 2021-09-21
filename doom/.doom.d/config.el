@@ -8,6 +8,16 @@
   (setq doom-font (font-spec :family "Iosevka" :size 13 :width 'normal)))
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
 
+(if (eq system-type 'darwin)
+  ; something for OS X if true
+  ; optional something if not
+;;; I prefer cmd key for meta
+(setq mac-option-key-is-meta nil
+      mac-command-key-is-meta t
+      mac-command-modifier 'meta
+      mac-option-modifier 'none)
+)
+
 (map!
   ;; window management
  (:map override
@@ -15,6 +25,8 @@
   :nv "M-j"         #'evil-window-down
   :nv "M-l"         #'evil-window-right
   :nv "M-h"         #'evil-window-left
+  ;; :nv "M-l"         #'mac-macs-window-right
+  ;; :nv "M-h"         #'mac-macs-window-left
   )
  (:map TeX-mode-map
   :nv "j"           #'evil-next-visual-line
@@ -60,7 +72,7 @@
     )
   ;; saving
   :desc "Save buffer" :nvi "C-s" #'save-buffer
-  ;; (:after evil-surround :map override :desc "Surround" :v "s" #'evil-surround-region)
+  (:after evil-surround :map override :desc "Surround" :v "s" #'evil-surround-region)
   ;; editing
   :desc "Append comment" :n "M-;" #'comment-dwim
   :desc "Delete word backward" :i "C-w" #'evil-delete-backward-word
@@ -83,6 +95,11 @@
     :desc "Recompile" :nv "<C-return>" #'recompile
     :desc "Recompile" :nv "C-<f9>" #'recompile ; in terminal
     )
+  (:after ein :map python-mode-map
+   :desc "Run cell" :nv "<C-return>" #'ein:worksheet-execute-cell-km
+   :desc "Next cell" :nv "C-j" #'ein:worksheet-goto-next-input-km
+   :desc "Next cell" :nv "C-k" #'ein:worksheet-goto-prev-input-km
+   )
   (:after tex :map LaTeX-mode-map :desc "Recompile" :nv "<C-return>" #'latex/build)
   ;; ivy
   (:after ivy :map ivy-mode-map
@@ -254,6 +271,7 @@
     :desc "Open calendar" :n "c" #'=calendar
     (:after dap-mode :map c++-mode-map
      :desc "Edit default dap config" :nv "j" #'dap-debug-create-or-edit-json-template)
+    :desc "open Ipython notebook" :n "i" #'ein:run
     )
 ) ; end map leader
 ;; hack, make cic change text inside curlies
@@ -654,6 +672,10 @@
 ;;           (kbd "SPC"))))
 ;;     )
 ;;   )
+;; ----------------------------------- Jupiter ---------------------------------
+(after! ein
+  (setq ein:output-area-inlined-images t)
+  )
 ;; ----------------------------------- Shell ---------------------------------
 ;; --------------------------------- Fixes -----------------------------------
 ;; (setq evil-respect-visual-line-mode t)

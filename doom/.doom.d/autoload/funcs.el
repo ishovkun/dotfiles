@@ -238,3 +238,21 @@ the right."
       (unless (file-exists-p filename)
 	(copy-file default filename))
       (find-file-existing filename)))
+;;;###autodef
+(defun mac-macs-window-right ()
+  "If not right emacs window, select window on the right. Otherwise call external script to focus window on the right"
+  (interactive)
+  (if (window-in-direction 'right (get-buffer-window (buffer-name)))
+      (evil-window-right 1)
+    (shell-command "$HOME/switch_window.sh 1")
+    )
+   )
+;;;###autodef
+(defun mac-macs-window-left ()
+  "If not right emacs window, select window on the right. Otherwise call external script to focus window on the right"
+  (interactive)
+  (if (window-in-direction 'left (get-buffer-window (buffer-name)))
+      (evil-window-left 1)
+    (shell-command "$HOME/switch_window.sh 0")
+    )
+   )

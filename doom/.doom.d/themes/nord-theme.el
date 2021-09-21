@@ -384,6 +384,8 @@
    `(eclipse-font-lock-comment-face ((t (:foreground ,comment))))
    `(eclipse-font-lock-import-face ((t (:foreground ,builtin))))
    `(eclipse-font-lock-fnutt-face ((t (:foreground ,func))))
+   ;; ------ EIN
+   `(ein:cell-input-area ((t (:background ,bg-dark))))
    ;; ------ cfw calendar
    `(cfw:face-title              ((t (:foreground ,keyword :background ,bg-dark :weight bold :height 2.0 :inherit variable-pitch))))
    `(cfw:face-header             ((t (:foreground ,fg-bright :background ,bg-dark :weight bold))))
