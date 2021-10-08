@@ -140,6 +140,7 @@
        ;;ocaml             ; an objective camel
        (org                ; organize your plain life in plain text
         +dragndrop         ; drag & drop files/images into org buffers
+        ;; +roam              ; dip inside my mind palace
         ;; +brain          ; Enables integration [[https://github.com/Kungsgeten/org-brain][org-brain]].
         ;; + jupyter       ; Enables Jupyter integration for babel.
         ;;
