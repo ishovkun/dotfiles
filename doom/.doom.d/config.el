@@ -95,10 +95,11 @@
     :desc "Recompile" :nv "<C-return>" #'recompile
     :desc "Recompile" :nv "C-<f9>" #'recompile ; in terminal
     )
-  (:after ein :map python-mode-map
-   :desc "Run cell" :nv "<C-return>" #'ein:worksheet-execute-cell-km
-   :desc "Next cell" :nv "C-j" #'ein:worksheet-goto-next-input-km
-   :desc "Next cell" :nv "C-k" #'ein:worksheet-goto-prev-input-km
+  (:after ein
+   (:map ein:notebook-mode-map
+    :desc "Run cell" :nv "<C-return>" #'ein:worksheet-execute-cell-km
+    :desc "Next cell" :nv "C-j" #'ein:worksheet-goto-next-input-km
+    :desc "Next cell" :nv "C-k" #'ein:worksheet-goto-prev-input-km)
    )
   (:after tex :map LaTeX-mode-map :desc "Recompile" :nv "<C-return>" #'latex/build)
   ;; ivy
@@ -575,6 +576,8 @@
     (when (string= (system-name) "space")
       (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
   )))
+;; ----------------------------------- Org-Roam -----------------------------
+;; (setq org-roam-directory "~/")
 ;; ---------------------------------- Calendar ------------------------------
 (defun =calendar ()
   (interactive)
