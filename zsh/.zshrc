@@ -5,7 +5,8 @@
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/ishovkun/.oh-my-zsh
+# export ZSH=/home/ishovkun/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
 
 # Time on RHS
 # RPROMPT='%{$fg[green]%}[%*]%{$reset_color%}'
