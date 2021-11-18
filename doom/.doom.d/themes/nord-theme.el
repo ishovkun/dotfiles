@@ -17,7 +17,8 @@
       (polar-night-light  (if (true-color-p) "#3b4252" "#3b4252")) ; hl-line
       (polar-night-lighter (if (true-color-p) "#434c5e" "#434c5e")) ; selection
       (polar-night-lightest (if (true-color-p) "#616e87" "#616e87")) ; comments
-      (polar-night-dark  (if (true-color-p) "#252b35" "#252b35")) ; main bg
+      (polar-night-dark  (if (true-color-p) "#252b35" "#252b35")) ; mode-line-box
+      (polar-night-little-darker  (if (true-color-p) "#272d37" "#2b313c")) ; special buffer bg
       ;; red-orange-yellow-green-pink
       (aurora-green     (if (true-color-p) "#a3be8c" "#5fafff"))
       (aurora-red       (if (true-color-p) "#bf616a" "#5fafff"))
@@ -25,13 +26,14 @@
       (aurora-yellow    (if (true-color-p) "#ebcb8b" "#5fafff"))
       (aurora-pink    (if (true-color-p) "#b48dac" "#5fafff"))
       ;;
-      (bg          polar-night)         ;; main background
-      (bg-light    polar-night-light)   ;; lighter than main
-      (bg-lighter  polar-night-lighter) ;; lighter than main
-      (bg-dark     polar-night-dark)    ;; darker than main background
-      (fg          snow-storm-dark)
-      (fg-dim      polar-night-lightest) ;; comments
-      (fg-bright   snow-storm)
+      (bg                  polar-night)               ;; main background
+      (bg-light            polar-night-light)         ;; lighter than main
+      (bg-lighter          polar-night-lighter)       ;; lighter than main
+      (bg-dark             polar-night-dark)          ;; darker than main background
+      (bg-dark-special     polar-night-little-darker) ;; solaire color
+      (fg                  snow-storm-dark)           ;; main foreground
+      (fg-dim              polar-night-lightest)      ;; comments
+      (fg-bright           snow-storm)
       ;; elements
       (builtin frost-green)
       (keyword frost-dark-blue)
@@ -311,6 +313,8 @@
    `(ivy-current-match   ((,class (:background ,region :distant-foreground nil :extend t))))
    `(ivy-posframe-border ((,class (:background ,bg-dark))))
    `(ivy-posframe        ((,class (:background ,bg-dark))))
+   ;; darken special buffers
+   `(solaire-default-face        ((,class (:background ,bg-dark-special))))
 
    ;; `(ivy-separator       ((,class (:background ,black))))
     ;;; modify minibuffer-prompt to change posframe top line color
