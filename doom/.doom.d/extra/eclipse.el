@@ -294,31 +294,41 @@ Argument LIMIT is the maximum distance to scan."
 
 
 (copy-face             'bold 'eclipse-font-lock-function-name-face)
-(set-face-foreground         'eclipse-font-lock-function-name-face "Red")
-(set-face-background         'eclipse-font-lock-function-name-face "Yellow")
+;; (set-face-foreground         'eclipse-font-lock-function-name-face "Red")
+;; (set-face-background         'eclipse-font-lock-function-name-face "Yellow")
+;; (set-face 'eclipse-font-lock-function-name-face 'font-lock-function-name-face)
+(set-face-attribute 'eclipse-font-lock-function-name-face nil :inherit 'font-lock-function-name-face)
 (setq eclipse-font-lock-function-name-face 'eclipse-font-lock-function-name-face)
 
 (copy-face             'bold 'eclipse-font-lock-keyword-face)
-(set-face-foreground         'eclipse-font-lock-keyword-face "Blue")
+;; (set-face-foreground         'eclipse-font-lock-keyword-face "Blue")
+;; (set-face 'eclipse-font-lock-keyword-face 'font-lock-keyword-face)
+(set-face-attribute 'eclipse-font-lock-keyword-face nil :inherit 'font-lock-keyword-face)
 (setq eclipse-font-lock-keyword-face 'eclipse-font-lock-keyword-face)
 
 (defvar eclipse-font-lock-import-face nil "Import and Include")
 (copy-face             'bold 'eclipse-font-lock-import-face)
-(set-face-foreground         'eclipse-font-lock-import-face "DarkViolet")
+;; (set-face-foreground         'eclipse-font-lock-import-face "DarkViolet")
+(set-face-attribute 'eclipse-font-lock-import-face nil :inherit 'font-lock-builtin-face)
+
 (setq eclipse-font-lock-import-face 'eclipse-font-lock-import-face)
 
 (defvar eclipse-font-lock-fnutt-face nil "Fnutt face")
 (copy-face             'bold 'eclipse-font-lock-fnutt-face)
-(set-face-foreground         'eclipse-font-lock-fnutt-face "Red")
+;; (set-face-foreground         'eclipse-font-lock-fnutt-face "Red")
+(set-face-attribute 'eclipse-font-lock-fnutt-face nil :inherit 'font-lock-type-face)
 (setq eclipse-font-lock-fnutt-face 'eclipse-font-lock-fnutt-face)
 
 (defvar eclipse-font-lock-wfnutt-face nil "Word fnutt face")
 (copy-face             'bold 'eclipse-font-lock-wfnutt-face)
-(set-face-foreground         'eclipse-font-lock-wfnutt-face "ForestGreen")
+;; (set-face-foreground         'eclipse-font-lock-wfnutt-face "ForestGreen")
+(set-face-attribute 'eclipse-font-lock-wfnutt-face nil :inherit 'font-lock-builtin-face)
 (setq eclipse-font-lock-wfnutt-face 'eclipse-font-lock-wfnutt-face)
 
 (copy-face             'font-lock-comment-face 'eclipse-font-lock-comment-face)
-(set-face-foreground         'eclipse-font-lock-comment-face "DarkGoldenrod")
+;; (set-face-foreground         'eclipse-font-lock-comment-face "DarkGoldenrod")
+;; (set-face  'eclipse-font-lock-comment-face 'font-lock-comment-face)
+(set-face-attribute 'eclipse-font-lock-comment-face nil :inherit 'font-lock-comment-face)
 (setq eclipse-font-lock-comment-face 'eclipse-font-lock-comment-face)
 
 
