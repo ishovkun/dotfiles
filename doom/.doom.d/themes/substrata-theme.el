@@ -1,56 +1,56 @@
-;;; ~/dotfiles/doom/.doom.d/themes/nord-theme.el -*- lexical-binding: t; -*-
+;;; themes/substrata.el -*- lexical-binding: t; -*-
 
-(deftheme nord)
+(deftheme substrata)
 (let* ((class '((class color) (min-colors 89)))
       ;;                               GUI       TER
-      ;; whiteish
-      (snow-storm-dark (if (true-color-p) "#c2c8d1" "#c2c8d1"))
+      ;; colors with names
+      (red          (if (true-color-p) "#cf8164" "#cf8164"))
+      (green        (if (true-color-p) "#76a065" "#76a065"))
+      (gray        (if (true-color-p) "#6c6f82" "#6c6f82"))
+      (yellow       (if (true-color-p) "#ab924c" "#ab924c"))
+      (blue         (if (true-color-p) "#8296b0" "#8296b0"))
+      (pink         (if (true-color-p) "#a18daf" "#a18daf"))
+      (cyan         (if (true-color-p) "#659ea2" "#659ea2"))
+      (light-red    (if (true-color-p) "#fe9f7c" "#fe9f7c"))
+      (light-green  (if (true-color-p) "#92c47e" "#92c47e"))
+      (light-yellow (if (true-color-p) "#d2b45f" "#d2b45f"))
+      (light-blue   (if (true-color-p) "#a0b9d8" "#a0b9d8"))
+      (light-pink   (if (true-color-p) "#c6aed7" "#c6aed7"))
+      (light-cyan   (if (true-color-p) "#7dc2c7" "#7dc2c7"))
+      (red-wash     (if (true-color-p) "#2d1d16" "#2d1d16"))
+      (green-wash   (if (true-color-p) "#1c2316" "#1c2316"))
+      (yellow-wash  (if (true-color-p) "#262011" "#262011"))
       (snow-storm      (if (true-color-p) "#d8dee9" "#d8dee9"))
       (snow-storm-light (if (true-color-p) "#eceff4" "#eceff4"))
-      ;; bluish
-      (frost-green (if (true-color-p) "#8fbcbb" "#5fafff"))     
-      (frost-light-blue (if (true-color-p) "#88c0d0" "#5fafff"))
-      (frost-blue       (if (true-color-p) "#81a1c1" "#5fafff"))
-      (frost-dark-blue  (if (true-color-p) "#5e81ac" "#5fafff"))
-      ;; dark background colors
-      (polar-night  (if (true-color-p) "#2e3440" "#2e3440")) ; main bg
-      (polar-night-light  (if (true-color-p) "#3b4252" "#3b4252")) ; hl-line
-      (polar-night-lighter (if (true-color-p) "#434c5e" "#434c5e")) ; selection
-      (polar-night-lightest (if (true-color-p) "#616e87" "#616e87")) ; comments
-      (polar-night-dark  (if (true-color-p) "#252b35" "#252b35")) ; mode-line-box
-      (polar-night-little-darker  (if (true-color-p) "#272d37" "#2b313c")) ; special buffer bg
-      ;; red-orange-yellow-green-pink
-      (aurora-green     (if (true-color-p) "#a3be8c" "#5fafff"))
-      (aurora-red       (if (true-color-p) "#bf616a" "#5fafff"))
-      (aurora-orange    (if (true-color-p) "#d08770" "#5fafff"))
-      (aurora-yellow    (if (true-color-p) "#ebcb8b" "#5fafff"))
-      (aurora-pink    (if (true-color-p) "#b48dac" "#5fafff"))
-      ;;
-      (bg                  polar-night)               ;; main background
-      (bg-light            polar-night-light)         ;; lighter than main
-      (bg-lighter          polar-night-lighter)       ;; lighter than main
-      (bg-dark             polar-night-dark)          ;; darker than main background
-      (bg-dark-special     polar-night-little-darker) ;; solaire color
-      (fg                  snow-storm-dark)           ;; main foreground
-      (fg-dim              polar-night-lightest)      ;; comments
+      ;; Primary colors
+      (bg           (if (true-color-p) "#191c25" "#191c25")) ;; main background
+      (bg-light     (if (true-color-p) "#20222d" "#20222d")) ;; lighter than main
+      (bg-lighter   (if (true-color-p) "#272935" "#272935")) ;; much lighter
+      (bg-lightest  (if (true-color-p) "#2e313d" "#2e313d"))
+      (invisible    (if (true-color-p) "#3c3f4e" "#3c3f4e"))
+      (bg-dark      bg)
+      (bg-darker      bg)
+      (bg-dark-special     bg-darker) ;; solaire color
+      (fg (if (true-color-p) "#9090a0" "#9090a0"))           ;; main foreground
+      (fg-dim              bg-light)      ;; comments
       (fg-bright           snow-storm)
       ;; elements
-      (builtin frost-green)
-      (keyword frost-dark-blue)
-      (const  aurora-pink)         ;; digits
-      (comment fg-dim)
-      (func    frost-light-blue)
-      (str     aurora-green)
-      (type    frost-blue)
-      (region  polar-night-lighter)         ;; basically selection
-      (var     aurora-green)
-      (warning aurora-red)
-      (success frost-green)      ;; bright green
-      (search-current frost-dark-blue)      ;; current match
-      (misc aurora-yellow)      ;; latex equations
+      (builtin pink)
+      (keyword blue)
+      (const   pink)         ;; digits
+      (comment gray)
+      (func    blue)
+      (str     cyan)
+      (type    cyan)
+      (region  bg-light)         ;; basically selection
+      (var     blue)
+      (warning yellow)
+      (success green)      ;; bright green
+      (search-current bg-lighter)      ;; current match
+      (misc yellow-wash)      ;; latex equations
       )
   (custom-theme-set-faces
-   'nord
+   'substrata
    `(default                      ((,class (:background ,bg :foreground ,fg))))
    `(font-lock-builtin-face       ((,class (:foreground ,builtin))))
    `(font-lock-comment-face       ((,class (:foreground ,comment :italic t))))
@@ -436,7 +436,7 @@
    pdf-view-midnight-colors       `(,fg . ,bg))
 
   (custom-theme-set-variables
-   'nord
+   'substrata
    `(ansi-color-names-vector (vector "black" ,warning ,str ,misc ,func ,const ,builtin ,fg-bright))
   ;;  ;; ["black" "red" "green" "yellow" "blue" "magenta" "cyan" "white"]
    )
@@ -449,10 +449,10 @@
   (add-to-list 'custom-theme-load-path
                (file-name-as-directory (file-name-directory load-file-name))))
 
-(provide-theme 'nord)
+(provide-theme 'substrata)
 
 ;; Local Variables:
 ;; no-byte-compile: t
 ;; End:
 
-;;; one-dark-theme.el ends here
+;;; substrata-theme.el ends here

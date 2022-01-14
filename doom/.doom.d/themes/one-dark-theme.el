@@ -1,4 +1,4 @@
-;; This file is not part of Emacs.
+;;; ~/dotfiles/doom/.doom.d/themes/nord-theme.el -*- lexical-binding: t; -*-
 
 (deftheme one-dark)
 (let* ((class '((class color) (min-colors 89)))
@@ -24,6 +24,7 @@
       (orange      (if (true-color-p) "#da8548" "#dd8844"))
       (violet      (if (true-color-p) "#a9a1e1" "#8787d7"))
       (red         (if (true-color-p) "#ff005f" "#ff005f"))
+      (aurora-yellow    (if (true-color-p) "#ebcb8b" "#5fafff"))
       ;; elements
       (builtin magenta2)
       (keyword blue)
@@ -36,6 +37,7 @@
       (var     lightgreen)
       (warning red)
       (success bright-green)      ;; bright green
+      (misc aurora-yellow)      ;; latex equations
       )
   (custom-theme-set-faces
    'one-dark
@@ -98,7 +100,6 @@
    `(term-color-yellow ((,class (:bold t :foreground ,warning :background ,bg))))
    `(term-color-red ((,class (:bold t :foreground ,warning :background ,warning))))
    ;; term-color-black
-   ;; `(error ((t (:foreground ,warning :background ,bg))))
    `(error ((t (:foreground ,warning))))
    ;; vterm
    `(vterm-color-default-fg ((,class (:foreground ,fg1))))
@@ -122,6 +123,7 @@
    '(lsp-face-highlight-write        ((t (:distant-foreground nil :foreground nil :background "#402311"))))
    `(lsp-ui-sideline-symbol          ((t (:foreground ,var :box nil))))
    `(lsp-ui-doc-background           ((t (:foreground ,var :background ,bg-dark :box nil))))
+   `(lsp-ui-doc-border               ((t (:foreground ,keyword))))
    `(lsp-ui-sideline-current-symbol  ((t (:foreground ,keyword :box nil))))
    ;;
    `(vertical-border ((,class (:foreground ,bg :background ,bg))))
@@ -155,11 +157,21 @@
    `(org-ellipsis ((,class (:foreground ,builtin))))
    `(org-verbatim ((,class (:foreground ,fg4))))
    `(org-document-info-keyword ((,class (:foreground ,func))))
+   ;; LaTeX
+   `(font-latex-sectioning-0-face ((,class (:foreground ,misc))))
+   `(font-latex-sectioning-1-face ((,class (:foreground ,misc))))
+   `(font-latex-sectioning-2-face ((,class (:foreground ,type :weight bold :height 1.8))))
+   `(font-latex-sectioning-3-face ((,class (:foreground ,type :weight bold :height 1.5))))
+   `(font-latex-sectioning-4-face ((,class (:foreground ,fg2 :weight bold :height 1.3))))
+   `(font-latex-sectioning-4-face ((,class (:foreground ,fg2 :weight bold))))
+   `(font-latex-warning-face ((,class (:foreground ,warning :weight bold))))
    `(font-latex-bold-face ((,class (:foreground ,type))))
    `(font-latex-italic-face ((,class (:foreground ,success :italic t))))
    `(font-latex-string-face ((,class (:foreground ,str))))
    `(font-latex-match-reference-keywords ((,class (:foreground ,const))))
    `(font-latex-match-variable-keywords ((,class (:foreground ,var))))
+   `(org-latex-and-related ((,class (:foreground ,misc))))
+   `(font-latex-math-face ((,class (:foreground ,misc)))) ;
    `(ido-only-match ((,class (:foreground ,warning))))
    `(org-sexp-date ((,class (:foreground ,fg4))))
    `(ido-first-match ((,class (:foreground ,keyword :bold t))))
@@ -281,6 +293,8 @@
    `(ivy-current-match   ((,class (:background ,region :distant-foreground nil :extend t))))
    `(ivy-posframe-border ((,class (:background ,bg-dark))))
    `(ivy-posframe        ((,class (:background ,bg-dark))))
+   ;; darken special buffers
+   `(solaire-default-face        ((,class (:background ,bg-dark))))
 
    ;; `(ivy-separator       ((,class (:background ,black))))
     ;;; modify minibuffer-prompt to change posframe top line color

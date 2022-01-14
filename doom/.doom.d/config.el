@@ -275,8 +275,22 @@
     :desc "open Ipython notebook" :n "i" #'ein:run
     )
 ) ; end map leader
+
+(map! :after latex
+      :localleader
+      :map LaTeX-mode-map
+      :desc "Environment" "e" #'LaTeX-environment
+      )
+
 ;; hack, make cic change text inside curlies
 (define-key evil-inner-text-objects-map "c" 'evil-inner-curly)
+;; hack, disable tab completion for company
+;; doesn't work via map!
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "<tab>") nil)
+  (define-key company-active-map (kbd "TAB") 'company-yasnippet-or-completion))
+
+
 
 ;; tab switching
 ;; (when (string= (system-name) "space")
@@ -487,31 +501,32 @@
   )
 (after! lsp-mode
   (progn
-     (setq lsp-enable-file-watchers nil)
-     (push 'company-lsp company-backends)
-     ;; ccls
-     (after! ccls
-       (setq ccls-executable "ccls")
-       (set-lsp-priority! 'ccls 2)
-       (setq ccls-initialization-options
-             `(:clang (:excludeArgs
-                       ;; Linux's gcc options. See ccls/wiki
+    (setq lsp-lens-enable nil)     ;; disable stupid lenses
+    (setq lsp-enable-file-watchers nil)
+    (push 'company-lsp company-backends)
+    ;; ccls
+    (after! ccls
+      (setq ccls-executable "ccls")
+      (set-lsp-priority! 'ccls 2)
+      (setq ccls-initialization-options
+            `(:clang (:excludeArgs
+                      ;; Linux's gcc options. See ccls/wiki
                        ["-falign-jumps=1" "-falign-loops=1" "-fconserve-stack" "-fmerge-constants" "-fno-code-hoisting" "-fno-schedule-insns"
                         "-fno-var-tracking-assignments" "-fsched-pressure" "-mhard-float" "-mindirect-branch-register"
                         "-mindirect-branch=thunk-inline" "-mpreferred-stack-boundary=2" "-mpreferred-stack-boundary=3"
                         "-mpreferred-stack-boundary=4" "-mrecord-mcount" "-mindirect-branch=thunk-extern" "-mno-fp-ret-in-387" "-mskip-rax-setup"
                         "--param=allow-store-data-races=0" "-Wa arch/x86/kernel/macros.s" "-Wa -"]
                        :extraArgs [])
-               :completion
-               (:include
-                (:blacklist
-                 ["^/usr/(local/)?include/c\\+\\+/[0-9\\.]+/(bits|tr1|tr2|profile|ext|debug)/"
-                  "^/usr/(local/)?include/c\\+\\+/v1/"
-                  ]))
-                      ))
-       )
+              :completion
+              (:include
+               (:blacklist
+                ["^/usr/(local/)?include/c\\+\\+/[0-9\\.]+/(bits|tr1|tr2|profile|ext|debug)/"
+                 "^/usr/(local/)?include/c\\+\\+/v1/"
+                 ]))
+              ))
+      )
 
-     ;; clangd
+    ;; clangd
      (setq lsp-clients-clangd-args '("-j=3"
                                      "--background-index"
                                      ;; "--clang-tidy"
@@ -546,7 +561,11 @@
 (use-package! dap-mode
   :config
    ;;; set the debugger executable (c++)
+
   (setq dap-lldb-debug-program '("/usr/bin/lldb-vscode"))
+  (if (eq system-type 'darwin)
+      (setq dap-lldb-debug-program '("/usr/local/Cellar/llvm/13.0.0_1/bin/lldb-vscode"))
+      )
   ;; (dap-register-debug-template "LLDB::Run"
   ;; (list :type "lldb"
   ;;       :request "launch"
@@ -554,6 +573,7 @@
   ;;       :target nil
         ;; :cwd nil))
   )
+(use-package! dap-cpptools)
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
@@ -626,6 +646,8 @@
 (use-package! eclipse
   :load-path "~/.doom.d/extra/"
   :config
+  (setq auto-mode-alist (cons '("\\.INCL\\'" . eclipse-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.incl\\'" . eclipse-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.DATA\\'" . eclipse-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.data\\'" . eclipse-mode) auto-mode-alist))
   )
