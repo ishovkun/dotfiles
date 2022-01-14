@@ -95,12 +95,6 @@
     :desc "Recompile" :nv "<C-return>" #'recompile
     :desc "Recompile" :nv "C-<f9>" #'recompile ; in terminal
     )
-  (:after ein
-   (:map ein:notebook-mode-map
-    :desc "Run cell" :nv "<C-return>" #'ein:worksheet-execute-cell-km
-    :desc "Next cell" :nv "C-j" #'ein:worksheet-goto-next-input-km
-    :desc "Next cell" :nv "C-k" #'ein:worksheet-goto-prev-input-km)
-   )
   (:after tex :map LaTeX-mode-map :desc "Recompile" :nv "<C-return>" #'latex/build)
   ;; ivy
   (:after ivy :map ivy-mode-map
@@ -281,6 +275,27 @@
       :map LaTeX-mode-map
       :desc "Environment" "e" #'LaTeX-environment
       )
+(map! :after ein
+      :map ein:notebook-mode-map
+      :desc "Save notebook" :nvi "C-s" #'ein:notebook-save-notebook-command-km
+      :desc "Interrupt" :nvi "C-c C-c" #'ein:notebook-kernel-interrupt-command-km
+      :desc "Next cell" :nv "C-j" #'ein:worksheet-goto-next-input-km
+      :desc "Next cell" :nv "C-k" #'ein:worksheet-goto-prev-input-km
+      :desc "Run cell" :nv "<return>" #'ein:worksheet-execute-cell-km
+      :desc "Run cell" :nv "<C-return>" #'ein:execute-all-cells
+      (:localleader
+       :desc "Insert cell below" "o" #'ein:worksheet-insert-cell-below-km
+       :desc "Insert cell above" "O" #'ein:worksheet-insert-cell-above-km
+       :desc "Close notebook" "x" #'ein:notebook-close-km
+       :desc "Rename notebook" "R" #'ein:notebook-rename-command-km
+       :desc "Change cell type" "t" #'ein:worksheet-change-cell-type-km
+       :desc "Delete cell" "d" #'ein:worksheet-kill-cell-km
+       :desc "Copy cell" "y" #'ein:worksheet-copy-cell-km
+       :desc "Paste cell" "p" #'ein:worksheet-yank-cell-km
+       :desc "Clear output" "c" #'ein:worksheet-clear-output-km
+       )
+      )
+
 
 ;; hack, make cic change text inside curlies
 (define-key evil-inner-text-objects-map "c" 'evil-inner-curly)
