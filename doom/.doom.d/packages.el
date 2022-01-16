@@ -15,15 +15,13 @@
 (package! ccls)
 (package! google-c-style) ; google c/c++ coding style
 (package! company-lsp)
-(package! evil-commentary)
+(package! evil-commentary)              ; easily comment lines
 (package! yascroll)
 (package! evil-swap-keys :recipe (:host github :repo "wbolster/evil-swap-keys"))
 (package! evil-terminal-cursor-changer)
 (package! dap-lldb :recipe (:host github :repo "emacs-lsp/dap-mode"))
 (package! alert)
 (package! org-wild-notifier)
-;; (package! eaf :recipe (:host github
-;;                        :repo "manateelazycat/emacs-application-framework"
-;;                        :files ("*")
-;;                        :no-byte-compile t))
+(package! mini-modeline :recipe (:host github :repo "kiennq/emacs-mini-modeline"))
+(package! lsp-treemacs)
 ;;; packages.el ends here

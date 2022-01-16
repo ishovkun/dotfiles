@@ -1,56 +1,55 @@
-;;; ~/dotfiles/doom/.doom.d/themes/nord-theme.el -*- lexical-binding: t; -*-
+;;; themes/wilmersdorf-theme.el -*- lexical-binding: t; -*-
 
-(deftheme nord)
+(deftheme wilmersdorf)
+
 (let* ((class '((class color) (min-colors 89)))
       ;;                               GUI       TER
       ;; whiteish
-      (snow-storm-dark (if (true-color-p) "#c2c8d1" "#c2c8d1"))
-      (snow-storm      (if (true-color-p) "#d8dee9" "#d8dee9"))
-      (snow-storm-light (if (true-color-p) "#eceff4" "#eceff4"))
-      ;; bluish
-      (frost-green (if (true-color-p) "#8fbcbb" "#5fafff"))     
-      (frost-light-blue (if (true-color-p) "#88c0d0" "#5fafff"))
-      (frost-blue       (if (true-color-p) "#81a1c1" "#5fafff"))
-      (frost-dark-blue  (if (true-color-p) "#5e81ac" "#5fafff"))
-      ;; dark background colors
-      (polar-night  (if (true-color-p) "#2e3440" "#2e3440")) ; main bg
-      (polar-night-light  (if (true-color-p) "#3b4252" "#3b4252")) ; hl-line
-      (polar-night-lighter (if (true-color-p) "#434c5e" "#434c5e")) ; selection
-      (polar-night-lightest (if (true-color-p) "#616e87" "#616e87")) ; comments
+      (snow-storm-dark     (if (true-color-p) "#c2c8d1" "#c2c8d1"))
       (polar-night-dark  (if (true-color-p) "#252b35" "#252b35")) ; mode-line-box
       (polar-night-little-darker  (if (true-color-p) "#272d37" "#2b313c")) ; special buffer bg
-      ;; red-orange-yellow-green-pink
-      (aurora-green     (if (true-color-p) "#a3be8c" "#5fafff"))
-      (aurora-red       (if (true-color-p) "#bf616a" "#5fafff"))
-      (aurora-orange    (if (true-color-p) "#d08770" "#5fafff"))
-      (aurora-yellow    (if (true-color-p) "#ebcb8b" "#5fafff"))
-      (aurora-pink    (if (true-color-p) "#b48dac" "#5fafff"))
       ;;
-      (bg                  polar-night)               ;; main background
-      (bg-light            polar-night-light)         ;; lighter than main
-      (bg-lighter          polar-night-lighter)       ;; lighter than main
-      (bg-dark             polar-night-dark)          ;; darker than main background
-      (bg-dark-special     polar-night-little-darker) ;; solaire color
-      (fg                  snow-storm-dark)           ;; main foreground
-      (fg-dim              polar-night-lightest)      ;; comments
-      (fg-bright           snow-storm)
+      (gray             (if (true-color-p) "#515462" "#515462")) ;; gray
+      (white            (if (true-color-p) "#c9d9ff" "#c9d9ff"))
+      (red              (if (true-color-p) "#e1c1ee" "#e1c1ee"))
+      (orange           (if (true-color-p) "#a6c1e0" "#a6c1e0"))
+      (green            (if (true-color-p) "#5b94ab" "#5b94ab"))
+      (teal             (if (true-color-p) "#7ebebd" "#7ebebd"))
+      (yellow           (if (true-color-p) "#cfcf9c" "#cfcf9c"))
+      (blue             (if (true-color-p) "#819cd6" "#819cd6"))
+      (light-blue       (if (true-color-p) "#90a6db" "#90a6db"))
+      (dark-blue        (if (true-color-p) "#616c96" "#616c96"))
+      (magenta          (if (true-color-p) "#a6c1e0" "#a6c1e0"))
+      (violet           (if (true-color-p) "#b0a2e7" "#b0a2e7"))
+      (cyan             (if (true-color-p) "#7289bc" "#7289bc"))
+      (dark-cyan        (if (true-color-p) "#6e7899" "#6e7899"))
+      ;;
+      (bg               (if (true-color-p) "#282b33" "#282b33")) ;; main background
+      (bg-light         (if (true-color-p) "#333947" "#333947")) ;; lighter than main
+      (bg-lighter       (if (true-color-p) "#434c5e" "#434c5e")) ;; lighter than main
+      (bg-dark          (if (true-color-p) "#1f2024" "#1f2024")) ;; darker than main background
+      (bg-dark-special  (if (true-color-p) "#22242b" "#1e2026")) ;; solaire color
+      (fg               (if (true-color-p) "#adb6c7" "#adb6c7")) ;; main foreground
+      (fg-dim              dark-cyan)                            ;; comments
+      (fg-bright           white)                                ;; selection foreground
       ;; elements
-      (builtin frost-green)
-      (keyword frost-dark-blue)
-      (const  aurora-pink)         ;; digits
-      (comment fg-dim)
-      (func    frost-light-blue)
-      (str     aurora-green)
-      (type    frost-blue)
-      (region  polar-night-lighter)         ;; basically selection
-      (var     aurora-green)
-      (warning aurora-red)
-      (success frost-green)      ;; bright green
-      (search-current frost-dark-blue)      ;; current match
-      (misc aurora-yellow)      ;; latex equations
+      (builtin             teal)
+      (keyword             blue)
+      (const               magenta)                   ;; digits
+      (comment             fg-dim)
+      (func                teal)
+      (str                 green)
+      (type                violet)
+      (region              bg-lighter)        ;; basically selection
+      (var                 magenta)
+      (error               red)
+      (warning             yellow)
+      (success             green)                      ;; bright green
+      (search-current      dark-blue)                  ;; current match
+      (misc                yellow)                     ;; latex equations
       )
   (custom-theme-set-faces
-   'nord
+   'wilmersdorf
    `(default                      ((,class (:background ,bg :foreground ,fg))))
    `(font-lock-builtin-face       ((,class (:foreground ,builtin))))
    `(font-lock-comment-face       ((,class (:foreground ,comment :italic t))))
@@ -85,7 +84,7 @@
    `(doom-modeline-warning             ((,class (:foreground ,warning :background ,bg-dark ))))
    `(doom-modeline-buffer-modified     ((,class (:foreground ,warning :background ,bg-dark ))))
    `(success                           ((,class (:foreground ,success))))
-   `(doom-modeline-lsp-error           ((,class (:foreground ,warning :background ,bg-dark ))))
+   `(doom-modeline-lsp-error           ((,class (:foreground ,error   :background ,bg-dark ))))
    `(doom-modeline-lsp-warning         ((,class (:foreground ,warning :background ,bg-dark ))))
    `(compilation-mode-line-exit        ((,class (:foreground ,success :background ,bg-dark ))))
    `(compilation-mode-line-fail        ((,class (:foreground ,warning :background ,bg-dark ))))
@@ -117,12 +116,12 @@
    `(term-color-white            ((t (:foreground ,fg-bright :background ,fg-bright))))
    ;; term-color-black
    ;; `(error ((t (:foreground ,warning :background ,bg))))
-   `(error ((t (:foreground ,warning))))
+   `(error ((t (:foreground ,error))))
    ;; vterm
    `(vterm-color-default-fg ((,class (:foreground ,fg))))
    `(vterm-color-default-bg ((,class (:background ,bg))))
    ;; compilation
-   `(compilation-error ((t (:foreground ,warning :background ,bg))))
+   `(compilation-error ((t (:foreground ,error :background ,bg))))
    `(compilation-info ((t (:foreground ,keyword :background ,bg))))
    `(compilation-warning ((t (:foreground ,builtin :background ,bg))))
    ;; `(compilation-column-number ((t (:inherit ,comment))))
@@ -213,7 +212,7 @@
    `(js2-jsdoc-value ((,class (:foreground ,str))))
    `(js2-private-member ((,class (:foreground ,fg-bright))))
    `(js3-warning-face ((,class (:underline ,keyword))))
-   `(js3-error-face ((,class (:underline ,warning))))
+   `(js3-error-face ((,class (:underline ,error))))
    `(js3-external-variable-face ((,class (:foreground ,var))))
    `(js3-function-param-face ((,class (:foreground ,success))))
    `(js3-jsdoc-tag-face ((,class (:foreground ,keyword))))
@@ -371,7 +370,7 @@
    `(w3m-header-line-location-title ((,class (:foreground ,func))))
    `(w3m-anchor ((,class (:foreground ,func))))
    `(w3m-form ((,class (:foreground ,str))))
-   `(w3m-error ((,class (:foreground ,warning))))
+   `(w3m-error ((,class (:foreground ,error))))
    `(w3m-tab-selected-retrieving ((,class (:foreground ,const))))
    ;; ---- yascroll
    ;; `(yascroll:thumb-fringe ((,class (:background ,builtin :foreground ,builtin))))
@@ -398,7 +397,7 @@
    `(ein:markdown-header-face ((t (:background ,bg-dark))))
    `(ein:markdown-header-face-1 ((t (:background ,bg))))
    `(ein:cell-output-area ((t (:background ,bg))))
-   `(ein:cell-output-area-error ((t (:background ,bg :foreground ,warning))))
+   `(ein:cell-output-area-error ((t (:background ,bg :foreground ,error))))
    ;; ------ cfw calendar
    `(cfw:face-title              ((t (:foreground ,keyword :background ,bg-dark :weight bold :height 2.0 :inherit variable-pitch))))
    `(cfw:face-header             ((t (:foreground ,fg-bright :background ,bg-dark :weight bold))))
@@ -426,39 +425,29 @@
    );; end custom-set-face
 
   (setq
-   ;; evil-emacs-state-cursor        `(,base00 box)
-   ;; evil-evilified-state-cursr     `(,base0A box)
    evil-hybrid-state-cursor       `(,str bar)
-   ;; evil-iedit-state-cursor        `(,base08 box)
-   ;; evil-iedir-insert-state-cursor `(,base08 bar)
    evil-insert-state-cursor       `(,str bar)
-   ;; evil-lisp-state-cursor         `(,base0E box)
-   ;; evil-motion-state-cursor       `(,base0E box)
    evil-normal-state-cursor       `(,keyword box)
-   ;; evil-replace-state-cursor      `(,base08 hbar)
    evil-visual-state-cursor       `(,keyword box)
-   ;; fci-rule-color                 `(,bg-light)
    fci-rule-color                 `,comment
    pdf-view-midnight-colors       `(,fg . ,bg))
 
   (custom-theme-set-variables
-   'nord
+   'wilmersdorf
    `(ansi-color-names-vector (vector "black" ,warning ,str ,misc ,func ,const ,builtin ,fg-bright))
-  ;;  ;; ["black" "red" "green" "yellow" "blue" "magenta" "cyan" "white"]
    )
 
   )
-
 
 ;;;###autoload
 (when load-file-name
   (add-to-list 'custom-theme-load-path
                (file-name-as-directory (file-name-directory load-file-name))))
 
-(provide-theme 'nord)
+(provide-theme 'wilmersdorf)
 
 ;; Local Variables:
 ;; no-byte-compile: t
 ;; End:
 
-;;; one-dark-theme.el ends here
+;;; wilmersdorf-theme.el ends here

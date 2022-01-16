@@ -352,7 +352,7 @@
 (after! doom-modeline
   (progn
     (winum-mode)
-    (setq doom-modeline-height 10
+    (setq doom-modeline-height 5
           ;; doom-modeline-buffer-file-name-style 'buffer-name ;; just the buffer name
           doom-modeline-buffer-file-name-style 'relative-from-project ;; name start from root
           doom-modeline-buffer-file-name-style 'auto ;; name start from root
@@ -367,6 +367,7 @@
           doom-modeline-display-default-persp-name t
           doom-modeline-percent-position nil
           doom-modeline-unicode-fallback t
+          all-the-icons-scale-factor 1.0
           )
 
     (if window-system
@@ -412,10 +413,6 @@
       (doom-modeline-set-modeline 'ishovkun-line 'default))
 
     (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline)
-
-  ;;   (doom-modeline-def-modeline 'main
-  ;; '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position word-count parrot selection-info)
-  ;; '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
     ))
 
 
@@ -424,25 +421,6 @@
           (require 'evil-terminal-cursor-changer)
           (evil-terminal-cursor-changer-activate) ; or (etcc-on)
           )
-;;(use-package! mini-modeline
-  ;;:after doom-modeline
-  ;;config
-
-    ;; (setq doom-modeline-icon nil)
-
-  ;; (defun ivy-resize--minibuffer-setup-hook ()
-  ;;   "Minibuffer setup hook."
-  ;;   (add-hook 'post-command-hook #'ivy-resize--post-command-hook nil t))
-
-  ;; (defun ivy-resize--post-command-hook ()
-  ;;   "Hook run every command in minibuffer."
-  ;;   (when mini-modeline-mode
-  ;;     (shrink-window (1+ ivy-height))))  ; Plus 1 for the input field.
-
-  ;; (add-hook 'minibuffer-setup-hook 'ivy-resize--minibuffer-setup-hook)
-    ;;(add-hook 'mini-modeline-mode-hook 'my-setup-mini-modeline)
-    ;; (mini-modeline-mode t)
-  ;;)
 
 ;; evil yank to the end of line
 (setq evil-want-Y-yank-to-eol t)
@@ -455,18 +433,18 @@
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 ;; (load-theme 'one-dark t)
-(load-theme 'nord t)
-;; (load-theme 'doom-nord t)
-;;
+;; (load-theme 'nord t)
+(load-theme 'wilmersdorf t)
+
+
 (if window-system
-    (use-package! yascroll
-      :config
-      (setq yascroll:delay-to-hide nil)
-      (add-hook 'prog-mode-hook 'yascroll-bar-mode)
-      ;; (after! ligatures
-      ;;   (add-hook 'prog-mode-hook 'prettify-symbols-mode)
-      ;;   )
-      ))
+    (scroll-bar-mode t)
+  ;; else
+  (use-package! yascroll
+    :config
+    (setq yascroll:delay-to-hide nil)
+    (add-hook 'prog-mode-hook 'yascroll-bar-mode)
+    ))
 
 ;; posframe
 (if window-system
@@ -503,17 +481,8 @@
 (setq mouse-wheel-follow-mouse 't)                  ;; scroll window under mouse
 ;; ----------------------------- c/c++ ----------------------------------
 ;; lsp
-(after! lsp-ui
-  (progn
-    (setq lsp-ui-sideline-enable nil)
-    (setq lsp-ui-doc-enable t)
-    (setq lsp-ui-doc-position 'bottom) ; top, bottom, at-point
-    (setq lsp-ui-doc-max-width 150)
-    (setq lsp-ui-doc-max-height 150)
-    (lsp-ui-doc-mode)
-    ;; (set-face-attribute 'lsp-ui-doc-global nil :height 0.75)
-    )
-  )
+
+
 (after! lsp-mode
   (progn
     (setq lsp-lens-enable nil)     ;; disable stupid lenses
@@ -554,7 +523,41 @@
      ;;                   :remote? t
      ;;                   :server-id 'ccls-remote))
 
+     ;; (setq lsp-headerline-breadcrumb-segments '(project file symbols))
+     (setq lsp-headerline-breadcrumb-segments '(file symbols))
+     (setq lsp-headerline-breadcrumb-icons-enable t)
+     (setq lsp-headerline-breadcrumb-enable t)
+     ;; (setq lsp-headerline-breadcrumb-enable-symbol-numbers t)
+
+     ;; (lsp-treemacs-sync-mode 1)
      ))
+
+(use-package! lsp-ui
+  :config
+  (setq lsp-headerline-breadcrumb-segments '(file symbols))
+  (setq lsp-headerline-breadcrumb-icons-enable t)
+  (setq lsp-headerline-breadcrumb-enable t)
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-position 'bottom) ; top, bottom, at-point
+  (setq lsp-ui-doc-max-width 150)
+  (setq lsp-ui-doc-max-height 150)
+  ;; (set-face-attribute 'lsp-ui-doc-global nil :height 0.75)
+  (lsp-ui-doc-mode)
+  )
+
+;; (after! lsp-ui
+;;   (progn
+;;     (setq lsp-ui-sideline-enable nil)
+;;     (setq lsp-ui-doc-enable t)
+;;     (setq lsp-ui-doc-position 'bottom) ; top, bottom, at-point
+;;     (setq lsp-ui-doc-max-width 150)
+;;     (setq lsp-ui-doc-max-height 150)
+;;     (lsp-ui-doc-mode)
+;;     ;; (set-face-attribute 'lsp-ui-doc-global nil :height 0.75)
+;;     )
+;;   )
+
 ;; -----------------------------------------------------------------
 
 ;; enable dir-locals in tramp
