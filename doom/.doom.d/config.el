@@ -282,7 +282,11 @@
       :desc "Next cell" :nv "C-j" #'ein:worksheet-goto-next-input-km
       :desc "Next cell" :nv "C-k" #'ein:worksheet-goto-prev-input-km
       :desc "Run cell" :nv "<return>" #'ein:worksheet-execute-cell-km
-      :desc "Run cell" :nv "<C-return>" #'ein:execute-all-cells
+      :desc "Run cell" :nv "<C-return>" #'ein:worksheet-execute-all-cells
+      (:leader
+       :prefix "f"
+       :desc "Save notebook" :nv "s" #'ein:notebook-save-notebook-command-km
+       )
       (:localleader
        :desc "Insert cell below" "o" #'ein:worksheet-insert-cell-below-km
        :desc "Insert cell above" "O" #'ein:worksheet-insert-cell-above-km
@@ -293,6 +297,7 @@
        :desc "Copy cell" "y" #'ein:worksheet-copy-cell-km
        :desc "Paste cell" "p" #'ein:worksheet-yank-cell-km
        :desc "Clear output" "c" #'ein:worksheet-clear-output-km
+       :desc "Split cell" "s" #'ein:worksheet-split-cell-at-point-km
        )
       )
 
@@ -327,19 +332,14 @@
   (setq ivy-rich-display-transformers-list
         '(ivy-switch-buffer
           (:columns
-           (;;(+ivy-rich-buffer-icon)
+           (
             (+ivy-rich-buffer-name (:width 30))
             (ivy-rich-switch-buffer-size (:width 7))
             (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
             (ivy-rich-switch-buffer-major-mode (:width 12 :face font-lock-variable-name-face))
             (ivy-rich-switch-buffer-project (:width 15 :face font-lock-keyword-face))
-            ;; (ivy-rich-switch-buffer-path (:width (lambda (x)
-            ;;                                        (ivy-rich-switch-buffer-shorten-path x
-            ;;                                                                             (ivy-rich-minibuffer-width 0.3)))))
             )
            )))
-  ;; (ivy-rich-mode nil)
-  ;; (ivy-rich-mode +1)
 )
 
 (if window-system
@@ -734,7 +734,8 @@
 (setq auth-sources '("~/.authinfo"))
 ;; -------------------------------- Projectile -------------------------------
 (after! projectile
-  (setq compilation-read-command nil)  ; no prompt in projectile-compile-project
+  ;; (setq compilation-read-command nil)  ; no prompt in projectile-compile-project
+  ;; (setq compilation-read-command t)
   ;; . -> Build
   (projectile-register-project-type 'cmake '("CMakeLists.txt")
                                     :configure "cmake %s"

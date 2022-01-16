@@ -32,7 +32,7 @@
       (bg-darker      bg)
       (bg-dark-special     bg-darker) ;; solaire color
       (fg (if (true-color-p) "#9090a0" "#9090a0"))           ;; main foreground
-      (fg-dim              bg-light)      ;; comments
+      (fg-dim              gray)      ;; comments
       (fg-bright           snow-storm)
       ;; elements
       (builtin pink)
