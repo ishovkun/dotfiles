@@ -362,6 +362,15 @@
    `(web-mode-html-attr-value-face ((,class (:foreground ,keyword))))
    `(web-mode-warning-face ((,class (:inherit ,font-lock-warning-face))))
    `(web-mode-html-tag-face ((,class (:foreground ,builtin))))
+   ;; tab bar
+   `(tab-bar ((,class (:background ,bg-dark-special))))
+   `(tab-line ((,class (:background ,bg-dark-special))))
+   `(centaur-tabs-selected                    ((,class (:background ,bg-light))))
+   `(centaur-tabs-selected-modified           ((,class (:foreground ,warning :background ,bg-light))))
+   `(centaur-tabs-modified-marker-selected    ((,class (:foreground ,warning :background ,bg-light))))
+   `(centaur-tabs-unselected                  ((,class (:background ,bg-dark-special))))
+   `(centaur-tabs-unselected-modified         ((,class (:foreground ,warning :background ,bg-dark-special))))
+   `(centaur-tabs-modified-marker-unselected  ((,class (:foreground ,warning :background ,bg-dark-special))))
    ;; w3m
    `(w3m-tab-background ((,class (:background ,bg-dark :foreground ,fg-bright))))
    `(w3m-tab-selected ((,class (:background ,bg-light :foreground ,builtin))))

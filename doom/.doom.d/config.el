@@ -25,9 +25,17 @@
   :nv "M-j"         #'evil-window-down
   :nv "M-l"         #'evil-window-right
   :nv "M-h"         #'evil-window-left
-  ;; :nv "M-l"         #'mac-macs-window-right
-  ;; :nv "M-h"         #'mac-macs-window-left
+  ;; :nv "M-n"         #'next-buffer
+  ;; :nv "M-p"         #'previous-buffer
+  (:after centaur-tabs
+   :nv "M-m"         #'centaur-tabs-forward
+   :nv "M-,"         #'centaur-tabs-backward
+   )
   )
+ (:map treemacs-mode-map
+  "M-l"         #'evil-window-right
+  )
+
  (:map TeX-mode-map
   :nv "j"           #'evil-next-visual-line
   :nv "k"           #'evil-previous-visual-line
@@ -209,6 +217,7 @@
     :desc "switch to compilation buffer" :nv "c" #'switch-to-compilation-buffer
     :desc "switch to messages buffer"    :nv "m" #'switch-to-messages-buffer
     :desc "switch buffer"                :nv "b" #'+ivy/switch-buffer
+    :desc "show all buffers"             :nv "a" #'ibuffer-list-buffers
     )
   ;; files
   (:prefix "f"
@@ -311,17 +320,85 @@
   (define-key company-active-map (kbd "TAB") 'company-yasnippet-or-completion))
 
 
-
 ;; tab switching
-;; (when (string= (system-name) "space")
-;;   (map!
-;;    (:after centaur-tabs :map override
-;;     :nv "M-1"         #'centaur-tabs-select-visible-1st-tab
-;;     :nv "M-2"         #'centaur-tabs-select-visible-2nd-tab
-;;     :nv "M-3"         #'centaur-tabs-select-visible-3rd-tab
-;;     )
-;;    )  ;;
-;; )
+(use-package! centaur-tabs
+  :config
+  (centaur-tabs-mode t)
+
+  (defun wd/get-buffer-persp-group (buffer)
+    (let* ((name))
+      (dolist (persp (persp-persps))
+        (if persp
+            (if (persp-contain-buffer-p buffer persp)
+                (setq name (safe-persp-name persp)))))
+      name
+      ))
+
+  (defun centaur-tabs-buffer-groups ()
+    (list
+     (cond
+      ((or (string-equal "*" (substring (buffer-name) 0 1))
+         (memq major-mode '(magit-process-mode
+                            magit-status-mode
+                            magit-diff-mode
+                            magit-log-mode
+                            magit-file-mode
+                            magit-blob-mode
+                            magit-blame-mode
+                            )))
+     "Emacs")
+    ((derived-mode-p 'eshell-mode)
+     "EShell")
+    ;; ((derived-mode-p 'emacs-lisp-mode) ;; do not separate elisp filed from everything else
+    ;;  "Elisp")
+    ((derived-mode-p 'dired-mode)
+     "Dired")
+    ((memq major-mode '(org-mode org-agenda-mode diary-mode))
+     "OrgMode")
+    (t
+     (let ((name (wd/get-buffer-persp-group (current-buffer))))
+       (if name
+           name
+         ;;(centaur-tabs-get-group-name (current-buffer))
+         "Other"
+         )
+       ))))
+  )
+
+  (defun centaur-tabs-hide-tab (x)
+    "Do no to show buffer X in tabs."
+    (let ((name (format "%s" x)))
+      (or
+       ;; Current window is not dedicated window.
+       (window-dedicated-p (selected-window))
+
+       ;; Buffer name not match below blacklist.
+       (string-prefix-p "*epc" name)
+       (string-prefix-p "*helm" name)
+       (string-prefix-p "*Helm" name)
+       (string-prefix-p "*Compile-Log*" name)
+       (string-prefix-p "*lsp" name)
+       (string-prefix-p "*company" name)
+       (string-prefix-p "*vterm" name)
+       (string-prefix-p "*ccls" name)
+       (string-prefix-p "*Flycheck" name)
+       (string-prefix-p "*quickrun" name)
+       (string-prefix-p "*anaconda-mode" name)
+       (string-prefix-p "*compilation" name)
+       (string-prefix-p "*Deft*" name)
+       (string-prefix-p "*tramp" name)
+       (string-prefix-p " *Mini" name)
+       (string-prefix-p "*help" name)
+       (string-prefix-p "*straight" name)
+       (string-prefix-p " *temp" name)
+       (string-prefix-p "*Help" name)
+       ;; (string-prefix-p "*mybuf" name)
+
+       ;; Is not magit buffer.
+       (and (string-prefix-p "magit" name)
+            (not (file-name-extension name)))
+       )))
+)
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
 (setq display-line-numbers-type 'relative)
@@ -560,11 +637,20 @@
 
 ;; -----------------------------------------------------------------
 
-;; enable dir-locals in tramp
 (after! tramp
+  (setq tramp-inline-compress-start-size 1000)
+  (setq tramp-copy-size-limit 10000)
+  (setq vc-handled-backends '(Git))
+  (setq tramp-verbose 1)
+  (setq tramp-default-method "scp")
+  (setq tramp-use-ssh-controlmaster-options nil)
+  (setq projectile--mode-line "Projectile")
+  (setq tramp-verbose 1)
   (setq tramp-shell-prompt-pattern "^[^$>\n]*[#$%>] *\\(\[[0-9;]*[a-zA-Z] *\\)*")
+  ;; emable tramp dir-locals
+  (setq enable-remote-dir-locals t)
   )
-(setq enable-remote-dir-locals t)
+
 ;; google-c-style
 (use-package! google-c-style
   :load-path "~/.doom.d/extra"
