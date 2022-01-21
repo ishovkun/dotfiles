@@ -19,23 +19,32 @@
 )
 
 (map!
-  ;; window management
+ (:map treemacs-mode-map
+  "M-l"         #'evil-window-right
+  "M-h"         #'evil-window-left
+  )
+  ;; ranger
+  (:after ranger
+   :desc "Invoke deer" :n  "-" #'deer
+   (:map ranger-mode-map
+    "M-k" #'evil-window-up
+    "M-j" #'evil-window-down
+    "M-l" #'evil-window-right
+    "M-h" #'evil-window-left
+    [escape] #'doom/escape
+    )
+   )
+ ;; window management
  (:map override
   :nv "M-k"         #'evil-window-up
   :nv "M-j"         #'evil-window-down
   :nv "M-l"         #'evil-window-right
   :nv "M-h"         #'evil-window-left
-  ;; :nv "M-n"         #'next-buffer
-  ;; :nv "M-p"         #'previous-buffer
   (:after centaur-tabs
    :nv "M-m"         #'centaur-tabs-forward
    :nv "M-,"         #'centaur-tabs-backward
    )
   )
- (:map treemacs-mode-map
-  "M-l"         #'evil-window-right
-  )
-
  (:map TeX-mode-map
   :nv "j"           #'evil-next-visual-line
   :nv "k"           #'evil-previous-visual-line
@@ -70,14 +79,6 @@
   :nvi "M-`"        #'+popup/toggle
   ;; :nv "S"           #'evil-snipe-s
   (:map compilation-mode-map :desc "evil backward char" :nv "h" #'evil-backward-char)
-  ;; ranger
-  (:after ranger :desc "Invoke deer" :n  "-"   #'deer)
-  (:after ranger :map ranger-mode-map
-    "M-k" #'evil-window-up
-    "M-j" #'evil-window-down
-    "M-l" #'evil-window-right
-    "M-h" #'evil-window-left
-    )
   ;; saving
   :desc "Save buffer" :nvi "C-s" #'save-buffer
   (:after evil-surround :map override :desc "Surround" :v "s" #'evil-surround-region)
@@ -133,6 +134,9 @@
    :desc "Two week view"  :nv "T"   #'cfw:change-view-two-weeks
    :desc "Goto date"      :nv "g"   #'cfw:navi-goto-date-command
    :desc "Goto today"     :nv "t"   #'cfw:navi-goto-today-command
+   )
+  (:map calc-edit-mode-map
+   :desc "Quit calc-edit" :nv "q" #'kill-current-buffer
    )
 )
 (map! :leader
@@ -273,9 +277,11 @@
     (:after realgud :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
     :desc "Open vterm" :n "t" #'+vterm/here
     :desc "Open calendar" :n "c" #'=calendar
+    :desc "Open calc" :n "'" #'calc
     (:after dap-mode :map c++-mode-map
      :desc "Edit default dap config" :nv "j" #'dap-debug-create-or-edit-json-template)
-    :desc "open Ipython notebook" :n "i" #'ein:run
+    (:after ein
+     :desc "Open Ipython notebook" :n "i" #'ein:run)
     )
 ) ; end map leader
 
@@ -514,14 +520,16 @@
 (load-theme 'wilmersdorf t)
 
 
-(if window-system
-    (scroll-bar-mode t)
+;; (if window-system
+;;     (scroll-bar-mode t)
   ;; else
   (use-package! yascroll
     :config
     (setq yascroll:delay-to-hide nil)
+    (setq yascroll:scroll-bar 'text-area)
     (add-hook 'prog-mode-hook 'yascroll-bar-mode)
-    ))
+    )
+  ;; )
 
 ;; posframe
 (if window-system
@@ -601,9 +609,9 @@
      ;;                   :server-id 'ccls-remote))
 
      ;; (setq lsp-headerline-breadcrumb-segments '(project file symbols))
-     (setq lsp-headerline-breadcrumb-segments '(file symbols))
-     (setq lsp-headerline-breadcrumb-icons-enable t)
-     (setq lsp-headerline-breadcrumb-enable t)
+     ;; (setq lsp-headerline-breadcrumb-segments '(file symbols))
+     ;; (setq lsp-headerline-breadcrumb-icons-enable t)
+     ;; (setq lsp-headerline-breadcrumb-enable t)
      ;; (setq lsp-headerline-breadcrumb-enable-symbol-numbers t)
 
      ;; (lsp-treemacs-sync-mode 1)
@@ -611,9 +619,9 @@
 
 (use-package! lsp-ui
   :config
-  (setq lsp-headerline-breadcrumb-segments '(file symbols))
-  (setq lsp-headerline-breadcrumb-icons-enable t)
-  (setq lsp-headerline-breadcrumb-enable t)
+  ;; (setq lsp-headerline-breadcrumb-segments '(file symbols))
+  ;; (setq lsp-headerline-breadcrumb-icons-enable t)
+  ;; (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-ui-sideline-enable nil)
   (setq lsp-ui-doc-enable t)
   (setq lsp-ui-doc-position 'bottom) ; top, bottom, at-point
@@ -649,6 +657,12 @@
   (setq tramp-shell-prompt-pattern "^[^$>\n]*[#$%>] *\\(\[[0-9;]*[a-zA-Z] *\\)*")
   ;; emable tramp dir-locals
   (setq enable-remote-dir-locals t)
+  (setq vc-ignore-dir-regexp
+      (format "\\(%s\\)\\|\\(%s\\)"
+              vc-ignore-dir-regexp
+              tramp-file-name-regexp))
+  ;; if line above is too radical
+  ;; (setq vc-handled-backends '(Git))
   )
 
 ;; google-c-style
