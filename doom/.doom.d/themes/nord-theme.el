@@ -92,6 +92,8 @@
    `(compilation-mode-line-run         ((,class (:foreground ,builtin :background ,bg-dark ))))
    ;; modeline git branch color
    `(doom-modeline-info  ((,class (:foreground ,success :weight bold))))
+   `(mini-modeline-mode-line           ((,class (:background ,builtin :height 2))))
+   `(mini-modeline-mode-line-inactive  ((,class (:background ,bg-dark :height 2))))
    ;; first thing on the right
    ;; `(mode-line ((,class (:box (:line-width 1 :color ,bg) :bold t :foreground ,builtin :background ,bg-dark))))
    `(mode-line ((,class (:bold t :foreground ,fg-bright :background ,bg-dark))))

@@ -329,7 +329,11 @@
 ;; tab switching
 (use-package! centaur-tabs
   :config
-  (centaur-tabs-mode t)
+  ;; (setq centaur-tabs-height 4)
+  (centaur-tabs-init-tabsets-store)
+  ;; (centaur-tabs-init-tabsets-store)
+  ;; (centaur-tabs-display-update)
+  ;; (centaur-tabs-headline-match)
 
   (defun wd/get-buffer-persp-group (buffer)
     (let* ((name))
@@ -406,6 +410,7 @@
        (and (string-prefix-p "magit" name)
             (not (file-name-extension name)))
        )))
+  (centaur-tabs-mode t)
 )
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
@@ -839,6 +844,38 @@
   (setq ein:output-area-inlined-images t)
   )
 ;; ----------------------------------- Shell ---------------------------------
+(when (display-graphic-p)
+  (use-package mini-modeline
+    :after doom-modeline
+    :config
+    (doom-modeline-def-modeline 'minibuffer-line
+      '(matches remote-host persp-name major-mode indent-info vcs lsp checker fancy-modals)
+      )
+    ;; (setq doom-modeline-major-mode-icon nil)
+
+    (setq mini-modeline-l-format '("%e" mode-line-front-space
+                                   ;; (:eval (doom-modeline--anzu))
+                                   ;; (:eval (doom-modeline--buffer-mode-icon))
+                                   (:eval (doom-modeline--macro-recording))
+                                   (:eval (doom-modeline--buffer-name))
+                                   ))
+    (setq mini-modeline-r-format '(:eval (doom-modeline-format--minibuffer-line)))
+    (setq mini-modeline-right-padding 0 mini-modeline-enhance-visual t)
+    ;; shut up minibuffer messages
+    ;; (setq inhibit-message nil)
+    (global-eldoc-mode -1) ;; disable useful eldoc messages
+
+    (global-hide-mode-line-mode)
+    (set-face-attribute 'mode-line nil :box nil :height 1)
+    (set-face-attribute 'minibuffer-prompt nil :background (face-background 'tab-bar))
+    (setq mini-modeline-display-gui-line nil)
+    (remove-hook 'dired-mode-hook #'doom-modeline-set-project-modeline t)
+    ;; (add-hook 'ranger-mode-hook #'hide-mode-line-mode)
+
+    ;; (mini-modeline-mode t)
+        ;; :hook (after-init . mini-modeline-mode)
+    )
+)
 ;; --------------------------------- Fixes -----------------------------------
 ;; (setq evil-respect-visual-line-mode t)
 (setq evil-respect-visual-line-mode 0) ;; otherwise  deletes line on cc
