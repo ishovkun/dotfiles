@@ -91,8 +91,9 @@
    `(compilation-mode-line-run         ((,class (:foreground ,builtin :background ,bg-dark ))))
    ;; modeline git branch color
    `(doom-modeline-info  ((,class (:foreground ,success :weight bold))))
+   `(mini-modeline-mode-line           ((,class (:background ,builtin :height 2))))
+   `(mini-modeline-mode-line-inactive  ((,class (:background ,bg-dark :height 2))))
    ;; first thing on the right
-   ;; `(mode-line ((,class (:box (:line-width 1 :color ,bg) :bold t :foreground ,builtin :background ,bg-dark))))
    `(mode-line ((,class (:bold t :foreground ,fg-bright :background ,bg-dark))))
    `(mode-line-inactive ((,class (:box (:line-width 1 :color ,bg-dark) :foreground ,fg :background ,bg-dark :weight bold))))
    `(mode-line-highlight ((,class (:foreground ,keyword :box nil :weight bold))))
@@ -314,8 +315,6 @@
    `(ivy-posframe        ((,class (:background ,bg-dark))))
    ;; darken special buffers
    `(solaire-default-face        ((,class (:background ,bg-dark-special))))
-
-   ;; `(ivy-separator       ((,class (:background ,black))))
     ;;; modify minibuffer-prompt to change posframe top line color
    ;; dired
    `(diredp-dir-heading           ((,class (:foreground ,str :background ,bg))))
@@ -369,7 +368,8 @@
    ;; tab bar
    `(tab-bar ((,class (:background ,bg-dark-special))))
    `(tab-line ((,class (:background ,bg-dark-special))))
-   `(centaur-tabs-selected                    ((,class (:background ,bg-light))))
+   `(centaur-tabs-active-bar-face             ((,class (:background ,builtin))))
+   `(centaur-tabs-selected                    ((,class (:background ,bg))))
    `(centaur-tabs-selected-modified           ((,class (:foreground ,warning :background ,bg-light))))
    `(centaur-tabs-modified-marker-selected    ((,class (:foreground ,warning :background ,bg-light))))
    `(centaur-tabs-unselected                  ((,class (:background ,bg-dark-special))))
@@ -388,7 +388,8 @@
    `(w3m-tab-selected-retrieving    ((,class (:foreground ,const))))
    ;; ---- yascroll
    ;; `(yascroll:thumb-fringe ((,class (:background ,builtin :foreground ,builtin))))
-   `(yascroll:thumb-fringe ((,class (:background ,region :foreground ,region))))
+   `(yascroll:thumb-fringe    ((,class (:background ,region :foreground ,region ))))
+   `(yascroll:thumb-text-area ((,class (:background ,region :foreground ,region ))))
    `(scroll-bar    ((,class (:foreground ,bg-light))))
    ;; ----
    `(jde-java-font-lock-package-face ((t (:foreground ,var))))
