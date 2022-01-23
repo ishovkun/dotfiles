@@ -389,6 +389,8 @@
        (string-prefix-p "*ccls" name)
        (string-prefix-p "*Flycheck" name)
        (string-prefix-p "*quickrun" name)
+       (string-prefix-p "*Calculator*" name)
+       (string-prefix-p "*Calc Trail*" name)
        (string-prefix-p "*anaconda-mode" name)
        (string-prefix-p "*compilation" name)
        (string-prefix-p "*Deft*" name)
@@ -430,12 +432,12 @@
         window-divider-default-right-width  4)
   (window-divider-mode +1)
 )
+(use-package doom-modeline
+  :demand t
+  :config
 
-;; set modes
-(after! doom-modeline
-  (progn
-    (winum-mode)
-    (setq doom-modeline-height 5
+  (winum-mode)
+  (setq doom-modeline-height 5
           ;; doom-modeline-buffer-file-name-style 'buffer-name ;; just the buffer name
           doom-modeline-buffer-file-name-style 'relative-from-project ;; name start from root
           doom-modeline-buffer-file-name-style 'auto ;; name start from root
@@ -452,14 +454,38 @@
           doom-modeline-unicode-fallback t
           all-the-icons-scale-factor 1.0
           )
+  (if window-system
+      (setq doom-modeline-icon t
+            doom-modeline-major-mode-icon t
+       ))
 
-    (if window-system
-        (setq
-         doom-modeline-icon t
-         doom-modeline-major-mode-icon t
-         ))
-
-    (doom-modeline-def-segment window-number-evil
+  (doom-modeline-def-segment fancy-modals
+    "The current evil state. Requires `evil-mode' to be enabled."
+    (when (bound-and-true-p evil-local-mode)
+      (let ((num
+             (cond ((evil-normal-state-p)   "NORMAL")
+                   ((evil-emacs-state-p)    "EMACS")
+                   ((evil-insert-state-p)   "INSERT")
+                   ((evil-motion-state-p)   "MOTION")
+                   ((evil-visual-state-p)   "VISUAL")
+                   ((evil-operator-state-p) "OPERATOR")
+                   ((evil-replace-state-p)  "REPLACE")
+                   )
+             ))
+      (propertize (format " %s " num)
+                  'face (if (doom-modeline--active)
+                            (cond ((evil-normal-state-p)   'doom-modeline-evil-normal-state)
+                                  ((evil-emacs-state-p)    'doom-modeline-evil-emacs-state)
+                                  ((evil-insert-state-p)   'doom-modeline-evil-insert-state)
+                                  ((evil-motion-state-p)   'doom-modeline-evil-motion-state)
+                                  ((evil-visual-state-p)   'doom-modeline-evil-visual-state)
+                                  ((evil-operator-state-p) 'doom-modeline-evil-operator-state)
+                                  ((evil-replace-state-p)  'doom-modeline-evil-replace-state))
+                      'mode-line-inactive))
+      )
+    )
+    )
+  (doom-modeline-def-segment window-number-evil
       (let ((num (cond
                   ((bound-and-true-p ace-window-display-mode)
                   (aw-update)
@@ -481,23 +507,18 @@
                             ((evil-replace-state-p)  'doom-modeline-evil-replace-state))
                       'mode-line-inactive))
           ))
-    ; filesize in modeline
-    (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
-    ;; my own modeline
-    (doom-modeline-def-modeline 'ishovkun-line
-      '(bar workspace-name window-number-evil matches buffer-info remote-host buffer-position word-count parrot selection-info)
-      '(misc-info persp-name buffer-encoding major-mode indent-info process vcs lsp checker))
-
-    ;; (doom-modeline-def-modeline 'ishovkun-line
-    ;;   '(workspace-name window-number-evil matches buffer-info remote-host buffer-position word-count parrot selection-info)
-    ;;   '(misc-info minor-modes buffer-encoding major-mode indent-info process vcs lsp checker))
+  ;; filesize in modeline
+  (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
+  ;; my own modeline
+  (doom-modeline-def-modeline 'ishovkun-line
+    '(bar workspace-name window-number-evil matches buffer-info remote-host buffer-position word-count parrot selection-info)
+    '(misc-info persp-name buffer-encoding major-mode indent-info process vcs lsp checker))
 
     (defun setup-custom-doom-modeline ()
       (doom-modeline-set-modeline 'ishovkun-line 'default))
 
     (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline)
-    ))
-
+  )  ;; end use-package doom-modeline
 
 ;; Cursor shape in emacs terminal
 (unless (display-graphic-p)
@@ -553,8 +574,6 @@
 
     (ivy-posframe-mode 1)
 ))
-
-
 
 ;; ranger
 (setq ranger-deer-show-details nil)
