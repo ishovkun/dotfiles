@@ -1,22 +1,20 @@
 ;;; ~/.doom.d/config.el -*- lexical-binding: t; -*-
 
 ;; place your private configuration here
-(setq doom-font (font-spec :family "Iosevka SS04" :size 14))
+;; (setq doom-font (font-spec :family "Iosevka SS04" :size 14))
 (when (string= (system-name) "space")
-  ;; different scaling
-  ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 27)))
   (setq doom-font (font-spec :family "Iosevka" :size 13 :width 'normal)))
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
 
 (if (eq system-type 'darwin)
-  ; something for OS X if true
-  ; optional something if not
-;;; I prefer cmd key for meta
-(setq mac-option-key-is-meta nil
-      mac-command-key-is-meta t
-      mac-command-modifier 'meta
-      mac-option-modifier 'none)
-)
+    (progn
+       (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 14))
+        ;;; I prefer cmd key for meta
+       (setq mac-option-key-is-meta nil
+             mac-command-key-is-meta t
+             mac-command-modifier 'meta
+             mac-option-modifier 'none)
+       ))
 
 (map!
  (:map treemacs-mode-map
@@ -318,21 +316,24 @@
 
 
 ;; hack, make cic change text inside curlies
+(after! evil
 (define-key evil-inner-text-objects-map "c" 'evil-inner-curly)
+)
 ;; hack, disable tab completion for company
 ;; doesn't work via map!
 (with-eval-after-load 'company
   (define-key company-active-map (kbd "<tab>") nil)
   (define-key company-active-map (kbd "TAB") 'company-yasnippet-or-completion))
 
-
 ;; tab switching
 (use-package! centaur-tabs
+  :init
+  (setq centaur-tabs-set-close-button nil)
+  (setq centaur-tabs-show-count t)
   :config
-  ;; (setq centaur-tabs-height 4)
-  (centaur-tabs-init-tabsets-store)
   ;; (centaur-tabs-init-tabsets-store)
-  ;; (centaur-tabs-display-update)
+  (centaur-tabs-init-tabsets-store)
+  (centaur-tabs-display-update)
   ;; (centaur-tabs-headline-match)
 
   (defun wd/get-buffer-persp-group (buffer)
@@ -440,7 +441,6 @@
 (use-package doom-modeline
   :demand t
   :config
-
   (winum-mode)
   (setq doom-modeline-height 5
           ;; doom-modeline-buffer-file-name-style 'buffer-name ;; just the buffer name
@@ -550,9 +550,10 @@
 ;;     (scroll-bar-mode t)
   ;; else
   (use-package! yascroll
+    :init
+    (setq yascroll:delay-to-hide nil
+          yascroll:scroll-bar 'text-area)
     :config
-    (setq yascroll:delay-to-hide nil)
-    (setq yascroll:scroll-bar 'text-area)
     (add-hook 'prog-mode-hook 'yascroll-bar-mode)
     )
   ;; )
@@ -560,7 +561,7 @@
 ;; posframe
 (if window-system
     (use-package! ivy-posframe
-      :config
+      :init
       ;; (setq ivy-posframe-parameters
       ;;       '((left-fringe . 20)
       ;;         (right-fringe . 20)
@@ -576,7 +577,7 @@
             ivy-posframe-parameters `((min-width . 50)
                                       (min-height . ,ivy-height))
             )
-
+      :config
     (ivy-posframe-mode 1)
 ))
 
@@ -642,15 +643,16 @@
      ))
 
 (use-package! lsp-ui
-  :config
-  ;; (setq lsp-headerline-breadcrumb-segments '(file symbols))
-  ;; (setq lsp-headerline-breadcrumb-icons-enable t)
-  ;; (setq lsp-headerline-breadcrumb-enable nil)
+  :init
   (setq lsp-ui-sideline-enable nil)
   (setq lsp-ui-doc-enable t)
   (setq lsp-ui-doc-position 'bottom) ; top, bottom, at-point
   (setq lsp-ui-doc-max-width 150)
   (setq lsp-ui-doc-max-height 150)
+  ;; (setq lsp-headerline-breadcrumb-segments '(file symbols))
+  ;; (setq lsp-headerline-breadcrumb-icons-enable t)
+  ;; (setq lsp-headerline-breadcrumb-enable nil)
+  :config
   ;; (set-face-attribute 'lsp-ui-doc-global nil :height 0.75)
   (lsp-ui-doc-mode)
   )
@@ -851,8 +853,6 @@
     (doom-modeline-def-modeline 'minibuffer-line
       '(matches remote-host persp-name major-mode indent-info vcs lsp checker fancy-modals)
       )
-    ;; (setq doom-modeline-major-mode-icon nil)
-
     (setq mini-modeline-l-format '("%e" mode-line-front-space
                                    ;; (:eval (doom-modeline--anzu))
                                    ;; (:eval (doom-modeline--buffer-mode-icon))
@@ -870,10 +870,7 @@
     (set-face-attribute 'minibuffer-prompt nil :background (face-background 'tab-bar))
     (setq mini-modeline-display-gui-line nil)
     (remove-hook 'dired-mode-hook #'doom-modeline-set-project-modeline t)
-    ;; (add-hook 'ranger-mode-hook #'hide-mode-line-mode)
-
-    ;; (mini-modeline-mode t)
-        ;; :hook (after-init . mini-modeline-mode)
+    (mini-modeline-mode t)
     )
 )
 ;; --------------------------------- Fixes -----------------------------------
