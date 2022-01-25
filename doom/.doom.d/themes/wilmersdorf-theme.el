@@ -368,6 +368,8 @@
    ;; tab bar
    `(tab-bar ((,class (:background ,bg-dark-special))))
    `(tab-line ((,class (:background ,bg-dark-special))))
+   `(tab-line-tab-current ((,class (:background ,bg))))
+   `(tab-line-tab-inactive ((,class (:background ,bg-dark-special))))
    `(centaur-tabs-active-bar-face             ((,class (:background ,builtin))))
    `(centaur-tabs-selected                    ((,class (:background ,bg))))
    `(centaur-tabs-selected-modified           ((,class (:foreground ,warning :background ,bg-light))))
