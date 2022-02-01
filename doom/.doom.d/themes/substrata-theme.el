@@ -106,6 +106,7 @@
    `(spaceline-highlight-face-evil-state ((,class (:bold t :foreground ,func :background ,bg))))
    `(spacemacs-hybrid-face ((t (:foreground ,bg :background ,str :inherit 'mode-line))))
    `(spacemacs-normal-face ((t (:foreground ,bg :background ,keyword :inherit 'mode-line))))
+   `(error ((t (:foreground ,warning))))
    ;; term
    `(term-color-black            ((t (:foreground ,bg :background ,bg))))
    `(term-color-red              ((t (:foreground ,warning :background ,warning))))
@@ -115,12 +116,17 @@
    `(term-color-magenta          ((t (:foreground ,const :background ,const))))
    `(term-color-cyan             ((t (:foreground ,builtin :background ,builtin))))
    `(term-color-white            ((t (:foreground ,fg-bright :background ,fg-bright))))
-   ;; term-color-black
-   ;; `(error ((t (:foreground ,warning :background ,bg))))
-   `(error ((t (:foreground ,warning))))
    ;; vterm
-   `(vterm-color-default-fg ((,class (:foreground ,fg))))
-   `(vterm-color-default-bg ((,class (:background ,bg))))
+   `(vterm-color-default-fg      ((,class (:foreground ,fg))))
+   `(vterm-color-default-bg      ((,class (:background ,bg))))
+   `(vterm-color-black           ((t (:foreground ,fg :background ,bg-dark))))
+   `(vterm-color-red             ((t (:foreground ,error :background ,warning))))
+   `(vterm-color-green           ((t (:foreground ,str :background ,str))))
+   `(vterm-color-yellow          ((t (:foreground ,misc :background ,misc))))
+   `(vterm-color-blue            ((t (:foreground ,type :background ,type))))
+   `(vterm-color-magenta         ((t (:foreground ,const :background ,const))))
+   `(vterm-color-cyan            ((t (:foreground ,builtin :background ,builtin))))
+   `(vterm-color-white           ((t (:foreground ,fg-bright :background ,fg-bright))))
    ;; compilation
    `(compilation-error ((t (:foreground ,warning :background ,bg))))
    `(compilation-info ((t (:foreground ,keyword :background ,bg))))

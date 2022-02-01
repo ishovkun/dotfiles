@@ -8,7 +8,7 @@
 
 (if (eq system-type 'darwin)
     (progn
-       (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 14))
+       (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 12))
         ;;; I prefer cmd key for meta
        (setq mac-option-key-is-meta nil
              mac-command-key-is-meta t
@@ -296,7 +296,8 @@
       :desc "Next cell" :nv "C-k" #'ein:worksheet-goto-prev-input-km
       :desc "Run cell" :nv "<return>" #'ein:worksheet-execute-cell-km
       :desc "Run cell" :nv "<C-return>" #'ein:worksheet-execute-all-cells
-      (:leader
+      (:map ein:notebook-mode-map
+       :leader
        :prefix "f"
        :desc "Save notebook" :nv "s" #'ein:notebook-save-notebook-command-km
        )
@@ -329,7 +330,7 @@
 (use-package! centaur-tabs
   :init
   (setq centaur-tabs-set-close-button nil)
-  (setq centaur-tabs-show-count t)
+  (setq centaur-tabs-show-count nil)
   :config
   ;; (centaur-tabs-init-tabsets-store)
   (centaur-tabs-init-tabsets-store)
@@ -561,7 +562,7 @@
 ;; posframe
 (if window-system
     (use-package! ivy-posframe
-      :init
+      :config
       ;; (setq ivy-posframe-parameters
       ;;       '((left-fringe . 20)
       ;;         (right-fringe . 20)
@@ -842,7 +843,8 @@
 ;;     )
 ;;   )
 ;; ----------------------------------- Jupiter ---------------------------------
-(after! ein
+(use-package! ein
+  :config
   (setq ein:output-area-inlined-images t)
   )
 ;; ----------------------------------- Shell ---------------------------------
