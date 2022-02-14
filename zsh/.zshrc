@@ -1,76 +1,42 @@
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # do not do fancy terminal prompts while connecting through tramp
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
 
-# Path to your oh-my-zsh installation.
-# export ZSH=/home/ishovkun/.oh-my-zsh
-export ZSH=$HOME/.oh-my-zsh
-
-# Time on RHS
-# RPROMPT='%{$fg[green]%}[%*]%{$reset_color%}'
-
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-# ZSH_THEME="robbyrussell"
-ZSH_THEME="bira"
-# ZSH_THEME="intheloop"
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
+# oh-my-zsh variables
 # Uncomment the following line to use hyphen-insensitive completion. Case
 # sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
+HYPHEN_INSENSITIVE="true"
 # Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
+DISABLE_AUTO_TITLE="true"
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
 
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions z fancy-ctrl-z zsh-completions)
-
-source $ZSH/oh-my-zsh.sh
-
+# zgen
+# install: git clone https://github.com/tarjoilija/zgen.git "${HOME}/.zgen"
+source "${HOME}/.zgen/zgen.zsh"
+if ! zgen saved; then
+  zgen oh-my-zsh
+  # specify plugins here
+  zgen oh-my-zsh plugins/git
+  zgen oh-my-zsh plugins/sudo
+  zgen oh-my-zsh plugins/z
+  zgen load zsh-users/zsh-syntax-highlighting
+  zgen load zsh-users/zsh-completions src
+  zgen load zsh-users/zsh-autosuggestions
+  zgen load cal2195/q
+  zgen load Aloxaf/fzf-tab
+  # theme
+  # zgen oh-my-zsh themes/arrow
+  zgen load $HOME/dotfiles/zsh/ishovkun.zsh-theme
+  # generate the init script from plugins above
+  zgen save
+  ### NOTE: after update, run: zgen reset; source ~/.zshrc
+fi
 
 # User configuration
 local ret_status="%(?:%{$fg_bold[green]%}❯ :%{$fg_bold[red]%}❯ )"
-
-# source /home/ishovkun/.deer/deer
-# zle -N deer
-# bindkey '\ee' deer
 
 # nnn config
 n ()
@@ -106,57 +72,25 @@ nnn-navigate () {
 zle -N nnn-navigate
 bindkey '\ee' nnn-navigate
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
 export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+# aliases
 alias gmsh="~/build/gmsh/bin/gmsh"
 alias ssh="TERM=xterm-256color ssh"
 alias msh2="~/dev/msh2gprs/build/msh2gprs"
 alias doom="~/.emacs.d/bin/doom"
 
-
 PYTHONPATH="${PYTHONPATH}:/home/ishovkun/dev"
+PYTHONPATH="${PYTHONPATH}:/$HOME/build/python"
 export PYTHONPATH
 
 # color gcc output
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# color man
-man() {
-    LESS_TERMCAP_md=$'\e[01;31m' \
-    LESS_TERMCAP_me=$'\e[0m' \
-    LESS_TERMCAP_se=$'\e[0m' \
-    LESS_TERMCAP_so=$'\e[01;44;33m' \
-    LESS_TERMCAP_ue=$'\e[0m' \
-    LESS_TERMCAP_us=$'\e[01;32m' \
-    command man "$@"
-}
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-FZF_DEFAULT_OPTS="--color=light,fg:15,bg:0,bg+:10,info:2"
-
-# fish-like syntax highlight
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export FZF_DEFAULT_OPTS="--color=light,fg:15,bg:0,bg+:10,info:2"
 
 # disable ctrl-s
 stty -ixon
@@ -169,7 +103,6 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
     alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 fi
 
+
 export PARDISO_LIC_PATH="$HOME/lic/pardiso.lic"
 export SSH_ASKPASS='/usr/bin/ksshaskpass'
-# export SVD_LICENSE_FILE="$HOME/lic/SAMG.lic"
-export SVD_LICENSE_FILE='27001@cees-download'
