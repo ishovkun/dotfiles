@@ -17,7 +17,7 @@
 (package! company-lsp)
 (package! evil-commentary)              ; easily comment lines
 (package! yascroll)
-(package! evil-swap-keys :recipe (:host github :repo "wbolster/evil-swap-keys"))
+;; (package! evil-swap-keys :recipe (:host github :repo "wbolster/evil-swap-keys"))
 (package! evil-terminal-cursor-changer)
 (package! dap-lldb :recipe (:host github :repo "emacs-lsp/dap-mode"))
 (package! alert)

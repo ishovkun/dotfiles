@@ -38,6 +38,9 @@
   :nv "M-j"         #'evil-window-down
   :nv "M-l"         #'evil-window-right
   :nv "M-h"         #'evil-window-left
+  :nv "M-M"           #'+workspace/switch-left
+  :nv "M-<"           #'+workspace/switch-right
+
   (:after centaur-tabs
    :nv "M-m"         #'centaur-tabs-forward
    :nv "M-,"         #'centaur-tabs-backward
@@ -47,10 +50,11 @@
   :nv "j"           #'evil-next-visual-line
   :nv "k"           #'evil-previous-visual-line
   )
-  :nv "S-C-<left>"  #'shrink-window-horizontally
-  :nv "S-C-<right>" #'enlarge-window-horizontally
-  :nv "S-C-<down>"  #'shrink-window
-  :nv "S-C-<up>"    #'enlarge-window
+  :nv "M-H"         #'shrink-window-horizontally
+  ;; :nv "S-C-<left>"  #'shrink-window-horizontally
+  :nv "M-L"         #'enlarge-window-horizontally
+  :nv "M-J"         #'shrink-window
+  :nv "M-K"         #'enlarge-window
   ;; indenting
   :n  "<"           #'evil-shift-left-line
   :n  ">"           #'evil-shift-right-line
