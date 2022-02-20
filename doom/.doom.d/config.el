@@ -259,6 +259,8 @@
       :desc "Project replace"   :n  "R" #'projectile-replace
       )
     )
+  (:prefix "b"
+   :desc "rename buffer" :n "R" #'rename-buffer)
   ;; browse functions
   (:prefix "s"
     (:desc "Browse functions" :nv "j" #'counsel-imenu)
@@ -293,29 +295,31 @@
       :desc "Environment" "e" #'LaTeX-environment
       )
 (map! :after ein
-      :map ein:notebook-mode-map
-      :desc "Save notebook" :nvi "C-s" #'ein:notebook-save-notebook-command-km
-      :desc "Interrupt" :nvi "C-c C-c" #'ein:notebook-kernel-interrupt-command-km
-      :desc "Next cell" :nv "C-j" #'ein:worksheet-goto-next-input-km
-      :desc "Next cell" :nv "C-k" #'ein:worksheet-goto-prev-input-km
-      :desc "Run cell" :nv "<return>" #'ein:worksheet-execute-cell-km
-      :desc "Run cell" :nv "<C-return>" #'ein:worksheet-execute-all-cells
       (:map ein:notebook-mode-map
-       :leader
-       :prefix "f"
-       :desc "Save notebook" :nv "s" #'ein:notebook-save-notebook-command-km
-       )
-      (:localleader
-       :desc "Insert cell below" "o" #'ein:worksheet-insert-cell-below-km
-       :desc "Insert cell above" "O" #'ein:worksheet-insert-cell-above-km
-       :desc "Close notebook" "x" #'ein:notebook-close-km
-       :desc "Rename notebook" "R" #'ein:notebook-rename-command-km
-       :desc "Change cell type" "t" #'ein:worksheet-change-cell-type-km
-       :desc "Delete cell" "d" #'ein:worksheet-kill-cell-km
-       :desc "Copy cell" "y" #'ein:worksheet-copy-cell-km
-       :desc "Paste cell" "p" #'ein:worksheet-yank-cell-km
-       :desc "Clear output" "c" #'ein:worksheet-clear-output-km
-       :desc "Split cell" "s" #'ein:worksheet-split-cell-at-point-km
+       :desc "Save notebook" :nvi "C-s" #'ein:notebook-save-notebook-command-km
+       :desc "Interrupt" :nvi "C-c C-c" #'ein:notebook-kernel-interrupt-command-km
+       :desc "Next cell" :nv "C-j" #'ein:worksheet-goto-next-input-km
+       :desc "Next cell" :nv "C-k" #'ein:worksheet-goto-prev-input-km
+       :desc "Run cell" :nv "<return>" #'ein:worksheet-execute-cell-km
+       :desc "Run cell" :nv "<C-return>" #'ein:worksheet-execute-all-cells
+       (:leader
+        :map ein:notebook-mode-map
+        :prefix "f"
+        :desc "Save notebook" :nv "s" #'ein:notebook-save-notebook-command-km
+        )
+
+       (:localleader
+        :desc "Insert cell below" "o" #'ein:worksheet-insert-cell-below-km
+        :desc "Insert cell above" "O" #'ein:worksheet-insert-cell-above-km
+        :desc "Close notebook" "x" #'ein:notebook-close-km
+        :desc "Rename notebook" "R" #'ein:notebook-rename-command-km
+        :desc "Change cell type" "t" #'ein:worksheet-change-cell-type-km
+        :desc "Delete cell" "d" #'ein:worksheet-kill-cell-km
+        :desc "Copy cell" "y" #'ein:worksheet-copy-cell-km
+        :desc "Paste cell" "p" #'ein:worksheet-yank-cell-km
+        :desc "Clear output" "c" #'ein:worksheet-clear-output-km
+        :desc "Split cell" "s" #'ein:worksheet-split-cell-at-point-km
+        )
        )
       )
 
@@ -395,7 +399,7 @@
        (string-prefix-p "*Compile-Log*" name)
        (string-prefix-p "*lsp" name)
        (string-prefix-p "*company" name)
-       (string-prefix-p "*vterm" name)
+       ;; (string-prefix-p "*vterm" name)
        (string-prefix-p "*ccls" name)
        (string-prefix-p "*Flycheck" name)
        (string-prefix-p "*quickrun" name)
@@ -551,17 +555,14 @@
 (load-theme 'wilmersdorf t)
 
 
-;; (if window-system
-;;     (scroll-bar-mode t)
-  ;; else
-  (use-package! yascroll
-    :init
-    (setq yascroll:delay-to-hide nil
-          yascroll:scroll-bar 'text-area)
-    :config
-    (add-hook 'prog-mode-hook 'yascroll-bar-mode)
+(use-package! yascroll
+  :init
+  (setq yascroll:delay-to-hide nil
+        yascroll:scroll-bar 'text-area)
+  :config
+  (add-hook 'prog-mode-hook 'yascroll-bar-mode)
+  (add-hook 'text-mode-hook 'yascroll-bar-mode)
     )
-  ;; )
 
 ;; posframe
 (if window-system

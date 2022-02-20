@@ -9,21 +9,27 @@
 ;; found in modules/README.org.
 
 (doom! :input
+       ;;chinese
+       ;;japanese
+       ;;layout            ; auie,ctsrnm is the superior home row
+
        :completion
        company              ; the ultimate code completion backend
-                            ;;helm        ; the *other* search engine for love and life
-                            ;;ido         ; the other *other* search engine...
-                            ;;layout      ; auie,ctsrnm is the superior home row
+       ;;helm        ; the *other* search engine for love and life
+       ;;ido         ; the other *other* search engine...
+       ;; vertico           ; the search engine of the future
        (ivy +icons)         ; a search engine for love and life
+
        :ui
        deft                 ; notational velocity for Emacs
        doom                 ; what makes DOOM look the way it does
        doom-dashboard       ; a nifty splash screen for Emacs
-                            ; doom-quit  ; DOOM quit-message prompts when you quit Emacs
-                            ; fill-column ; a `fill-column' indicator
+       ;; doom-quit         ; DOOM quit-message prompts when you quit Emacs
+       ;; (emoji +unicode)  ; 🙂
+       ; fill-column ; a `fill-column' indicator
        hl-todo              ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW tags
                             ;;hydra
-       ;; (ligatures +iosevka) ; ligatures and symbols to make your code pretty again
+       (:if IS-MAC ligatures +iosevka) ; ligatures and symbols to make your code pretty again
        indent-guides        ; highlighted indent columns
        modeline             ; snazzy, Atom-inspired modeline, plus API
        nav-flash            ; blink the current line after jumping
@@ -96,11 +102,11 @@
        ;;prodigy           ; FIXME managing external services & code builders
        rgb               ; creating color strings
        ;;terraform         ; infrastructure as code
-       ;;tmux              ; an API for interacting with tmux
+       tmux              ; an API for interacting with tmux
        ;;upload            ; map local to remote projects via ssh/ftp
        ;;wakatime
        :checkers
-       syntax              ; tasing you for every semicolon you forget
+       syntax            ; tasing you for every semicolon you forget
        spell             ; tasing you for misspelling mispelling
        grammar           ; tasing grammar mistake every you make
 
@@ -153,7 +159,7 @@
         +export          ; Exporting org to whatever you want
         +habit           ; Keep track of your habits
         +present         ; Emacs for presentations
-        +pretty         ; Enables pretty unicode symbols for bullets and priorities
+        +pretty          ; Enables pretty unicode symbols for bullets and priorities
         +protocol)       ; Support for org-protocol:// links
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
@@ -164,7 +170,7 @@
        ;;racket            ; a DSL for DSLs
        ;;rest              ; Emacs as a REST client
        ;;ruby              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
-       ;;rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+       (rust +lsp)         ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        ;;scala             ; java, but good
        sh                ; she sells {ba,z,fi}sh shells on the C xor
        ;;solidity          ; do you need a blockchain? No.
