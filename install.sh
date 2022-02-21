@@ -10,5 +10,5 @@ fi
 # tmux resurrect
 if [ ! -d "${HOME}/build/tmux-resurrect" ]
 then
-    git clone https://github.com/tmux-plugins/tmux-resurrect
+    git clone https://github.com/tmux-plugins/tmux-resurrect "${HOME}/build/tmux-resurrect"
 fi
