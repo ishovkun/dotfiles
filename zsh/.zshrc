@@ -11,7 +11,7 @@ HYPHEN_INSENSITIVE="true"
 # Uncomment the following line to disable auto-setting terminal title.
 DISABLE_AUTO_TITLE="true"
 # Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="false"
+ENABLE_CORRECTION="false"
 
 # zgen
 # install: git clone https://github.com/tarjoilija/zgen.git "${HOME}/.zgen"
