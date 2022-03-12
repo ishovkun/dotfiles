@@ -24,4 +24,5 @@
 (package! org-wild-notifier)
 (package! mini-modeline :recipe (:host github :repo "kiennq/emacs-mini-modeline"))
 (package! lsp-treemacs)
+(package! awesome-tab :recipe (:host github :repo "manateelazycat/awesome-tab"))
 ;;; packages.el ends here

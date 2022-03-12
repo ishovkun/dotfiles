@@ -370,6 +370,12 @@
    `(tab-line ((,class (:background ,bg-dark-special))))
    `(tab-line-tab-current ((,class (:background ,bg))))
    `(tab-line-tab-inactive ((,class (:background ,bg-dark-special))))
+   `(awesome-tab-dark-active-bar-color ((,class (:background ,str))))
+   `(awesome-tab-selected-ace-face ((,class (:background ,fg :foreground ,str))))
+   `(awesome-tab-selected-face ((,class (:background ,fg :foreground ,fg))))
+   `(awesome-tab-selected-index-face ((,class (:background ,fg :foreground ,fg))))
+   `(awesome-tab-unselected-face ((,class (:background ,fg-dim :foreground ,fg))))
+   `(awesome-tab-unselected-index-face ((,class (:background ,fg-dim :foreground ,fg))))
    `(centaur-tabs-active-bar-face             ((,class (:background ,builtin))))
    `(centaur-tabs-selected                    ((,class (:background ,bg))))
    `(centaur-tabs-selected-modified           ((,class (:foreground ,warning :background ,bg-light))))
@@ -378,6 +384,7 @@
    `(centaur-tabs-unselected-modified         ((,class (:foreground ,warning :background ,bg-dark-special))))
    `(centaur-tabs-modified-marker-unselected  ((,class (:foreground ,warning :background ,bg-dark-special))))
    ;; w3m
+   `(awesome-tab-selected-face                ((,class (:background ,bg-light :foreground ,str))))
    `(w3m-tab-background             ((,class (:background ,bg-dark :foreground ,fg-bright))))
    `(w3m-tab-selected               ((,class (:background ,bg-light :foreground ,builtin))))
    `(w3m-tab-selected-background    ((,class (:background ,bg :foreground ,keyword))))
@@ -446,12 +453,19 @@
    evil-insert-state-cursor       `(,str bar)
    evil-normal-state-cursor       `(,keyword box)
    evil-visual-state-cursor       `(,keyword box)
+   awesome-tab-dark-unselected-blend 0.9
+   ;; awesome-tab-dark-selected-foreground-color ,str
+   ;; awesome-tab-dark-selected-foreground-color ,fg
+   frame-background-mode          'dark
    fci-rule-color                 `,comment
    pdf-view-midnight-colors       `(,fg . ,bg))
 
   (custom-theme-set-variables
    'wilmersdorf
    `(ansi-color-names-vector (vector "black" ,warning ,str ,misc ,func ,const ,builtin ,fg-bright))
+   `(awesome-tab-dark-active-bar-color          ,str)
+   `(awesome-tab-dark-selected-background-color ,bg)
+   `(awesome-tab-dark-selected-foreground-color ,fg)
    )
 
   )

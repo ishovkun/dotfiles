@@ -370,7 +370,7 @@
    `(web-mode-html-tag-face ((,class (:foreground ,builtin))))
    ;; tab bar
    `(tab-bar ((,class (:background ,bg-dark-special))))
-   `(tab-line ((,class (:background ,bg-dark-special))))
+   `(tab-line ((,class (:background ,bg-dark-special :foreground ,fg))))
    `(centaur-tabs-selected                    ((,class (:background ,bg-light))))
    `(centaur-tabs-selected-modified           ((,class (:foreground ,warning :background ,bg-light))))
    `(centaur-tabs-modified-marker-selected    ((,class (:foreground ,warning :background ,bg-light))))

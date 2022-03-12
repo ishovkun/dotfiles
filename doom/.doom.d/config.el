@@ -45,6 +45,12 @@
    :nv "M-m"         #'centaur-tabs-forward
    :nv "M-,"         #'centaur-tabs-backward
    )
+  (:after awesome-tab
+   :nv "C-<tab>"     #'awesome-tab-forward
+   :nv "C-S-<tab>"   #'awesome-tab-backward
+   :nv "M-m"         #'awesome-tab-forward
+   :nv "M-,"         #'awesome-tab-backward
+   )
   )
  (:map TeX-mode-map
   :nv "j"           #'evil-next-visual-line
@@ -260,6 +266,9 @@
       :desc "Project replace"   :n  "R" #'projectile-replace
       )
     )
+  (:prefix "i"
+   :desc "Latex input" :n "l" #'set-input-method-tex
+   )
   (:prefix "b"
    :desc "rename buffer" :n "R" #'rename-buffer)
   ;; browse functions
@@ -277,6 +286,19 @@
   (:prefix "t"
     :desc "toggle line wrap" :n "L" #'toggle-truncate-lines
   )
+  ;; tabs
+  (:prefix "j"
+   :after awesome-tab
+   :desc "jump to tab 1" :nv "1" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 2" :nv "2" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 3" :nv "3" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 4" :nv "4" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 5" :nv "5" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 6" :nv "6" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 7" :nv "7" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 8" :nv "8" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 9" :nv "9" #'awesome-tab-select-visible-tab
+   )
   (:prefix "o"
     ;; debugging
     (:after realgud :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
@@ -318,12 +340,11 @@
         )
        )
       )
-
-
-;; hack, make cic change text inside curlies
 (after! evil
-(define-key evil-inner-text-objects-map "c" 'evil-inner-curly)
+  (define-key evil-inner-text-objects-map (kbd "c") nil)
+  (define-key evil-inner-text-objects-map (kbd "c") 'evil-inner-curly)
 )
+
 ;; hack, disable tab completion for company
 ;; doesn't work via map!
 (with-eval-after-load 'company
@@ -331,93 +352,111 @@
   (define-key company-active-map (kbd "TAB") 'company-yasnippet-or-completion))
 
 ;; tab switching
-(use-package! centaur-tabs
-  :init
-  (setq centaur-tabs-set-close-button nil)
-  (setq centaur-tabs-show-count nil)
+(use-package! awesome-tab
   :config
-  ;; (centaur-tabs-init-tabsets-store)
-  (centaur-tabs-init-tabsets-store)
-  (centaur-tabs-display-update)
-  ;; (centaur-tabs-headline-match)
+  (awesome-tab-mode t)
+  (setq awesome-tab-show-tab-index nil)
+  (setq awesome-tab-height 120)
+  ;; hide tab
+  (defun awesome-tab-hide-tab (x)
+  (let ((name (format "%s" x)))
+    (or
+     (string-prefix-p "*epc" name)
+     (string-prefix-p "*Compile-Log*" name)
+     (string-prefix-p "*lsp" name)
+     (string-prefix-p "*doom*" name)
+     (and (string-prefix-p "magit" name)
+               (not (file-name-extension name)))
+     )))
+  )  ;; end awesome tab
 
-  (defun wd/get-buffer-persp-group (buffer)
-    (let* ((name))
-      (dolist (persp (persp-persps))
-        (if persp
-            (if (persp-contain-buffer-p buffer persp)
-                (setq name (safe-persp-name persp)))))
-      name
-      ))
+;; (use-package! centaur-tabs
+;;   :init
+;;   (setq centaur-tabs-set-close-button nil)
+;;   (setq centaur-tabs-show-count nil)
+;;   :config
+;;   ;; (centaur-tabs-init-tabsets-store)
+;;   (centaur-tabs-init-tabsets-store)
+;;   (centaur-tabs-display-update)
+;;   ;; (centaur-tabs-headline-match)
 
-  (defun centaur-tabs-buffer-groups ()
-    (list
-     (cond
-      ((or (string-equal "*" (substring (buffer-name) 0 1))
-         (memq major-mode '(magit-process-mode
-                            magit-status-mode
-                            magit-diff-mode
-                            magit-log-mode
-                            magit-file-mode
-                            magit-blob-mode
-                            magit-blame-mode
-                            )))
-     "Emacs")
-    ((derived-mode-p 'eshell-mode)
-     "EShell")
-    ;; ((derived-mode-p 'emacs-lisp-mode) ;; do not separate elisp filed from everything else
-    ;;  "Elisp")
-    ((derived-mode-p 'dired-mode)
-     "Dired")
-    ((memq major-mode '(org-mode org-agenda-mode diary-mode))
-     "OrgMode")
-    (t
-     (let ((name (wd/get-buffer-persp-group (current-buffer))))
-       (if name
-           name
-         ;;(centaur-tabs-get-group-name (current-buffer))
-         "Other"
-         )
-       ))))
-  )
+;;   (defun wd/get-buffer-persp-group (buffer)
+;;     (let* ((name))
+;;       (dolist (persp (persp-persps))
+;;         (if persp
+;;             (if (persp-contain-buffer-p buffer persp)
+;;                 (setq name (safe-persp-name persp)))))
+;;       name
+;;       ))
 
-  (defun centaur-tabs-hide-tab (x)
-    "Do no to show buffer X in tabs."
-    (let ((name (format "%s" x)))
-      (or
-       ;; Current window is not dedicated window.
-       (window-dedicated-p (selected-window))
+;;   (defun centaur-tabs-buffer-groups ()
+;;     (list
+;;      (cond
+;;       ((or (string-equal "*" (substring (buffer-name) 0 1))
+;;          (memq major-mode '(magit-process-mode
+;;                             magit-status-mode
+;;                             magit-diff-mode
+;;                             magit-log-mode
+;;                             magit-file-mode
+;;                             magit-blob-mode
+;;                             magit-blame-mode
+;;                             )))
+;;      "Emacs")
+;;     ((derived-mode-p 'eshell-mode)
+;;      "EShell")
+;;     ;; ((derived-mode-p 'emacs-lisp-mode) ;; do not separate elisp filed from everything else
+;;     ;;  "Elisp")
+;;     ((derived-mode-p 'dired-mode)
+;;      "Dired")
+;;     ((memq major-mode '(org-mode org-agenda-mode diary-mode))
+;;      "OrgMode")
+;;     (t
+;;      (let ((name (wd/get-buffer-persp-group (current-buffer))))
+;;        (if name
+;;            name
+;;          ;;(centaur-tabs-get-group-name (current-buffer))
+;;          "Other"
+;;          )
+;;        ))))
+;;   )
 
-       ;; Buffer name not match below blacklist.
-       (string-prefix-p "*epc" name)
-       (string-prefix-p "*helm" name)
-       (string-prefix-p "*Helm" name)
-       (string-prefix-p "*Compile-Log*" name)
-       (string-prefix-p "*lsp" name)
-       (string-prefix-p "*company" name)
-       ;; (string-prefix-p "*vterm" name)
-       (string-prefix-p "*ccls" name)
-       (string-prefix-p "*Flycheck" name)
-       (string-prefix-p "*quickrun" name)
-       (string-prefix-p "*Calculator*" name)
-       (string-prefix-p "*Calc Trail*" name)
-       (string-prefix-p "*anaconda-mode" name)
-       (string-prefix-p "*compilation" name)
-       (string-prefix-p "*Deft*" name)
-       (string-prefix-p "*tramp" name)
-       (string-prefix-p " *Mini" name)
-       (string-prefix-p "*help" name)
-       (string-prefix-p "*straight" name)
-       (string-prefix-p " *temp" name)
-       (string-prefix-p "*Help" name)
-       ;; (string-prefix-p "*mybuf" name)
+;;   (defun centaur-tabs-hide-tab (x)
+;;     "Do no to show buffer X in tabs."
+;;     (let ((name (format "%s" x)))
+;;       (or
+;;        ;; Current window is not dedicated window.
+;;        (window-dedicated-p (selected-window))
 
-       ;; Is not magit buffer.
-       (and (string-prefix-p "magit" name)
-            (not (file-name-extension name)))
-       )))
-  (centaur-tabs-mode t)
-)
+;;        ;; Buffer name not match below blacklist.
+;;        (string-prefix-p "*epc" name)
+;;        (string-prefix-p "*helm" name)
+;;        (string-prefix-p "*Helm" name)
+;;        (string-prefix-p "*Compile-Log*" name)
+;;        (string-prefix-p "*lsp" name)
+;;        (string-prefix-p "*company" name)
+;;        ;; (string-prefix-p "*vterm" name)
+;;        (string-prefix-p "*ccls" name)
+;;        (string-prefix-p "*Flycheck" name)
+;;        (string-prefix-p "*quickrun" name)
+;;        (string-prefix-p "*Calculator*" name)
+;;        (string-prefix-p "*Calc Trail*" name)
+;;        (string-prefix-p "*anaconda-mode" name)
+;;        (string-prefix-p "*compilation" name)
+;;        (string-prefix-p "*Deft*" name)
+;;        (string-prefix-p "*tramp" name)
+;;        (string-prefix-p " *Mini" name)
+;;        (string-prefix-p "*help" name)
+;;        (string-prefix-p "*straight" name)
+;;        (string-prefix-p " *temp" name)
+;;        (string-prefix-p "*Help" name)
+;;        ;; (string-prefix-p "*mybuf" name)
+
+;;        ;; Is not magit buffer.
+;;        (and (string-prefix-p "magit" name)
+;;             (not (file-name-extension name)))
+;;        )))
+;;   (centaur-tabs-mode t)
+;; )
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
 (setq display-line-numbers-type 'relative)
@@ -878,8 +917,9 @@
 )
 ;; --------------------------------- Fixes -----------------------------------
 ;; (setq evil-respect-visual-line-mode t)
-(setq evil-respect-visual-line-mode 0) ;; otherwise  deletes line on cc
+;; (setq evil-respect-visual-line-mode 0) ;; otherwise  deletes line on cc
 (setq evil-move-cursor-back nil)
+;; (setq-default truncate-lines nil)
 ;; make compilation buffer stick to the frame
 ;; (push '("\\*compilation\\*" . (nil (reusable-frames . t))) display-buffer-alist)
 (setq doom-private-dir "~/dotfiles/doom/.doom.d/")
@@ -921,3 +961,11 @@
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )
 
+(plist-put! +ligatures-extra-symbols
+  :name          "»"
+  :src_block     "»"
+  :src_block_end "«"
+  :quote         "“"
+  :quote_end     "”"
+  :list          "𝕃"
+  :dot           "•")

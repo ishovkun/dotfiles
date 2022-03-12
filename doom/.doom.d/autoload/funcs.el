@@ -256,3 +256,8 @@ the right."
     (shell-command "$HOME/switch_window.sh 0")
     )
    )
+;;;###autodef
+(defun set-input-method-tex ()
+  (interactive)
+  (set-input-method "TeX")
+  )
