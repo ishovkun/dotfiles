@@ -146,6 +146,18 @@
   (:map calc-edit-mode-map
    :desc "Quit calc-edit" :nv "q" #'kill-current-buffer
    )
+  ;; tabs
+  (:after awesome-tab
+   :desc "jump to tab 1" :nv "[1" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 2" :nv "[2" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 3" :nv "[3" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 4" :nv "[4" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 5" :nv "[5" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 6" :nv "[6" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 7" :nv "[7" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 8" :nv "[8" #'awesome-tab-select-visible-tab
+   :desc "jump to tab 9" :nv "[9" #'awesome-tab-select-visible-tab
+   )
 )
 (map! :leader
   (:when (featurep! :ui workspaces)
@@ -286,19 +298,6 @@
   (:prefix "t"
     :desc "toggle line wrap" :n "L" #'toggle-truncate-lines
   )
-  ;; tabs
-  (:prefix "j"
-   :after awesome-tab
-   :desc "jump to tab 1" :nv "1" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 2" :nv "2" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 3" :nv "3" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 4" :nv "4" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 5" :nv "5" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 6" :nv "6" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 7" :nv "7" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 8" :nv "8" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 9" :nv "9" #'awesome-tab-select-visible-tab
-   )
   (:prefix "o"
     ;; debugging
     (:after realgud :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
