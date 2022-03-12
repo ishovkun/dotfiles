@@ -20,7 +20,7 @@ if ! zgen saved; then
   zgen oh-my-zsh
   # specify plugins here
   zgen oh-my-zsh plugins/git
-  zgen oh-my-zsh plugins/sudo
+  # zgen oh-my-zsh plugins/sudo # annoying
   zgen oh-my-zsh plugins/z
   zgen load zsh-users/zsh-syntax-highlighting
   zgen load zsh-users/zsh-completions src
