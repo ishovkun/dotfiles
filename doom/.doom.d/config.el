@@ -14,7 +14,16 @@
              mac-command-key-is-meta t
              mac-command-modifier 'meta
              mac-option-modifier 'none)
-       ))
+       (plist-put! +ligatures-extra-symbols
+                   :name          "»"
+                   :src_block     "»"
+                   :src_block_end "«"
+                   :quote         "“"
+                   :quote_end     "”"
+                   :list          "𝕃"
+                   :dot           "•")
+       )
+  )
 
 (map!
  (:map treemacs-mode-map
@@ -960,11 +969,3 @@
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )
 
-(plist-put! +ligatures-extra-symbols
-  :name          "»"
-  :src_block     "»"
-  :src_block_end "«"
-  :quote         "“"
-  :quote_end     "”"
-  :list          "𝕃"
-  :dot           "•")
