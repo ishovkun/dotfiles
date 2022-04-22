@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: print variable
+# uuid:
+# key: c=
+# condition: t
+# --
+print("$1", $1)
