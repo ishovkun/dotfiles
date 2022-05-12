@@ -55,6 +55,8 @@
   (:after centaur-tabs
    :nv "M-m"         #'centaur-tabs-forward
    :nv "M-,"         #'centaur-tabs-backward
+   :nv "C-<tab>"     #'centaur-tabs-forward
+   :nv "C-S-<tab>"   #'centaur-tabs-backward
    )
   (:after awesome-tab
    :nv "C-<tab>"     #'awesome-tab-forward
@@ -349,13 +351,13 @@
       )
 (map! :after ein
       (:map ein:notebook-mode-map
-       :desc "Save notebook" :nvi "C-s"  #'ein:notebook-save-notebook-command-km
+       :desc "Save notebook" :nvi "C-s"  #'ein:notebook-save-notebook-command
        :desc "Interrupt" :nvi "C-c C-c"  #'ein:notebook-kernel-interrupt-command-km
-       :desc "Next cell" :nv "C-j"       #'ein:worksheet-goto-next-input-km
-       :desc "Next cell" :nv "C-k"       #'ein:worksheet-goto-prev-input-km
+       :desc "Next cell" :nv "]"       #'ein:worksheet-goto-next-input-km
+       :desc "Prev cell" :nv "["       #'ein:worksheet-goto-prev-input-km
        :desc "Run cell" :nv "<return>"   #'ein:worksheet-execute-cell-km
        :desc "Run cell" :nv "<C-return>" #'ein:worksheet-execute-all-cells
-       [remap buffer-save-function]      #'ein:notebook-save-notebook-command-km
+       [remap buffer-save-function]      #'ein:notebook-save-notebook-command
        (:localleader
         :desc "Insert cell below" "o" #'ein:worksheet-insert-cell-below-km
         :desc "Insert cell above" "O" #'ein:worksheet-insert-cell-above-km
@@ -916,6 +918,7 @@
 (use-package! ein
   :config
   (setq ein:output-area-inlined-images t)
+  (setq ein:worksheet-enable-undo nil)  ;this allows to undo
   )
 ;; ----------------------------------- Shell ---------------------------------
 ;; (when (display-graphic-p)
