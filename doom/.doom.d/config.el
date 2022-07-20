@@ -251,6 +251,9 @@
     :desc "Switch to 8st window" :nv "8" #'winum-select-window-8
     :desc "Switch to 9st window" :nv "9" #'winum-select-window-9
     )
+  (:prefix-map ("d" . "diff")
+   :desc "ediff buffers" :nv "b" #'ediff-buffers
+   )
   (:prefix "w"
     :nv "d"   #'delete-window
     :nv "SPC" #'ace-swap-window
