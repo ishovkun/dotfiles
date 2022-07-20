@@ -74,6 +74,9 @@
   :v "-"         #'evil-last-non-blank
   :v "="         #'evil-first-non-blank
   )
+ (:map text-mode-map
+  :n "Q"         #'evil-execute-macro
+  )
   :nv "M-H"         #'shrink-window-horizontally
   ;; :nv "S-C-<left>"  #'shrink-window-horizontally
   :nv "M-L"         #'enlarge-window-horizontally
@@ -253,6 +256,7 @@
     )
   (:prefix-map ("d" . "diff")
    :desc "ediff buffers" :nv "b" #'ediff-buffers
+   :desc "ediff files" :nv "f" #'ediff-files
    )
   (:prefix "w"
     :nv "d"   #'delete-window
