@@ -352,10 +352,15 @@
       :map LaTeX-mode-map
       :desc "Environment" "e" #'LaTeX-environment
       )
+(map! :localleader
+      :map markdown-mode-map
+      :desc "Preview Emacs" "v" #'markdown-live-preview-mode
+      )
+
 (map! :after ein
       (:map ein:notebook-mode-map
        :desc "Save notebook" :nvi "C-s"  #'ein:notebook-save-notebook-command
-       :desc "Interrupt" :nvi "C-c C-c"  #'ein:notebook-kernel-interrupt-command-km
+       :desc "Interrupt" :nvi "C-c C-c"  #'ein:notebook-kernel-interrupt-command
        :desc "Next cell" :nv "]"       #'ein:worksheet-goto-next-input-km
        :desc "Prev cell" :nv "["       #'ein:worksheet-goto-prev-input-km
        :desc "Run cell" :nv "<return>"   #'ein:worksheet-execute-cell-km
@@ -365,6 +370,7 @@
         :desc "Insert cell below" "o" #'ein:worksheet-insert-cell-below-km
         :desc "Insert cell above" "O" #'ein:worksheet-insert-cell-above-km
         :desc "Close notebook" "x"    #'ein:notebook-close-km
+        :desc "Restart notebook" "r"   #'ein:notebook-restart-session-command
         :desc "Rename notebook" "R"   #'ein:notebook-rename-command-km
         :desc "Change cell type" "t"  #'ein:worksheet-change-cell-type-km
         :desc "Delete cell" "d"       #'ein:worksheet-kill-cell-km
