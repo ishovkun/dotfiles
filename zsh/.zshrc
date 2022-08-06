@@ -90,6 +90,7 @@ export PYTHONPATH
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
 export FZF_DEFAULT_OPTS="--color=light,fg:15,bg:0,bg+:10,info:2"
 
 # disable ctrl-s
