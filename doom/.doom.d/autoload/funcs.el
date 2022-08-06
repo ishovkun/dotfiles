@@ -261,3 +261,8 @@ the right."
   (interactive)
   (set-input-method "TeX")
   )
+;;;###autodef
+(defun insert-file-basename ()
+  (interactive)
+  (insert (file-name-base buffer-file-name))
+  )

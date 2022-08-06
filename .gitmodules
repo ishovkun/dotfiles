@@ -1,3 +1,0 @@
-[submodule "emacs/.emacs.d/private/google-calendar"]
-	path = emacs/.emacs.d/private/google-calendar
-	url = https://github.com/mhkc/google-calendar-layer
