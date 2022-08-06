@@ -320,6 +320,7 @@
     )
   (:prefix "i"
    :desc "Latex input" :n "l" #'set-input-method-tex
+   :desc "Insert buffer basename" :n "b" #'insert-file-basename
    )
   (:prefix "b"
    :desc "rename buffer" :n "R" #'rename-buffer)
