@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-#name : fori
-#key : fori
-#contributor : Igor
-# --
-for (std::size_t $1=0; $1<$2; ++$1)

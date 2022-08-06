@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-#name : python
-#key : python
-#contributor : Igor
-# --
-#+BEGIN_SRC python
-$1
-#+END_SRC
