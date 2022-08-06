@@ -1018,3 +1018,8 @@
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )
 
+;; -------------------------------- Fun -------------------------------
+(use-package zone
+  :config
+  (zone-when-idle 300)
+  )
