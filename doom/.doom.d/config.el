@@ -633,8 +633,8 @@
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 ;; (load-theme 'one-dark t)
-;; (load-theme 'nord t)
-(load-theme 'wilmersdorf t)
+(load-theme 'nord t)
+;; (load-theme 'wilmersdorf t)
 
 
 (use-package! yascroll
