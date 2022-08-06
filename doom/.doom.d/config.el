@@ -485,6 +485,7 @@
        (string-prefix-p "*Flycheck" name)
        (string-prefix-p "*quickrun" name)
        (string-prefix-p "*Calculator*" name)
+       (string-prefix-p "*which-key*" name)
        (string-prefix-p "*Calc Trail*" name)
        (string-prefix-p "*anaconda-mode" name)
        (string-prefix-p "*compilation" name)
