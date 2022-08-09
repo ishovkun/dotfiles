@@ -15,4 +15,4 @@ fi
 
 # enable 24bit colors
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-/usr/bin/tic -x -o .terminfo ${SCRIPT_DIR}/misc/xterm-24bit.terminfo
+/usr/bin/tic -x -o ~/.terminfo ${SCRIPT_DIR}/misc/xterm-24bit.terminfo
