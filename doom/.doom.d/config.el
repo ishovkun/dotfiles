@@ -258,6 +258,7 @@
    :desc "ediff buffers" :nv "b" #'ediff-buffers
    :desc "ediff files" :nv "f" #'ediff-files
    )
+  :desc "balance-windows" :n "=" #'balance-windows
   (:prefix "w"
     :nv "d"   #'delete-window
     :nv "SPC" #'ace-swap-window
@@ -1021,5 +1022,5 @@
 ;; -------------------------------- Fun -------------------------------
 (use-package zone
   :config
-  (zone-when-idle 300)
+  (zone-when-idle 1000)
   )
