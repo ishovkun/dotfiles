@@ -3,8 +3,8 @@
 ;; place your private configuration here
 ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 14))
 (when (string= (system-name) "space")
-  (setq doom-font (font-spec :family "Iosevka" :size 13 :width 'normal)))
-  ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 15)))
+  ;; (setq doom-font (font-spec :family "Iosevka" :size 27 :width 'normal)))
+  (setq doom-font (font-spec :family "Iosevka SS04" :size 14)))
 
 (if (eq system-type 'darwin)
     (progn

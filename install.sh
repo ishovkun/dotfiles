@@ -12,7 +12,15 @@ if [ ! -d "${HOME}/build/tmux-resurrect" ]
 then
     git clone https://github.com/tmux-plugins/tmux-resurrect "${HOME}/build/tmux-resurrect"
 fi
+# tmux disk space plugin
+if [ ! -d "${HOME}/build/tmux-df" ]
+then
+    git clone https://github.com/tassaron/tmux-df "${HOME}/build/tmux-df"
+fi
 
 # enable 24bit colors
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-/usr/bin/tic -x -o ~/.terminfo ${SCRIPT_DIR}/misc/xterm-24bit.terminfo
+if [ ! -f "${HOME}/.terminfo" ]
+then
+   /usr/bin/tic -x -o ~/.terminfo ${SCRIPT_DIR}/misc/xterm-24bit.terminfo
+fi
