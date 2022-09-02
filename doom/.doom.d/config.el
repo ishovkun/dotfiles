@@ -1020,7 +1020,7 @@
   )
 
 ;; -------------------------------- Fun -------------------------------
-(use-package zone
-  :config
-  (zone-when-idle 1000)
-  )
+;; (use-package zone
+;;   :config
+;;   (zone-when-idle 1000)
+;;   )
