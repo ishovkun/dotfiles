@@ -1,0 +1,9 @@
+allow_images=true
+allow_markup=true
+dmenu-parse_action=true
+drun-display_generic=true
+# key_down=Tab
+key_expand=Tab
+key_forward=Right
+key_down=Control_L-j
+key_up=Control_L-k

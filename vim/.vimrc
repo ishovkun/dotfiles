@@ -80,6 +80,9 @@ inoremap kj <esc>
 nnoremap k gk
 nnoremap j gj
 
+nnoremap <C-j> <C-e>
+nnoremap <C-k> <C-y>
+
 nnoremap <C-e> <C-u>
 inoremap <C-e> <esc>$a
 

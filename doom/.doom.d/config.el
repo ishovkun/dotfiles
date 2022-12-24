@@ -4,7 +4,7 @@
 ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 14))
 (when (string= (system-name) "space")
   ;; (setq doom-font (font-spec :family "Iosevka" :size 27 :width 'normal)))
-  (setq doom-font (font-spec :family "Iosevka SS04" :size 14)))
+  (setq doom-font (font-spec :family "Iosevka SS04" :size 12)))
 
 (if (eq system-type 'darwin)
     (progn

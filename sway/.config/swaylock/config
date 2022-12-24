@@ -1,0 +1,16 @@
+color=282b33
+# indicator-idle-visible
+indicator-radius=100
+indicator-thickness=40
+inside-color=1d1d1d
+inside-clear-color=1d1d1d
+inside-ver-color=1d1d1d
+inside-wrong-color=282b33
+line-uses-inside
+separator-color=1d1d1d
+text-caps-lock-color=ededed
+text-clear-color=adb6c7
+text-ver-color=819cd6
+text-wrong-color=e1c1ee
+layout-bg-color=282b33
+layout-text-color=adb6c7
