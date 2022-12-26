@@ -197,9 +197,8 @@ bindsym Mod1+space exec $menu
     # bindsym $mod+g       exec $term -e ~/bin/swayrec
 
 # Custom Apps
-    bindsym --to-code $mod+e exec bash ~/dotfiles/sway/.config/sway/toggle.sh Ferdium X
+    bindsym --to-code $mod+e exec bash ~/dotfiles/sway/.config/sway/toggle.sh ferdium wayland
     bindsym --to-code $mod+f exec bash ~/dotfiles/sway/.config/sway/toggle.sh org.kde.dolphin wayland
-    # bindsym $mod+e exec bash ~/dotfiles/sway/.config/sway/toggle.sh Ferdium
     # bindsym $mod+Shift+e exec ferdium --enable-features=UseOzonePlatform --ozone-platform=wayland
 
 floating_modifier $mod
