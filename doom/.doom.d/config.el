@@ -686,6 +686,7 @@
   (progn
     (setq lsp-lens-enable nil)     ;; disable stupid lenses
     (setq lsp-enable-file-watchers nil)
+    (lsp-headerline-breadcrumb-enable t)
     (push 'company-lsp company-backends)
     ;; ccls
     (after! ccls
@@ -1015,6 +1016,7 @@
                    (my-counsel-ignore-regexp-builder
                     "\\`__pycache__/\\'"
                     "^.cquery"
+                    "^.clangd"
                     "^.ccls-cache"
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )
