@@ -376,7 +376,7 @@
    `(awesome-tab-selected-index-face ((,class (:background ,fg :foreground ,fg))))
    `(awesome-tab-unselected-face ((,class (:background ,fg-dim :foreground ,fg))))
    `(awesome-tab-unselected-index-face ((,class (:background ,fg-dim :foreground ,fg))))
-   `(centaur-tabs-active-bar-face             ((,class (:background ,builtin))))
+   `(centaur-tabs-active-bar-face             ((t (:background ,builtin))))
    `(centaur-tabs-selected                    ((,class (:background ,bg))))
    `(centaur-tabs-selected-modified           ((,class (:foreground ,warning :background ,bg-light))))
    `(centaur-tabs-modified-marker-selected    ((,class (:foreground ,warning :background ,bg-light))))

@@ -24,7 +24,26 @@
 (package! org-wild-notifier)
 (package! mini-modeline :recipe (:host github :repo "kiennq/emacs-mini-modeline"))
 (package! lsp-treemacs)
-(package! awesome-tab :recipe (:host github :repo "manateelazycat/awesome-tab"))
+
+(package! codeium :recipe (:host github :repo "Exafunction/codeium.el"))
+
+;; temporary fix after doom update
+;; run thes sync to have those updated (mind the flags)
+;; doom sync -u
+(package! transient
+      :pin "c2bdf7e12c530eb85476d3aef317eb2941ab9440"
+      :recipe (:host github :repo "magit/transient"))
+
+(package! with-editor
+          :pin "bbc60f68ac190f02da8a100b6fb67cf1c27c53ab"
+          :recipe (:host github :repo "magit/with-editor"))
+(package! centaur-tabs)
+
+
+
+
+;; (package! awesome-tab :recipe (:host github :repo "manateelazycat/awesome-tab"))
+;; (package! centaur-tabs)
 ;; (package! rmsbolt)
 
 ;;; packages.el ends here

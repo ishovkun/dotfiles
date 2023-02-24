@@ -62,13 +62,27 @@ bindswitch --reload --locked lid:on output $laptop disable
     {
         transform 90
         background ~/Pictures/macos-mojave-night-lightened-r.jpg fill
+        pos 3840 0
+    }
+
+    output DP-5
+    {
+        transform 0
+        background ~/Pictures/macos-mojave-night-lightened-r.jpg fill
+        pos 1920 0
+    }
+
+    output DP-6
+    {
+        transform 0
+        background ~/Pictures/macos-mojave-night-lightened-r.jpg fill
+        pos 1920 0
     }
 
 # Gaps
     # gaps outer 10
-    # smart_gaps inverse_outer
-    bindsym $mod+equal gaps outer current plus  5
-    bindsym $mod+minus gaps outer current minus 5
+    bindsym $mod+equal gaps inner current plus  10
+    bindsym $mod+minus gaps inner current minus 10
     bindsym $mod+c move position center
 
 # brightness indicators
@@ -84,8 +98,8 @@ exec rm -f $WOBSOCK && mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --background-co
     bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
     bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
-    bindsym XF86MonBrightnessDown exec brightnessctl set 5%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
-    bindsym XF86MonBrightnessUp exec brightnessctl set +5% | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+    bindsym XF86MonBrightnessDown exec brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+    bindsym XF86MonBrightnessUp exec brightnessctl set +2% | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
     bindsym XF86AudioPlay exec playerctl play-pause
     bindsym XF86AudioNext exec playerctl next
     bindsym XF86AudioPrev exec playerctl previous
@@ -95,10 +109,14 @@ exec rm -f $WOBSOCK && mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --background-co
     bindsym $mod+F8 exec playerctl play-pause
 
 ### Idle configuration
+# exec swayidle -w \
+#           timeout 300 'swaylock -f' \
+#           timeout 305 'swaymsg "output * dpms off"' after-resume 'swaymsg "output * dpms on"' \
+#           before-sleep 'swaylock -f'
 exec swayidle -w \
-          timeout 300 'swaylock -f' \
-          timeout 305 'swaymsg "output * dpms off"' after-resume 'swaymsg "output * dpms on"' \
-          before-sleep 'swaylock -f'
+         timeout 300 'swaylock -f' \
+         timeout 600 '[[ $(cat /sys/class/power_supply/AC/online) -eq 0 ]] && systemctl suspend-then-hibernate' \
+         before-sleep 'swaylock -f'
 
 
 bindsym $mod+Return exec bash ~/dotfiles/sway/.config/sway/toggle.sh org.kde.konsole
@@ -184,10 +202,24 @@ bindsym Mod1+space exec $menu
 #
 # Resize
 #
-    bindsym --to-code $mod+Shift+h resize shrink width 10px
-    bindsym --to-code $mod+Shift+j resize grow height 10px
-    bindsym --to-code $mod+Shift+k resize shrink height 10px
-    bindsym --to-code $mod+Shift+l resize grow width 10px
+    bindsym --to-code $mod+Shift+h resize shrink width  100px
+    bindsym --to-code $mod+Shift+j resize grow height   100px
+    bindsym --to-code $mod+Shift+k resize shrink height 100px
+    bindsym --to-code $mod+Shift+l resize grow width    100px
+#
+# Swap
+#
+    bindsym $mod+ctrl+h move left
+    bindsym $mod+ctrl+l move right
+    bindsym $mod+ctrl+k move up
+    bindsym $mod+ctrl+j move down
+    # bindsym $mod+v splitv
+    bindsym $mod+backslash splitv
+#
+# Move to other screen
+#
+    bindsym --to-code $mod+Alt+l move window to output right
+    bindsym --to-code $mod+Alt+h move window to output left
 #
 # Screenshots
 #
@@ -195,6 +227,11 @@ bindsym Mod1+space exec $menu
     bindsym Shift+Print        exec /usr/share/sway/scripts/grimshot save area
     bindsym $mod+Shift+Print   exec /usr/share/sway/scripts/grimshot save screen
     # bindsym $mod+g       exec $term -e ~/bin/swayrec
+#
+# Scratchpad
+#
+bindsym $mod+m move scratchpad
+bindsym $mod+BackSpace scratchpad show
 
 # Custom Apps
     bindsym --to-code $mod+e exec bash ~/dotfiles/sway/.config/sway/toggle.sh ferdium wayland
@@ -208,18 +245,6 @@ default_border pixel
 
 bar {
     position top
-
-    # When the status_command prints a new line to stdout, swaybar updates.
-    # The default just shows the current date and time.
-    # status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
-    # status_command i3blocks
-    # font pango: FontAwesome 12
-
-    # colors {
-    #     statusline #d8dee9
-    #     background #2e3440
-    #     inactive_workspace #32323200 #32323200 #5c5c5c
-    # }
     swaybar_command waybar
 }
 

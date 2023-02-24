@@ -40,6 +40,7 @@
     "M-j" #'evil-window-down
     "M-l" #'evil-window-right
     "M-h" #'evil-window-left
+    :desc "Open in external app" "<C-return>" #'ranger-open-in-external-app
     [escape] #'doom/escape
     )
    )
@@ -189,6 +190,7 @@
    :desc "jump to tab 7" :nv "[7" #'centaur-tabs-select-visible-tab
    :desc "jump to tab 8" :nv "[8" #'centaur-tabs-select-visible-tab
    :desc "jump to tab 9" :nv "[9" #'centaur-tabs-select-visible-tab
+   :desc "jump to tab number"  :nv "gt" #'centaur-tabs-ace-jump
    )
   (:map vterm-mode-map
    :desc "C-k" :nvi "C-k"          #'vterm-send-C-k
@@ -419,13 +421,23 @@
 
 (use-package! centaur-tabs
   :init
-  (setq centaur-tabs-set-close-button nil)
-  (setq centaur-tabs-show-count nil)
+  ;;(set-face-attribute 'centaur-tabs-active-bar-face nil :background "#c586d8")
   :config
-  ;; (centaur-tabs-init-tabsets-store)
+  (setq
+   centaur-tabs-set-close-button nil
+   centaur-tabs-show-count nil
+   centaur-tabs-set-bar 'left
+   x-underline-at-descent-line t
+   )
+  ;; override the bar
+  (setq centaur-tabs-active-bar
+        (centaur-tabs--make-xpm 'centaur-tabs-active-bar-face
+                                2
+                                centaur-tabs-bar-height))
+  ;; (setq x-underline-at-descent-line t)
+  ;; (setq centaur-tabs-set-bar 'below)
   (centaur-tabs-init-tabsets-store)
   (centaur-tabs-display-update)
-  ;; (centaur-tabs-headline-match)
 
   (defun wd/get-buffer-persp-group (buffer)
     (let* ((name))
@@ -505,6 +517,8 @@
        )))
   (centaur-tabs-mode t)
 )
+
+
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
 (setq display-line-numbers-type 'relative)
@@ -686,7 +700,7 @@
   (progn
     (setq lsp-lens-enable nil)     ;; disable stupid lenses
     (setq lsp-enable-file-watchers nil)
-    (lsp-headerline-breadcrumb-enable t)
+    (setq lsp-headerline-breadcrumb-enable t)
     (push 'company-lsp company-backends)
     ;; ccls
     (after! ccls
@@ -747,6 +761,34 @@
   (lsp-ui-doc-mode)
   )
 
+;; Machine learnig!
+(use-package! codeium
+   :init
+    ;; use globally
+    (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
+    :defer t
+    :config
+    (setq use-dialog-box nil) ;; do not use popup boxes
+
+    (setq codeium/metadata/api_key "ae87000a-d404-4747-950d-cf4d2973a50f")
+
+    ;; use M-x codeium-diagnose to see apis/fields that would be sent to the local language server
+    (setq codeium-api-enabled
+          (lambda (api)
+            (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
+
+    ;; You can overwrite all the codeium configs!
+    ;; for example, we recommend limiting the string sent to codeium for better performance
+    (defun my-codeium/document/text ()
+      (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
+   ;; if you change the text, you should also change the cursor_offset
+    ;; warning: this is measured by UTF-8 encoded bytes
+    (defun my-codeium/document/cursor_offset ()
+        (codeium-utf8-byte-length
+         (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
+    (setq codeium/document/text 'my-codeium/document/text)
+    (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset)
+  )
 ;; (after! lsp-ui
 ;;   (progn
 ;;     (setq lsp-ui-sideline-enable nil)
@@ -966,8 +1008,8 @@
 ;;     (global-eldoc-mode -1) ;; disable useful eldoc messages
 
 ;;     (global-hide-mode-line-mode)
-;;     (set-face-attribute 'mode-line nil :box nil :height 1)
-;;     (set-face-attribute 'minibuffer-prompt nil :background (face-background 'tab-bar))
+    ;; (set-face-attribute 'mode-line nil :box nil :height 1)
+    ;; (set-face-attribute 'minibuffer-prompt nil :background (face-background 'tab-bar))
 ;;     (setq mini-modeline-display-gui-line nil)
 ;;     (remove-hook 'dired-mode-hook #'doom-modeline-set-project-modeline t)
 ;;     (mini-modeline-mode t)
@@ -1011,6 +1053,7 @@
     ad-do-it))
 
   )
+
 (after! ivy
   (setq counsel-find-file-ignore-regexp
                    (my-counsel-ignore-regexp-builder
@@ -1021,6 +1064,12 @@
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )
 
+;; (require 'subword-mode)
+(global-subword-mode 1)
+;; (use-package! subword-mode
+;;   :config
+;;   (global-subword-mode)
+;;   )
 ;; -------------------------------- Fun -------------------------------
 ;; (use-package zone
 ;;   :config

@@ -366,10 +366,14 @@
    ;; tab bar
    `(tab-bar ((,class (:background ,bg-dark-special))))
    `(tab-line ((,class (:background ,bg-dark-special))))
+   ;;
+  ;;
+   `(centaur-tabs-default             ((,class (:background ,bg-dark))))
    `(centaur-tabs-selected            ((,class (:background ,bg-light))))
    `(centaur-tabs-selected-modified   ((,class (:foreground ,warning :background ,bg-light))))
    `(centaur-tabs-unselected          ((,class (:background ,bg-dark-special))))
    `(centaur-tabs-unselected-modified ((,class (:foreground ,warning :background ,bg-dark-special))))
+   `(centaur-tabs-active-bar-face     ((t (:background ,keyword))))
    ;; w3m
    `(w3m-tab-background ((,class (:background ,bg-dark :foreground ,fg-bright))))
    `(w3m-tab-selected ((,class (:background ,bg-light :foreground ,builtin))))

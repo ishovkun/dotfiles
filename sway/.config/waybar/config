@@ -17,7 +17,9 @@
                      "sway/language",
                      "battery", "battery#bat2",
                      "idle_inhibitor",
-                     "clock", "tray",
+                     "clock",
+                     "custom/notification",
+                     "tray",
                      ],
     // Modules configuration
     // "sway/workspaces": {
@@ -166,14 +168,14 @@
         },
         "escape": true,
         "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
-    }
-    , "custom/notification": {
+    } ,
+    "custom/notification": {
     "tooltip": false,
     "format": "{icon}",
     "format-icons": {
-      "notification": "<span foreground='red'><sup></sup></span>",
-      "none": "",
+      // "notification": "<span foreground='red'><sup></sup></span>",
+      "notification": "<span><sup></sup></span>",
+      "none": " ",
       "dnd-notification": "<span foreground='red'><sup></sup></span>",
       "dnd-none": ""
     },
@@ -192,5 +194,5 @@
     "tooltip-format": "{controller_alias}\t{controller_address}",
     "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
     "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}"
-  }
+  },
 }

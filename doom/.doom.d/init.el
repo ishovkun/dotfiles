@@ -39,7 +39,7 @@
        (popup                  ; tame sudden yet inevitable temporary windows
                                ; +all             ; catch all popups that start with an asterix
         +defaults)             ; default popup rules
-       tabs                 ; an tab bar for Emacs
+       ;; tabs                 ; an tab bar for Emacs
        (treemacs               ; a project drawer, like neotree but cooler
         +lsp)                  ; this should add breadcrumb icons
        ;;unicode               ; extended unicode support for various languages
@@ -99,7 +99,7 @@
        ;;macos                 ; MacOS-specific commands
        (magit +forge)          ; a git porcelain for Emacs
        make                    ; run make tasks from Emacs
-       tty                     ; improve the terminal Emacs experience
+       ;; tty                     ; improve the terminal Emacs experience
        ;;pass                  ; password manager for nerds
        pdf                     ; pdf enhancements
        ;;prodigy               ; FIXME managing external services & code builders

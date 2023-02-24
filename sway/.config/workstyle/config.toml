@@ -1,0 +1,47 @@
+# Config for workstyle
+#
+# Format:
+# "pattern" = "icon"
+#
+# The pattern will be used to match against the application name, class_id or WM_CLASS.
+# The icon will be used to represent that application.
+#
+# Note if multiple patterns are present in the same application name,
+# precedence is given in order of apparition in this file.
+
+# "alacritty" = ""
+"alacritty" = "\uE936"
+# "alacritty" = "\uF0C8"
+"ferdium" = "\u2708"
+"dolphin" = "\uE9E9"
+"paraview" = "\uE9A1"
+"writer" = "\uE9ED"
+# "code" = ""
+"code" = "\uEB22"
+"github" = ""
+"rust" = ""
+"private browsing" = ""
+"firefox" = ""
+"google" = ""
+"chrome" = ""
+"file manager" = ""
+"libreoffice calc" = ""
+"libreoffice writer" = ""
+"libreoffice" = ""
+"nvim" = ""
+"gthumb" = ""
+"menu" = ""
+"calculator" = ""
+"transmission" = ""
+"videostream" = ""
+"mpv" = ""
+"music" = ""
+"spotify" = ""
+"emacs" = ""
+"disk usage" = ""
+".pdf" = "\uF1C1"
+"keeweb" = ""
+
+[other]
+fallback_icon = ""
+deduplicate_icons = false
