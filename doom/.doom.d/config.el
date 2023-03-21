@@ -8,7 +8,7 @@
 
 (if (eq system-type 'darwin)
     (progn
-       (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 12))
+       (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 11))
         ;;; I prefer cmd key for meta
        (setq mac-option-key-is-meta nil
              mac-command-key-is-meta t
