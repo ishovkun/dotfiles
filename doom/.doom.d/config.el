@@ -853,6 +853,9 @@
         ;; :cwd nil))
   )
 (use-package! dap-cpptools)
+;; CUDA
+(add-hook 'c-mode-common-hook 'display-line-numbers-mode)
+(add-hook 'cuda-mode-hook 'display-line-numbers-mode)
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
