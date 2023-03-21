@@ -7,13 +7,12 @@
 ;; (package! builtin-package :disable t)
 
 ;;; Code:
-;; (package! doom-themes :ignore t)
 (package! winum)
 (package! ivy-posframe :recipe (:host github :repo "tumashu/ivy-posframe"))
 (disable-packages! irony rtags)
 (package! cquery)
 (package! ccls)
-(package! google-c-style) ; google c/c++ coding style
+(package! google-c-style)
 (package! company-lsp)
 (package! evil-commentary)              ; easily comment lines
 (package! yascroll)

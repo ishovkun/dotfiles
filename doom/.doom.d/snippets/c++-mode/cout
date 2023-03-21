@@ -3,4 +3,4 @@
 #key : cout
 #contributor : Igor
 # --
-std::cout << $1 << std::endl;
+std::cout << $1 << ${2:std::endl};
