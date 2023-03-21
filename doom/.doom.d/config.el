@@ -684,6 +684,7 @@
     (ivy-posframe-mode 1)
 ))
 
+;; ----------------------------- dired ----------------------------------
 ;; ranger
 (setq ranger-deer-show-details nil)
 (setq ranger-show-hidden nil)
