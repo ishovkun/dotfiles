@@ -1,5 +1,6 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/.local/lib:$HOME/bin:/usr/local/bin:$PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.local/lib/
 
 # do not do fancy terminal prompts while connecting through tramp
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
@@ -79,6 +80,7 @@ export EDITOR='vim'
 # aliases
 alias gmsh="~/build/gmsh/bin/gmsh"
 alias ssh="TERM=xterm-256color ssh"
+alias gcloud="TERM=xterm-256color gcloud"
 alias msh2="~/dev/msh2gprs/build/msh2gprs"
 alias doom="~/.emacs.d/bin/doom"
 
