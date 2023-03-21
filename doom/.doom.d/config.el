@@ -843,7 +843,7 @@
 
   (setq dap-lldb-debug-program '("/usr/bin/lldb-vscode"))
   (if (eq system-type 'darwin)
-      (setq dap-lldb-debug-program '("/usr/local/Cellar/llvm/13.0.1_1/bin/lldb-vscode"))
+      (setq dap-lldb-debug-program '("/usr/local/Cellar/llvm/15.0.2/bin/lldb-vscode"))
       )
   ;; (dap-register-debug-template "LLDB::Run"
   ;; (list :type "lldb"
