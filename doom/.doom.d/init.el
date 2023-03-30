@@ -97,7 +97,9 @@
        lsp
        lookup                  ; navigate your code and its documentation
        ;;macos                 ; MacOS-specific commands
-       (magit +forge)          ; a git porcelain for Emacs
+       (magit
+        ;;+forge
+              )          ; a git porcelain for Emacs
        make                    ; run make tasks from Emacs
        ;; tty                     ; improve the terminal Emacs experience
        ;;pass                  ; password manager for nerds
@@ -138,7 +140,7 @@
        ;;(haskell +intero)     ; a language that's lazier than I am
        ;;hy                    ; readability of scheme w/ speed of python
        ;;idris             ;
-       (java +meghanada +lsp)  ; the poster child for carpal tunnel syndrome
+       ;; (java +meghanada +lsp)  ; the poster child for carpal tunnel syndrome
        ;;javascript            ; all(hope(abandon(ye(who(enter(here))))))
        ;;julia                 ; a better, faster MATLAB
        ;;kotlin                ; a better, slicker Java(Script)
