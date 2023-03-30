@@ -15,6 +15,7 @@ exec swaync
 bindsym $mod+apostrophe exec swaync-client -t -sw
 # sov -- sway overview
 exec_always rm -f /tmp/sovpipe && mkfifo /tmp/sovpipe && tail -f /tmp/sovpipe | sov
+exec dropbox
 
 # lid shenanigans
 # exec_always /home/ishovkun/dotfiles/sway/.config/sway/lidmanip.sh
@@ -51,7 +52,8 @@ bindswitch --reload --locked lid:on output $laptop disable
 ### Output configuration
     #
     # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-    output * bg /home/ishovkun/Pictures/pexels-bithin-raj-2763927.jpg fill
+    # output * bg /home/ishovkun/Pictures/pexels-bithin-raj-2763927.jpg fill
+    output * bg /home/ishovkun/Pictures/antilope_canyon.jpg fill
     #
     # Example configuration:
     #
@@ -206,6 +208,13 @@ bindsym Mod1+space exec $menu
     bindsym --to-code $mod+Shift+j resize grow height   100px
     bindsym --to-code $mod+Shift+k resize shrink height 100px
     bindsym --to-code $mod+Shift+l resize grow width    100px
+#
+# Move
+#
+    bindsym $mod+left move left 15
+    bindsym $mod+right move right 15
+    bindsym $mod+up move up 15
+    bindsym $mod+down move down 15
 #
 # Swap
 #
