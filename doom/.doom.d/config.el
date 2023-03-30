@@ -704,6 +704,7 @@
     (setq lsp-lens-enable nil)     ;; disable stupid lenses
     (setq lsp-enable-file-watchers nil)
     (setq lsp-headerline-breadcrumb-enable t)
+    (setq lsp-headerline-breadcrumb-icons-enable t)
     (push 'company-lsp company-backends)
     ;; ccls
     (after! ccls
