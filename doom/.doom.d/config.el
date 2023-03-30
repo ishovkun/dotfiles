@@ -898,11 +898,11 @@
    )))
 ;; ---------------------------------- Notifications --------------------------------
 ;; (use-package! alert :config (setq alert-default-style 'notifications))
-(use-package! org-wild-notifier
-  :config
-  (setq alert-default-style 'notifications)
-  (org-wild-notifier-mode t)
-  )
+;; (use-package! org-wild-notifier
+;;   :config
+;;   (setq alert-default-style 'notifications)
+;;   (org-wild-notifier-mode t)
+;;   )
   ;; ---------------------------- ORG calendar --------------------------------------
 ;; (use-package! org-gcal
 ;;   :config
