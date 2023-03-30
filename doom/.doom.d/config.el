@@ -401,6 +401,13 @@
   (define-key company-active-map (kbd "<tab>") nil)
   (define-key company-active-map (kbd "TAB") 'company-yasnippet-or-completion))
 
+(after! company
+  ;; get only preview
+  ;; (setq company-frontends '(company-preview-frontend))
+  ;; also get a drop down
+  (setq company-frontends '(company-pseudo-tooltip-frontend company-preview-frontend))
+)
+
 ;; tab switching
 ;; (use-package! awesome-tab
 ;;   :config
@@ -773,7 +780,7 @@
     :config
     (setq use-dialog-box nil) ;; do not use popup boxes
 
-    (setq codeium/metadata/api_key "ae87000a-d404-4747-950d-cf4d2973a50f")
+    ;; (setq codeium/metadata/api_key "ae87000a-d404-4747-950d-cf4d2973a50f")
 
     ;; use M-x codeium-diagnose to see apis/fields that would be sent to the local language server
     (setq codeium-api-enabled
