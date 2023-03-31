@@ -341,6 +341,7 @@
   ;; toggles
   (:prefix "t"
     :desc "toggle line wrap" :n "L" #'toggle-truncate-lines
+    :desc "toggle treemacs" :nv "\\" #'treemacs
   )
   (:prefix "o"
     ;; debugging
@@ -697,14 +698,21 @@
 ;; (use-package! dired-dd)
 ;; ----------------------------- c/c++ ----------------------------------
 ;; lsp
+(use-package! lsp-mode
+  ;; :commands lsp
+  :config
+    (setq lsp-lens-enable nil     ;; disable stupid lenses (number of references inline)
+          lsp-enable-file-watchers nil
+          lsp-headerline-breadcrumb-icons-enable t
+          lsp-headerline-breadcrumb-enable t
+          lsp-headerline-breadcrumb-enable-symbol-numbers nil
+          )
+  )
 
 
 (after! lsp-mode
   (progn
-    (setq lsp-lens-enable nil)     ;; disable stupid lenses
-    (setq lsp-enable-file-watchers nil)
-    (setq lsp-headerline-breadcrumb-enable t)
-    (setq lsp-headerline-breadcrumb-icons-enable t)
+
     (push 'company-lsp company-backends)
     ;; ccls
     (after! ccls
@@ -741,12 +749,6 @@
      ;;                   :remote? t
      ;;                   :server-id 'ccls-remote))
 
-     ;; (setq lsp-headerline-breadcrumb-segments '(project file symbols))
-     ;; (setq lsp-headerline-breadcrumb-segments '(file symbols))
-     ;; (setq lsp-headerline-breadcrumb-icons-enable t)
-     ;; (setq lsp-headerline-breadcrumb-enable t)
-     ;; (setq lsp-headerline-breadcrumb-enable-symbol-numbers t)
-
      ;; (lsp-treemacs-sync-mode 1)
      ))
 
@@ -757,9 +759,6 @@
   (setq lsp-ui-doc-position 'bottom) ; top, bottom, at-point
   (setq lsp-ui-doc-max-width 150)
   (setq lsp-ui-doc-max-height 150)
-  ;; (setq lsp-headerline-breadcrumb-segments '(file symbols))
-  ;; (setq lsp-headerline-breadcrumb-icons-enable t)
-  ;; (setq lsp-headerline-breadcrumb-enable nil)
   :config
   ;; (set-face-attribute 'lsp-ui-doc-global nil :height 0.75)
   (lsp-ui-doc-mode)
