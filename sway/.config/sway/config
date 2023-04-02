@@ -235,6 +235,7 @@ bindsym Mod1+space exec $menu
     bindsym Print              exec /usr/share/sway/scripts/grimshot save window
     bindsym Shift+Print        exec /usr/share/sway/scripts/grimshot save area
     bindsym $mod+Shift+Print   exec /usr/share/sway/scripts/grimshot save screen
+    bindsym $mod+Shift+c exec grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:- | tail -n 1 | cut -d ' ' -f 4 | wl-copy --type text/plain
     # bindsym $mod+g       exec $term -e ~/bin/swayrec
 #
 # Scratchpad
