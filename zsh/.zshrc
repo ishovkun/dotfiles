@@ -82,7 +82,7 @@ alias gmsh="~/build/gmsh/bin/gmsh"
 alias ssh="TERM=xterm-256color ssh"
 alias gcloud="TERM=xterm-256color gcloud"
 alias msh2="~/dev/msh2gprs/build/msh2gprs"
-alias doom="~/.emacs.d/bin/doom"
+alias doom="~/.config/emacs/bin/doom"
 
 PYTHONPATH="${PYTHONPATH}:/home/ishovkun/dev"
 PYTHONPATH="${PYTHONPATH}:/$HOME/build/python"
