@@ -1,0 +1,67 @@
+
+{
+    "title": "linux_like",
+    "rules": [{
+        "description": "ctrl c/v",
+        "manipulators": [
+            {
+                "type": "basic" ,
+                "from": {
+                    "key_code": "c",
+                    "modifiers": {
+                        "mandatory": ["left_control"]
+                    }
+                },
+                "to" : [{
+                    "key_code": "c",
+                    "modifiers":  ["left_command"]
+                }],
+                "conditions": [
+                    {
+                        "type": "frontmost_application_if",
+                        "bundle_identifiers": ["^com.google.Chrome", "^com.microsoft.Word", "^com.eltima.cmd1", "^org.mozilla.firefoxdeveloperedition"]
+                    }
+                ]
+            },
+            {
+                "type": "basic" ,
+                "from": {
+                    "key_code": "v",
+                    "modifiers": {
+                        "mandatory": ["left_control"]
+                    }
+                },
+                "to" : [{
+                    "key_code": "v",
+                    "modifiers":  ["left_command"]
+                }],
+                "conditions": [
+                    {
+                        "type": "frontmost_application_if",
+                        "bundle_identifiers": ["^com.google.Chrome", "^com.microsoft.Word", "^com.eltima.cmd1", "^org.mozilla.firefoxdeveloperedition"]
+                    }
+                ]
+            },
+            {
+                "type": "basic" ,
+                "from": {
+                    "key_code": "f",
+                    "modifiers": {
+                        "mandatory": ["left_control"]
+                    }
+                },
+                "to" : [{
+                    "key_code": "f",
+                    "modifiers":  ["left_command"]
+                }],
+                "conditions": [
+                    {
+                        "type": "frontmost_application_if",
+                        "bundle_identifiers": ["^com.google.Chrome", "^com.microsoft.Word", "^com.eltima.cmd1", "^org.mozilla.firefoxdeveloperedition"]
+                    }
+                ]
+            }
+        ]
+    }]
+}
+
