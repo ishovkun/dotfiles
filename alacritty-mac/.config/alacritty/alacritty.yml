@@ -1,0 +1,373 @@
+# Configuration for Alacritty, the GPU enhanced terminal emulator
+
+# Any items in the `env` entry below will be added as
+# environment variables. Some entries may override variables
+# set by alacritty it self.
+# env:
+  # TERM env customization.
+  #
+  # If this property is not set, alacritty will set it to xterm-256color.
+  #
+  # Note that some xterm terminfo databases don't declare support for italics.
+  # You can verify this by checking for the presence of `smso` and `sitm` in
+  # `infocmp xterm-256color`.
+  # TERM: xterm-256color
+
+window:
+  # Window dimensions in character columns and lines
+  # (changes require restart)
+  dynamic_title: true
+
+    # dimensions:
+    # columns: 120
+    # lines: 40
+
+  # Adds this many blank pixels of padding around the window
+  # Units are physical pixels; this is not DPI aware.
+  # (change requires restart)
+  padding:
+    x: 2
+    y: 2
+
+  # Values for `decorations`:
+  #     - full: Borders and title bar
+  #     - none: Neither borders nor title bar
+  #     - buttonless: Title bar, transparent background and title bar buttons
+  #     - transparent: Title bar, transparent background, but no title bar buttons
+  # decorations: none
+
+# When true, bold text is drawn using the bright variant of colors.
+draw_bold_text_with_bright_colors: true
+
+# Font configuration (changes require restart)
+font:
+  normal:
+    family: Iosevka Nerd Font
+
+  # Point size of the font
+  size: 12.0
+
+  # Offset is the extra space around each character. offset.y can be thought of
+  # as modifying the linespacing, and offset.x as modifying the letter spacing.
+  offset:
+    x: 0
+    y: 4
+
+  # Glyph offset determines the locations of the glyphs within their cells with
+  # the default being at the bottom. Increase the x offset to move the glyph to
+  # the right, increase the y offset to move the glyph upward.
+  glyph_offset:
+    x: 0
+    y: 0
+
+  # OS X only: use thin stroke font rendering. Thin strokes are suitable
+  # for retina displays, but for non-retina you probably want this set to
+  # false.
+  # use_thin_strokes: true
+
+
+# Visual Bell
+#
+# Any time the BEL code is received, Alacritty "rings" the visual bell. Once
+# rung, the terminal background will be set to white and transition back to the
+# default background color. You can control the rate of this transition by
+# setting the `duration` property (represented in milliseconds). You can also
+# configure the transition function by setting the `animation` property.
+#
+# Possible values for `animation`
+# `Ease`
+# `EaseOut`
+# `EaseOutSine`
+# `EaseOutQuad`
+# `EaseOutCubic`
+# `EaseOutQuart`
+# `EaseOutQuint`
+# `EaseOutExpo`
+# `EaseOutCirc`
+# `Linear`
+#
+# To completely disable the visual bell, set its duration to 0.
+#
+bell:
+  animation: EaseOutExpo
+  duration: 0
+
+# Background opacity
+window_opacity: 1.0
+
+# Mouse bindings
+#
+# Currently doesn't support modifiers. Both the `mouse` and `action` fields must
+# be specified.
+#
+# Values for `mouse`:
+# - Middle
+# - Left
+# - Right
+# - Numeric identifier such as `5`
+#
+# Values for `action`:
+# - Paste
+# - PasteSelection
+# - Copy (TODO)
+mouse_bindings:
+  - { mouse: Middle, action: PasteSelection }
+
+mouse:
+  # Click settings
+  #
+  # The `double_click` and `triple_click` settings control the time
+  # alacritty should wait for accepting multiple clicks as one double
+  # or triple click.
+  double_click: { threshold: 300 }
+  triple_click: { threshold: 300 }
+  faux_scrolling_lines: 1
+  hide_when_typing: false
+
+selection:
+  semantic_escape_chars: ",│`|:\"' ()[]{}<>"
+
+# Style of the cursor
+#
+cursor:
+  style: Block
+  unfocused_hollow: true
+
+# Live config reload (changes require restart)
+live_config_reload: true
+
+# Shell
+#
+# You can set shell.program to the path of your favorite shell, e.g. /bin/fish.
+# Entries in shell.args are passed unmodified as arguments to the shell.
+#
+#   shell:
+#     program: /usr/local/bin/zsh
+#     args:
+#       - --login
+
+# Key bindings
+#
+# Each binding is defined as an object with some properties. Most of the
+# properties are optional. All of the alphabetical keys should have a letter for
+# the `key` value such as `V`. Function keys are probably what you would expect
+# as well (F1, F2, ..). The number keys above the main keyboard are encoded as
+# `Key1`, `Key2`, etc. Keys on the number pad are encoded `Number1`, `Number2`,
+# etc.  These all match the glutin::VirtualKeyCode variants.
+#
+# A list with all available `key` names can be found here:
+# https://docs.rs/glutin/*/glutin/enum.VirtualKeyCode.html#variants
+#
+# Possible values for `mods`
+# `Command`, `Super` refer to the super/command/windows key
+# `Control` for the control key
+# `Shift` for the Shift key
+# `Alt` and `Option` refer to alt/option
+#
+# mods may be combined with a `|`. For example, requiring control and shift
+# looks like:
+#
+# mods: Control|Shift
+#
+# The parser is currently quite sensitive to whitespace and capitalization -
+# capitalization must match exactly, and piped items must not have whitespace
+# around them.
+#
+# Either an `action`, `chars`, or `command` field must be present.
+#   `action` must be one of `Paste`, `PasteSelection`, `Copy`, or `Quit`.
+#   `chars` writes the specified string every time that binding is activated.
+#     These should generally be escape sequences, but they can be configured to
+#     send arbitrary strings of bytes.
+#   `command` must be a map containing a `program` string, and `args` array of
+#     strings. For example:
+#     - { ... , command: { program: "alacritty", args: ["-e", "vttest"] } }
+key_bindings:
+  - { key: Key0,   mods: Command,         action: ResetFontSize         }
+  - { key: Equals, mods: Command,         action: IncreaseFontSize      }
+  - { key: Plus,   mods: Command,         action: IncreaseFontSize      }
+  - { key: Minus,  mods: Command,         action: DecreaseFontSize      }
+  # - { key: K,      mods: Command,         chars: "\x0c"                 }
+  - { key: V,      mods: Command,         action: Paste                 }
+  - { key: C,      mods: Command,         action: Copy                  }
+  # - { key: M,      mods: Command,         action: Minimize              }
+  - { key: Q,      mods: Command,         action: Quit                  }
+  - { key: W,      mods: Command,         action: Quit                  }
+  - { key: F,      mods: Command|Control, action: ToggleFullscreen      }
+
+  - { key: Paste,                    action: Paste                      }
+  - { key: Copy,                     action: Copy                       }
+  # - { key: L,         mods: Control, action: ClearLogNotice             }
+  - { key: L,         mods: Control, chars: "\x0c"                      }
+  # - { key: M,         mods: Control, chars: "\x0c"                      }
+  - { key: PageUp,    mods: Shift,   action: ScrollPageUp,   mode: ~Alt }
+  - { key: PageDown,  mods: Shift,   action: ScrollPageDown, mode: ~Alt }
+  - { key: Home,      mods: Shift,   action: ScrollToTop,    mode: ~Alt }
+  - { key: End,       mods: Shift,   action: ScrollToBottom, mode: ~Alt }
+  - { key: End,       mods: Shift,   action: ScrollToBottom, mode: ~Alt }
+  - { key: Left,      mods: Alt,     chars: ""                          }
+  - { key: Right,     mods: Alt,     chars: ""                          }
+  # - { key: NumpadEnter,             chars: "\n"                         }
+  - { key: T,        mods: Command, chars: "\x1c\x63"                   }
+  - { key: RBracket, mods: Command|Shift, chars: "\x1c\x6e"             }
+  - { key: LBracket, mods: Command|Shift, chars: "\x1c\x70"             }
+
+
+  - { key: A,         mods: Command,       chars: "\x1ba"               }
+  # Move cursor forward one word
+  - { key: B,         mods: Command,       chars: "\x1bb"               }
+  - { key: C,         mods: Command,       chars: "\x1bc"               }
+  # Delete forward one word
+  - { key: D,         mods: Command,       chars: "\x1bd"               }
+  - { key: E,         mods: Command,   chars: "\x1be"                   }
+  # Move cursor back one word
+  - { key: Semicolon, mods: Command,       chars: "\x1b;"               }
+  - { key: Comma,     mods: Control,       chars: "\x1b[44;5u"          }
+  - { key: Comma,     mods: Command,       chars: "\x1b,"               }
+  - { key: Period,    mods: Command,       chars: "\x1b."               }
+  - { key: LBracket,  mods: Command,       chars: "\x1b["               }
+  - { key: RBracket,  mods: Command,       chars: "\x1b]"               }
+  - { key: Slash,     mods: Command,       chars: "\x1b/"               }
+  - { key: Space,     mods: Command,       chars: "\x1b "               }
+  - { key: Backslash, mods: Command,       chars: "\x1b\\"              }
+  - { key: F,         mods: Command,       chars: "\x1bf"               }
+  - { key: G,         mods: Command,       chars: "\x1bg"               }
+  - { key: H,         mods: Command,       chars: "\x1bh"               }
+  - { key: I,         mods: Command,       chars: "\x1bi"               }
+  - { key: J,         mods: Command,       chars: "\x1bj"               }
+  - { key: K,         mods: Command,       chars: "\x1bk"               }
+  - { key: L,         mods: Command,       chars: "\x1bl"               }
+  - { key: M,         mods: Command,       chars: "\x1bm"               }
+  - { key: N,         mods: Command,       chars: "\x1bn"               }
+  - { key: O,         mods: Command,       chars: "\x1bo"               }
+  - { key: P,         mods: Command,       chars: "\x1bp"               }
+  - { key: Q,         mods: Command,       chars: "\x1bq"               }
+  - { key: R,         mods: Command,       chars: "\x1br"               }
+  - { key: S,         mods: Command,       chars: "\x1bs"               }
+  - { key: T,         mods: Command,       chars: "\x1bt"               }
+  - { key: U,         mods: Command,       chars: "\x1bu"               }
+  - { key: V,         mods: Command,       chars: "\x1bv"               }
+  - { key: W,         mods: Command,       chars: "\x1bw"               }
+  - { key: X,         mods: Command,       chars: "\x1bx"               }
+  - { key: Y,         mods: Command,       chars: "\x1by"               }
+  - { key: Z,         mods: Command,       chars: "\x1bz"               }
+  - { key: A,         mods: Command|Shift, chars: "\x1bA"               }
+  - { key: B,         mods: Command|Shift, chars: "\x1bB"               }
+  - { key: C,         mods: Command|Shift, chars: "\x1bC"               }
+  - { key: D,         mods: Command|Shift, chars: "\x1bD"               }
+  - { key: E,         mods: Command|Shift, chars: "\x1bE"               }
+  - { key: F,         mods: Command|Shift, chars: "\x1bF"               }
+  - { key: G,         mods: Command|Shift, chars: "\x1bG"               }
+  - { key: H,         mods: Command|Shift, chars: "\x1bH"               }
+  - { key: I,         mods: Command|Shift, chars: "\x1bI"               }
+  - { key: J,         mods: Command|Shift, chars: "\x1bJ"               }
+  - { key: K,         mods: Command|Shift, chars: "\x1bK"               }
+  - { key: L,         mods: Command|Shift, chars: "\x1bL"               }
+  - { key: M,         mods: Command|Shift, chars: "\x1bM"               }
+  - { key: N,         mods: Command|Shift, chars: "\x1bN"               }
+  - { key: O,         mods: Command|Shift, chars: "\x1bO"               }
+  - { key: P,         mods: Command|Shift, chars: "\x1bP"               }
+  - { key: Q,         mods: Command|Shift, chars: "\x1bQ"               }
+  - { key: R,         mods: Command|Shift, chars: "\x1bR"               }
+  - { key: S,         mods: Command|Shift, chars: "\x1bS"               }
+  - { key: T,         mods: Command|Shift, chars: "\x1bT"               }
+  - { key: U,         mods: Command|Shift, chars: "\x1bU"               }
+  - { key: V,         mods: Command|Shift, chars: "\x1bV"               }
+  - { key: W,         mods: Command|Shift, chars: "\x1bW"               }
+  - { key: X,         mods: Command|Shift, chars: "\x1bX"               }
+  - { key: Y,         mods: Command|Shift, chars: "\x1bY"               }
+  - { key: Z,         mods: Command|Shift, chars: "\x1bZ"               }
+
+  - { key: Key0,      mods: Alt,           chars: "\x1b0"               }
+  - { key: Key1,      mods: Alt,           chars: "\x1b1"               }
+  - { key: Key2,      mods: Alt,           chars: "\x1b2"               }
+  - { key: Key3,      mods: Alt,           chars: "\x1b3"               }
+  - { key: Key4,      mods: Alt,           chars: "\x1b4"               }
+  - { key: Key5,      mods: Alt,           chars: "\x1b5"               }
+  - { key: Key6,      mods: Alt,           chars: "\x1b6"               }
+  - { key: Key7,      mods: Alt,           chars: "\x1b7"               }
+  - { key: Key8,      mods: Alt,           chars: "\x1b8"               }
+  - { key: Key9,      mods: Alt,           chars: "\x1b9"               }
+
+  - { key: Key0, mods: Command, chars: "\x1b0" }
+  - { key: Key1, mods: Command, chars: "\x1b1" }
+  - { key: Key2, mods: Command, chars: "\x1b2" }
+  - { key: Key3, mods: Command, chars: "\x1b3" }
+  - { key: Key4, mods: Command, chars: "\x1b4" }
+  - { key: Key5, mods: Command, chars: "\x1b5" }
+  - { key: Key6, mods: Command, chars: "\x1b6" }
+  - { key: Key7, mods: Command, chars: "\x1b7" }
+  - { key: Key8, mods: Command, chars: "\x1b8" }
+  - { key: Key9, mods: Command, chars: "\x1b9" }
+
+  - { key: Return,    mods: Control,       chars: "\x1b[13;5u"          } # Ctrl + Enter
+  # - { key: Return,    mods: Shift,         chars: "\x1b[13;2u"          } # Shift + Enter
+  - { key: Return,    mods: Shift,         chars: "\x00c"          } # send tmux prefix + c to create new tmux window
+  - { key: Space,     mods: Shift,         chars: "\x1b[32;2u"          } # Shirt + Space
+  - { key: Space,     mods: Control,       chars: "\x00"                } # Ctrl + Space
+  - { key: Grave,     mods: Alt,           chars: "\x1b`"               } # Alt + `
+  - { key: Grave,     mods: Alt|Shift,     chars: "\x1b~"               } # Alt + ~
+  - { key: Period,    mods: Alt,           chars: "\x1b."               } # Alt + .
+  # - { key: Period,    mods: Control,       chars: "\x0b."           }
+  # - { key: Period,        mods: Control,       chars: "tmux next-window\n"               } # Alt + .
+  - { key: Key8,      mods: Alt|Shift,     chars: "\x1b*"               } # Alt + *
+  - { key: Key3,      mods: Alt|Shift,     chars: "\x1b#"               } # Alt + #
+  - { key: Period,    mods: Alt|Shift,     chars: "\x1b>"               } # Alt + >
+  - { key: Comma,     mods: Alt|Shift,     chars: "\x1b<"               } # Alt + <
+  - { key: Minus,     mods: Alt|Shift,     chars: "\x1b_"               } # Alt + _
+  - { key: Key5,      mods: Alt|Shift,     chars: "\x1b%"               } # Alt + %
+  - { key: Key6,      mods: Alt|Shift,     chars: "\x1b^"               } # Alt + ^
+  - { key: Backslash, mods: Alt,           chars: "\x1b\\"              } # Alt + \
+  - { key: Backslash, mods: Alt|Shift,     chars: "\x1b|"               } # Alt + |
+  - { key: Back,      mods: Shift,         chars: "\x7f"                } # Shift + Backspace
+  - { key: Back,      mods: Command,       chars: "\x1b\x7f"            }
+
+colors:
+  primary:
+    background: '#2e3440'
+    foreground: '#d8dee9'
+    dim_foreground: '#a5abb6'
+  cursor:
+    text: '#2e3440'
+    cursor: '#d8dee9'
+  vi_mode_cursor:
+    text: '#2e3440'
+    cursor: '#d8dee9'
+  selection:
+    text: CellForeground
+    background: '#4c566a'
+  search:
+    matches:
+      foreground: CellBackground
+      background: '#88c0d0'
+    footer_bar:
+      background: '#434c5e'
+      foreground: '#d8dee9'
+  normal:
+    black: '#3b4252'
+    red: '#bf616a'
+    green: '#a3be8c'
+    yellow: '#ebcb8b'
+    blue: '#81a1c1'
+    magenta: '#b48ead'
+    cyan: '#88c0d0'
+    white: '#e5e9f0'
+  bright:
+    black: '#4c566a'
+    red: '#bf616a'
+    green: '#a3be8c'
+    yellow: '#ebcb8b'
+    blue: '#81a1c1'
+    magenta: '#b48ead'
+    cyan: '#8fbcbb'
+    white: '#eceff4'
+  dim:
+    black: '#373e4d'
+    red: '#94545d'
+    green: '#809575'
+    yellow: '#b29e75'
+    blue: '#68809a'
+    magenta: '#8c738c'
+    cyan: '#6d96a5'
+    white: '#aeb3bb'
+
+
