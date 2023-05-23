@@ -1,0 +1,74 @@
+# the scripting-addition must be loaded manually if
+# you are running yabai on macOS Big Sur. Uncomment
+# the following line to have the injection performed
+# when the config is executed during startup.
+#
+# for this to work you must configure sudo such that
+# it will be able to run the command without password
+
+sudo yabai --load-sa
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+
+# bsp or float (default: bsp)
+# yabai -m config layout float
+yabai -m config layout bsp
+
+# Disable animations when opening and closing windows.
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Accelerated playback when adjusting the window size.
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# set mouse interaction modifier key (default: fn)
+yabai -m config mouse_modifier alt
+
+# set modifier + left-click drag to resize window (default: move)
+yabai -m config mouse_action1 move
+
+# set modifier + right-click drag to resize window (default: resize)
+yabai -m config mouse_action2 resize
+
+# set focus follows mouse mode (default: off, options: off, autoraise, autofocus)
+# yabai -m config focus_follows_mouse autoraise
+# yabai -m config focus_follows_mouse autofocus
+
+# set mouse follows focus mode (default: off)
+yabai -m config mouse_follows_focus off
+
+# yabai -m config window_border                off
+# yabai -m config window_border_width          6
+# yabai -m config active_window_border_color   0xff775759
+
+yabai -m rule --add app="^Ferdi.*$" manage=off
+# yabai -m rule --add app="^Finder$" sticky=on layer=above manage=off
+yabai -m rule --add app="^Finder$" layer=above manage=off
+yabai -m rule --add app="^System Preferences$" manage=off
+yabai -m rule --add app="^Karabiner-Elements$" manage=off
+# yabai -m rule --add app=Emacs manage=off
+yabai -m rule --add app="^Python$" manage=off
+yabai -m rule --add app="^Figure.$" manage=off
+yabai -m rule --add app="^Microsoft Teams$" manage=off
+yabai -m rule --add app="^Commander One$" manage=off
+
+yabai -m rule --add app="^Activity Monitor$" manage=off
+yabai -m rule --add app="^KeeWeb.*$" manage=off
+yabai -m rule --add app="^Zotero.*$" manage=off
+yabai -m rule --add app="^Problem Report.*$" manage=off
+yabai -m rule --add app="^ForkLift.*$" manage=off
+yabai -m rule --add title="^.*import.*" manage=off
+yabai -m rule --add title="^Select.*" sticky=on
+yabai -m rule --add app="^Digital Colou?r Meter$" sticky=on
+# yabai -m signal --add \
+#       event=application_activated \
+#       app="^Microsoft Teams$" \
+#       action='${HOME}/.config/yabai/scripts/defeat-teams'
+
+# yabai -m signal --add \
+#       event=window_focused \
+#       app="^Microsoft Teams$" \
+#       title="^Microsoft Teams Notification$" \
+#       action='${HOME}/.config/yabai/scripts/defeat-teams'
+
+# tempDir=/tmp/yabai-tiling-floating-toggle
+# [ -d $tempDir ] && rm -rf $tempDir
+# mkdir $tempDir
