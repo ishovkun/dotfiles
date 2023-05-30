@@ -1,10 +1,8 @@
 local M = {}
 
 function onActiveSpace(win_id)
-  print("here")
   local active_spaces = hs.spaces.activeSpaces()
   local win_spaces = hs.spaces.windowSpaces(win_id)
-  print("here2")
   for _,win_space in pairs(win_spaces) do
     for screen, screen_space in pairs(active_spaces) do
       if win_space == screen_space then
