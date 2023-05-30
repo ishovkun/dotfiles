@@ -32,6 +32,7 @@ hs.hotkey.bind('alt', 'e', function() launch.toggleApp("Ferdium", true) end)
 hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Forklift", false) end)
 hs.hotkey.bind('alt', 'return', function() launch.toggleApp("Alacritty", true) end)
 hs.hotkey.bind('alt', 't', function() launch.toggleApp("Terminal", true) end)
+hs.hotkey.bind('alt', 'r', function() launch.toggleApp("KeeWeb", true) end)
 
 -- reload
 hs.hotkey.bind(hyper, 'r', function()
