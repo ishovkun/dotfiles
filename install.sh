@@ -17,6 +17,11 @@ if [ ! -d "${HOME}/build/tmux-df" ]
 then
     git clone https://github.com/tassaron/tmux-df "${HOME}/build/tmux-df"
 fi
+# vim plugin manager
+if [ ! -d "${HOME}/.vim/bundle/Vundle.vim" ]
+then
+    git clone https://github.com/VundleVim/Vundle.vim.git "${HOME}/.vim/bundle/Vundle.vim"
+fi
 
 # enable 24bit colors
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
