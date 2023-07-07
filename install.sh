@@ -21,6 +21,7 @@ fi
 if [ ! -d "${HOME}/.vim/bundle/Vundle.vim" ]
 then
     git clone https://github.com/VundleVim/Vundle.vim.git "${HOME}/.vim/bundle/Vundle.vim"
+    vim +PluginInstall +qall
 fi
 
 # enable 24bit colors
