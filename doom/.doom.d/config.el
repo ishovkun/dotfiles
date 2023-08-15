@@ -750,6 +750,7 @@
                                      "--completion-style=detailed"
                                      "--header-insertion=never"))
      (after! lsp-clangd (set-lsp-priority! 'clangd 1))  ; ccls has priority 0
+
      ;; (lsp-register-client
      ;;  (make-lsp-client :new-connection (lsp-tramp-connection "/usr/bin/ccls")
      ;;                   :major-modes '(c++-mode c-mode)
@@ -778,7 +779,8 @@
     (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
     :defer t
     :config
-    (setq use-dialog-box nil) ;; do not use popup boxes
+    ;; (setq use-dialog-box nil) ;; do not use popup boxes
+    ;; (setq use-dialog-box t) ;; do not use popup boxes
 
     ;; (setq codeium/metadata/api_key "ae87000a-d404-4747-950d-cf4d2973a50f")
 
@@ -796,9 +798,11 @@
     (defun my-codeium/document/cursor_offset ()
         (codeium-utf8-byte-length
          (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
+
     (setq codeium/document/text 'my-codeium/document/text)
     (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset)
   )
+
 ;; (after! lsp-ui
 ;;   (progn
 ;;     (setq lsp-ui-sideline-enable nil)
@@ -810,7 +814,6 @@
 ;;     ;; (set-face-attribute 'lsp-ui-doc-global nil :height 0.75)
 ;;     )
 ;;   )
-
 ;; -----------------------------------------------------------------
 
 (after! tramp

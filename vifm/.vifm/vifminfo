@@ -1,0 +1,1064 @@
+# You can edit this file by hand, but it's recommended not to do that.
+
+# Marks:
+'1
+	/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVlibs
+	RVlib2PVL
+1602007877
+'D
+	/home/ishovkun/Dropbox
+	..
+1553314354
+'a
+	/home/ishovkun/sim/dfem
+	config.yaml
+1586990652
+'b
+	/home/ishovkun/build
+	DTK
+1553314677
+'d
+	/home/ishovkun/Downloads
+	..
+1552019790
+'h
+	/home/ishovkun/
+	..
+1551510253
+'j
+	/home/ishovkun/sim/dfem
+	config.yaml
+1586990647
+'p
+	/home/ishovkun/Dropbox/Presentations
+	..
+1553314358
+'q
+	/home/ishovkun/dev/gprs-doc
+	Figs
+1551509944
+'s
+	/home/ishovkun/sim
+	pedfm-comp
+1551510130
+
+# TUI:
+al
+q0
+v2
+ov
+m-1
+l2
+r-11,2
+
+# Left window history (oldest to newest):
+d/home/ishovkun/dev
+	algorithms
+4
+d/home/ishovkun/dev/algorithms
+	boggle
+5
+d/home/ishovkun/dev/algorithms/boggle
+	BoardLocation.java
+4
+d/home/ishovkun/sim/preproc
+	postprocessing
+3
+d/home/ishovkun/sim/preproc/postprocessing
+	..
+0
+d/home/ishovkun/sim/preproc
+	postprocessing
+3
+d/home/ishovkun/Downloads
+	..
+0
+d/home/ishovkun
+	Downloads
+32
+d/home/ishovkun/Downloads
+	..
+0
+d/home/ishovkun
+	dev
+42
+d/home/ishovkun/dev
+	msh2gprs
+6
+d/home/ishovkun/dev/msh2gprs
+	src
+12
+d/home/ishovkun/dev/msh2gprs/src
+	preprocessor
+3
+d/home/ishovkun/dev/msh2gprs/src/preprocessor
+	intersections
+6
+d/home/ishovkun/dev/msh2gprs/src/preprocessor/intersections
+	GridIntersectionSearcher.hpp
+2
+d/home/ishovkun/dev/msh2gprs/src/preprocessor
+	CellPropertyManager.hpp
+13
+d/home/ishovkun/sim
+	cond_num
+4
+d/home/ishovkun/sim/cond_num
+	config.yaml
+9
+d/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVlibs
+	RVlib2PVL
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVlibs/RVlib2PVL
+	RVLib
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVlibs/RVlib2PVL/RVLib
+	..
+0
+d/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVlibs/RVlib2PVL
+	RVLib
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/sources
+	..
+0
+d/home/ishovkun/dev/AD-GPRS/Libraries
+	sources
+3
+d/home/ishovkun/dev/AD-GPRS
+	build
+12
+d/home/ishovkun/dev/AD-GPRS/build
+	Libraries
+3
+d/home/ishovkun/dev/AD-GPRS/build/Libraries
+	sources
+1
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources
+	hdf5-1.8.19
+5
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19
+	CMakeFiles
+1
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19/CMakeFiles
+	CMakeDirectoryInformation.cmake
+1
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19
+	src
+4
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19/src
+	CMakeFiles
+1
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19/src/CMakeFiles
+	H5make_libsettings.dir
+2
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19/src/CMakeFiles/H5make_libsettings.dir
+	..
+0
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19/src/CMakeFiles
+	H5detect.dir
+1
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19/src/CMakeFiles/H5detect.dir
+	C.includecache
+1
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19/src/CMakeFiles
+	H5detect.dir
+1
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19/src
+	CMakeFiles
+1
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources/hdf5-1.8.19
+	src
+4
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources
+	hdf5-1.8.19
+5
+d/home/ishovkun/dev/AD-GPRS/build/Libraries
+	sources
+1
+d/home/ishovkun/dev/AD-GPRS/build/Libraries/sources
+	RVLib
+4
+d/home/ishovkun/dev/AD-GPRS/build/Libraries
+	sources
+1
+d/home/ishovkun/dev/AD-GPRS/build
+	Libraries
+3
+d/home/ishovkun/dev/AD-GPRS
+	Libraries
+8
+d/home/ishovkun/dev/AD-GPRS/Libraries
+	sources
+3
+d/home/ishovkun/dev/AD-GPRS/Libraries/sources
+	hdf5-1.8.19
+7
+d/home/ishovkun/dev/AD-GPRS/Libraries/sources/hdf5-1.8.19
+	test
+9
+d/home/ishovkun/dev/AD-GPRS/Libraries/sources
+	hdf5-1.8.19
+7
+d/home/ishovkun/dev/AD-GPRS/Libraries
+	Compiled
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/Compiled
+	..
+0
+d/home/ishovkun/dev/AD-GPRS/Libraries
+	sources
+3
+d/home/ishovkun/dev/AD-GPRS/Libraries/sources
+	SuperLU
+7
+d/home/ishovkun/dev/AD-GPRS/Libraries
+	bin
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin
+	linuxAMD64
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64
+	gcc-8
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/gcc-8
+	libamg.a
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64
+	gcc-4.8
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/gcc-4.8
+	libamg.a
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64
+	gcc-4.8
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin
+	osx
+3
+d/home/ishovkun/dev/AD-GPRS/Libraries
+	Compiled
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/Compiled
+	libspblas.a
+13
+d/home/ishovkun/dev/AD-GPRS/Libraries
+	bin
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin
+	linuxAMD64
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64
+	gcc-4.8
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/gcc-4.8
+	libamg.a
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64
+	gcc-8
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/gcc-8
+	libamg.a
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64
+	gcc-4.8
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/gcc-4.8
+	..
+0
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64
+	gcc-4.8
+1
+d/home/ishovkun/dev/AD-GPRS/Libraries/bin
+	linuxAMD64
+2
+d/home/ishovkun/dev/AD-GPRS/Libraries
+	bin
+2
+d/home/ishovkun/dev/AD-GPRS
+	Libraries
+8
+d/home/ishovkun/dev
+	AD-GPRS
+2
+d/home/ishovkun
+	.local
+4
+d/home/ishovkun/.local
+	share
+1
+d/home/ishovkun/.local/share
+	icons
+25
+d/home/ishovkun/.local/share/icons
+	Dex_KDE
+1
+d/home/ishovkun/.local/share/icons/Dex_KDE
+	apps
+3
+d/home/ishovkun/sim
+	10frac-dfm-coupled
+6
+d/home/ishovkun/sim/10frac-dfm-coupled
+	output
+2
+d/home/ishovkun/sim/10frac-dfm-coupled/output
+	..
+0
+d/home/ishovkun/sim/10frac-dfm-coupled
+	OUTPUT.vtk_output
+1
+d/home/ishovkun/sim/10frac-dfm-coupled/OUTPUT.vtk_output
+	..
+0
+d/home/ishovkun/sim/10frac-dfm-coupled
+	postprocessing
+3
+d/home/ishovkun/sim/10frac-dfm-coupled/postprocessing
+	..
+0
+d/home/ishovkun/sim/10frac-dfm-coupled
+	OUTPUT.rates.txt
+4
+d/home/ishovkun/Downloads
+	tax19
+25
+d/home/ishovkun
+	Documents
+23
+d/home/ishovkun/Documents
+	phase3
+25
+d/home/ishovkun/Documents/phase3
+	main.pdf
+10
+d/home/ishovkun/Documents
+	cedfm_pfem_paper
+24
+d/home/ishovkun/Documents/cedfm_pfem_paper
+	main.pdf
+16
+d/home/ishovkun/build
+	SDA-paper
+6
+d/home/ishovkun/build/SDA-paper
+	sda-coupled.pdf
+21
+d/home/ishovkun/build
+	SDA-paper
+6
+d/home/ishovkun/sim
+	mandel-pebi
+17
+d/home/ishovkun/sim/mandel-pebi
+	gprs.data
+10
+d
+
+# Right window history (oldest to newest):
+D/home/ishovkun/dev/AD-GPRS/Libraries
+	sources
+2
+D/home/ishovkun/dev/AD-GPRS
+	build
+2
+D/home/ishovkun/dev/AD-GPRS/build
+	Libraries
+4
+D/home/ishovkun/dev/AD-GPRS
+	build
+3
+D/home/ishovkun/dev/AD-GPRS/build
+	Libraries
+4
+D/home/ishovkun/dev/AD-GPRS
+	Libraries
+8
+D/home/ishovkun/dev/AD-GPRS/Libraries
+	sources
+2
+D/home/ishovkun/dev/AD-GPRS/Libraries/sources
+	Mesh_Library
+4
+D/home/ishovkun/dev/AD-GPRS/Libraries/sources/Mesh_Library
+	..
+0
+D/home/ishovkun/dev/AD-GPRS/Libraries/sources
+	hdf5-1.8.19
+2
+D/home/ishovkun/dev/AD-GPRS/Libraries/sources/hdf5-1.8.19
+	Makefile
+16
+D/home/ishovkun/dev/AD-GPRS/Libraries/sources
+	hdf5-1.8.19
+2
+D/home/ishovkun/dev/AD-GPRS/Libraries
+	Compiled
+1
+D/home/ishovkun/dev/AD-GPRS/Libraries/Compiled
+	..
+0
+D/home/ishovkun/dev/AD-GPRS/Libraries
+	Compiled
+1
+D/home/ishovkun/dev/AD-GPRS
+	Tests
+5
+D/home/ishovkun/dev/AD-GPRS/Tests
+	LinearSolver
+14
+D/home/ishovkun/dev/AD-GPRS/Tests/LinearSolver
+	CPR-FS
+2
+D/home/ishovkun/dev/AD-GPRS/Tests/LinearSolver/CPR-FS
+	Mandel
+1
+D/home/ishovkun/dev/AD-GPRS/Tests/LinearSolver/CPR-FS/Mandel
+	body.inc
+4
+D/home/ishovkun/dev/AD-GPRS/Tests/LinearSolver/CPR-FS
+	Mandel
+1
+D/home/ishovkun/dev/AD-GPRS/Tests/LinearSolver
+	CPR-FS
+2
+D/home/ishovkun/dev/AD-GPRS/Tests
+	Wells
+10
+D/home/ishovkun/dev/AD-GPRS
+	Tests
+5
+D/home/ishovkun/build
+	SuperLU
+1
+D/home/ishovkun/build/SuperLU
+	CMake
+1
+D/home/ishovkun/build/SuperLU/CMake
+	..
+0
+D/home/ishovkun/build/SuperLU
+	CMake
+1
+D/home/ishovkun/build
+	SuperLU
+1
+D/home/ishovkun/build/SuperLU
+	CMake
+1
+D/home/ishovkun/build
+	SuperLU
+1
+D/home/ishovkun
+	dev
+15
+D/home/ishovkun/dev
+	msh2gprs
+3
+D/home/ishovkun/dev/msh2gprs
+	src
+5
+D/home/ishovkun/dev/msh2gprs/src
+	mesh
+2
+D/home/ishovkun/dev/msh2gprs/src/mesh
+	CartesianMeshBuilder.cpp
+3
+D/home/ishovkun/sim
+	pedfm-comp
+25
+D/home/ishovkun/Downloads
+	..
+0
+D/home/ishovkun/Dropbox
+	..
+0
+D/home/ishovkun
+	Documents
+13
+D/home/ishovkun/Documents
+	cedfm_pfem_paper
+2
+D/home/ishovkun/Documents/cedfm_pfem_paper
+	img
+2
+D/home/ishovkun/Downloads
+	alg part ii
+2
+D/home/ishovkun
+	sim
+12
+D/home/ishovkun/sim
+	..
+0
+D/home/ishovkun
+	Downloads
+5
+D/home/ishovkun/Downloads
+	suprib_mail
+3
+D/home/ishovkun
+	dev
+4
+D/home/ishovkun/dev
+	AD-GPRS
+1
+D/home/ishovkun/dev/AD-GPRS
+	Tests
+4
+D/home/ishovkun/dev/AD-GPRS/Tests
+	SinglePhase_DeadOil_BlackOil
+6
+D/home/ishovkun/dev/AD-GPRS/Tests/SinglePhase_DeadOil_BlackOil
+	DeadOil
+1
+D/home/ishovkun/dev/AD-GPRS/Tests/SinglePhase_DeadOil_BlackOil/DeadOil
+	..
+0
+D/home/ishovkun/dev/AD-GPRS/Tests/SinglePhase_DeadOil_BlackOil
+	Blackoil_test
+3
+D/home/ishovkun/dev/AD-GPRS/Tests/SinglePhase_DeadOil_BlackOil/Blackoil_test
+	spe9_gas_injection_1
+2
+D/home/ishovkun/dev/AD-GPRS/Tests/SinglePhase_DeadOil_BlackOil/Blackoil_test/spe9_gas_injection_1
+	natural_formulation
+2
+D/home/ishovkun/dev/AD-GPRS/Tests/SinglePhase_DeadOil_BlackOil/Blackoil_test/spe9_gas_injection_1/natural_formulation
+	GPRS.txt
+3
+D/home/ishovkun/dev/AD-GPRS/Tests/SinglePhase_DeadOil_BlackOil/Blackoil_test/spe9_gas_injection_1
+	natural_formulation
+2
+D/home/ishovkun/dev/AD-GPRS/Tests/SinglePhase_DeadOil_BlackOil/Blackoil_test
+	gravity_segregation
+1
+D/home/ishovkun/dev/AD-GPRS/Tests/SinglePhase_DeadOil_BlackOil
+	Blackoil_test
+3
+D/home/ishovkun/dev/AD-GPRS/Tests
+	SEQ_Flow-Transport
+5
+D/home/ishovkun/Downloads
+	Strugackiy Arkadiy. Trudno byt bogom - BooksCafe.Net.fb2
+6
+D/home/ishovkun
+	Documents
+11
+D/home/ishovkun/Documents
+	cedfm_pfem_paper
+1
+D/home/ishovkun/Documents/cedfm_pfem_paper
+	data
+3
+D/home/ishovkun/Documents/cedfm_pfem_paper/data
+	10frac
+1
+D/home/ishovkun/Documents/cedfm_pfem_paper/data/10frac
+	full
+3
+D/home/ishovkun/Documents/cedfm_pfem_paper/data/10frac/full
+	..
+0
+D/home/ishovkun/Documents/cedfm_pfem_paper/data/10frac
+	one-way
+2
+D/home/ishovkun/Documents/cedfm_pfem_paper/data/10frac/one-way
+	..
+0
+D/home/ishovkun/Documents/cedfm_pfem_paper/data/10frac
+	one-way
+2
+D/home/ishovkun/Documents/cedfm_pfem_paper/data
+	shear-slip
+3
+D/home/ishovkun/Documents/cedfm_pfem_paper
+	img
+2
+D/home/ishovkun/Documents/cedfm_pfem_paper/img
+	dfm-3dview-lowperm-11000.png
+16
+D/home/ishovkun/Documents/cedfm_pfem_paper
+	img
+2
+D/home/ishovkun/Documents
+	cedfm_pfem_paper
+1
+D/home/ishovkun
+	Documents
+11
+D/home/ishovkun/Documents
+	cedfm_pfem_paper
+1
+D/home/ishovkun/Documents/cedfm_pfem_paper
+	data
+3
+D/home/ishovkun/Documents/cedfm_pfem_paper/data
+	10frac
+1
+D/home/ishovkun/Documents/cedfm_pfem_paper/data/10frac
+	rates
+1
+D/home/ishovkun/Documents/cedfm_pfem_paper/data/10frac/rates
+	rates-dfm-const.txt
+3
+D/home/ishovkun/Documents/cedfm_pfem_paper/data/10frac
+	rates
+2
+D/home/ishovkun/Documents/cedfm_pfem_paper/data
+	10frac
+3
+D/home/ishovkun/Documents/cedfm_pfem_paper
+	data
+4
+D/home/ishovkun/Documents
+	cedfm_pfem_paper
+1
+D/home/ishovkun
+	sim
+10
+D/home/ishovkun/sim
+	cond_num
+4
+D/home/ishovkun/sim/cond_num
+	config.yaml
+4
+D/home/ishovkun/sim
+	dean_gprs
+1
+D/home/ishovkun/sim/dean_gprs
+	standalone
+1
+D/home/ishovkun/sim/dean_gprs/standalone
+	out.wells
+1
+D/home/ishovkun/sim/dean_gprs
+	coupled
+2
+D/home/ishovkun/sim/dean_gprs/coupled
+	FIM
+1
+D/home/ishovkun/sim/dean_gprs/coupled/FIM
+	out.wells
+1
+D/home/ishovkun/sim/dean_gprs/coupled/FIM/out.wells
+	..
+0
+D/home/ishovkun/sim/dean_gprs/coupled/FIM
+	out.vtk_output
+2
+D/home/ishovkun/sim/dean_gprs/coupled/FIM/out.vtk_output
+	..
+0
+D/home/ishovkun/sim/dean_gprs/coupled/FIM
+	GPRS.txt
+6
+D/home/ishovkun/sim/dean_gprs/coupled
+	body.inc
+4
+D
+
+# Command line history (oldest to newest):
+:mkdir patch-tetras
+:mkdir config
+:mkdir pfem-custom-subdivision
+:mkdir pfem-direct-r0-hex
+:pfem-direct-gmsh-hex
+:mkdir pfem-direct-gmsh-hex
+:mkdir gprs-doc
+:mkdir Figs
+:mkdir dtk-2
+:mkdir pEDFM
+:invert?
+:help
+:invert
+:+
+:sort +m
+:sort +mtime
+:sort+mtime
+:+mtime
+:sort
+:set sort+=mtime
+:wq
+:mkdir snippets
+:mkdir c++-mode
+:mkdir org-mode
+:.,.+0q
+:lstrash
+:set sort=-mtime
+:makedir edfm-dfm
+:mkdir edfm-dfm
+:mkdir applications
+:mkdir hybdrid
+:mkdir fem
+:mkdir test
+:mkdir tmux
+:mkdir data
+:mkdir cedfm-shear-pebi
+:cedfm-shear-hex
+:mkdir cedfm-shear-hex
+:mkdir grids
+:mkdir dgm-shear-coupled-debug
+:mkdir 10frac-dfm-coupled
+:mkdir 10frac-pfem-coupled
+:mkdir tutorial
+:mkdir single_minimum
+:mkdir two_phase
+:mkdir shared
+:dx_setup
+:mkdir
+:mkdir dx_setup
+:mkdir input
+:mkdir preproc
+:mkdir wells
+:mkdir 
+:mkdir cartesian_grid_3d
+:q
+
+# Search history (oldest to newest):
+/sam
+/shear
+/dou
+/mulri
+/pebi
+/cus
+/ga
+/ced
+/fra
+/exam
+/em
+/share
+/kwin
+/plas
+/kxml
+/vscodk
+/dotfi
+/con
+/i3
+/docu
+/drop
+/msh2
+/pore
+/cpp
+/data
+/face
+/rel
+/cell
+/var
+/doc
+/bla
+/hex
+/geo
+/edf
+/dfm
+/tu
+/mand
+/gprs
+/tut
+/base
+/tris
+/dropbox
+/jou
+/biuild
+/do
+/pap
+/well
+/ad
+/rb
+/pre
+/alg
+/bo
+/src
+/search
+/s
+/sha
+/docke
+/ad-
+/ad-gp
+/lib
+/debug
+/rv
+/my
+/ins
+/in
+/inta
+/build
+/cmake
+/libe
+/awe
+/linear
+/supe
+/sup
+/super
+/msh
+/cmakelist
+/local
+/ions
+/icons
+/imajjjj
+/documen
+/down
+/dev
+/test
+/black
+/iimg
+/img
+/dfm-couple
+/docum
+/docume
+/phase
+/paper
+/tex
+/sim
+/move
+/cfl
+/cond
+/yaml
+/dean
+/gprs.
+
+# Prompt history (oldest to newest):
+pgm_fem_dfem.txt
+pgm_fem_an.txt
+pOUTPUT.vtk_output_gprs_shape_functions
+pOUTPUT.vtk_output_custom_fem
+pOUTPUT.vtk_output_pfem_fixed
+pOUTPUT.vtk_output_gprs
+pOUTPUT.vars.txt
+pOUTPUT.vtk_output_custom
+pOUTPUT.vtk_output_pfem_raw
+pgm_fem_new.txt
+pgm_fem_old.txt
+pDiscretizationDFM.hpp
+pgm_fem_test.txt
+pdialog.txt
+pbeamerinnerthemeblocks.sty
+p.doom.d.b
+pdfm1.vtk
+pfigs
+pParaview.desktop
+pfem
+pmechanics
+pdfm-new-4.pickle
+pgrid-nf3.vtk
+pgrid-nf6.vtk
+poutput_right
+p_output
+pgrid-nf16.vtk
+p10frac-cedfm-coupled
+pgprs.data
+pfrac-wells-edfm
+psimple-well-connect-edfm-2d
+pwells_reference.txt
+pfl_cell_data_reference.txt
+pflow_reservoir_reference.vtk
+pflow_reservoir_mesh_reference.vtk
+pRVlibs
+prates-dfm-const.txt
+
+# Local filter history (oldest to newest):
+
+# Registers:
+""/home/ishovkun/sim/10frac-dfm-coupled/OUTPUT.rates.txt
+
+# Directory stack (oldest to newest):
+
+# Trash content:
+t/home/ishovkun/.local/share/vifm/Trash/000_LiveOil.md
+	/home/ishovkun/dev/AD-GPRS.wiki/LiveOil.md
+t/home/ishovkun/.local/share/vifm/Trash/000_Figs
+	/home/ishovkun/dev/AD-GPRS.wiki/Figs
+t/home/ishovkun/.local/share/vifm/Trash/000_.spacemacs
+	/home/ishovkun/dotfiles/vifm/.vifm/.spacemacs
+t/home/ishovkun/.local/share/vifm/Trash/006_dialog.txt
+	/home/ishovkun/sim/dtk-2/dialog.txt
+t/home/ishovkun/.local/share/vifm/Trash/001_fracs.pmf
+	/home/ishovkun/sim/dtk-2/fracs.pmf
+t/home/ishovkun/.local/share/vifm/Trash/001_quarter_5_fractures.png
+	/home/ishovkun/sim/dtk-2/quarter_5_fractures.png
+t/home/ishovkun/.local/share/vifm/Trash/001_wells_fracs_rescale.txt
+	/home/ishovkun/sim/dtk-2/wells_fracs_rescale.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_evil-terminal-cursor-changer
+	/home/ishovkun/.emacs.d/private/evil-terminal-cursor-changer
+t/home/ishovkun/.local/share/vifm/Trash/001_evil-terminal-cursor-changer
+	/home/ishovkun/dotfiles/emacs/.emacs.d/private/evil-terminal-cursor-changer
+t/home/ishovkun/.local/share/vifm/Trash/000_.git
+	/home/ishovkun/dotfiles/emacs/.emacs.d/private/term-cursor.el/.git
+t/home/ishovkun/.local/share/vifm/Trash/000_.gitignore
+	/home/ishovkun/dotfiles/emacs/.emacs.d/private/term-cursor.el/.gitignore
+t/home/ishovkun/.local/share/vifm/Trash/000_LICENSE
+	/home/ishovkun/dotfiles/emacs/.emacs.d/private/term-cursor.el/LICENSE
+t/home/ishovkun/.local/share/vifm/Trash/000_config.el
+	/home/ishovkun/.doom.d/config.el
+t/home/ishovkun/.local/share/vifm/Trash/000_init.el
+	/home/ishovkun/.doom.d/init.el
+t/home/ishovkun/.local/share/vifm/Trash/000_packages.el
+	/home/ishovkun/.doom.d/packages.el
+t/home/ishovkun/.local/share/vifm/Trash/000_.doom.d.b
+	/home/ishovkun/.doom.d/.doom.d.b
+t/home/ishovkun/.local/share/vifm/Trash/000_CMakeCache.txt
+	/home/ishovkun/dev/msh2gprs/CMakeCache.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_cmake_install.cmake
+	/home/ishovkun/dev/msh2gprs/cmake_install.cmake
+t/home/ishovkun/.local/share/vifm/Trash/000_algs4.jar
+	/home/ishovkun/dev/algorithms/union_find/algs4.jar
+t/home/ishovkun/.local/share/vifm/Trash/001_doom
+	/home/ishovkun/.doom.d/doom
+t/home/ishovkun/.local/share/vifm/Trash/000_c++-mode
+	/home/ishovkun/dotfiles/doom/.doom.d/snippets/c++-mode
+t/home/ishovkun/.local/share/vifm/Trash/000_org-mode
+	/home/ishovkun/dotfiles/doom/.doom.d/snippets/org-mode
+t/home/ishovkun/.local/share/vifm/Trash/000_geom.geo.opt
+	/home/ishovkun/dev/msh2gprs/examples/mech/dfm-shear/geom.geo.opt
+t/home/ishovkun/.local/share/vifm/Trash/008_dialog.txt
+	/home/ishovkun/dev/msh2gprs/examples/flow/tpfa-nofrac-2d/output/dialog.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_src
+	/home/ishovkun/dev/msh2gprs/src/src
+t/home/ishovkun/.local/share/vifm/Trash/000_find_triplet.cpp
+	/home/ishovkun/dev/msh2gprs/src/preprocessor/discretization/find_triplet.cpp
+t/home/ishovkun/.local/share/vifm/Trash/000_nsp
+	/home/ishovkun/dotfiles/doom/.doom.d/snippets/c++-mode/nsp
+t/home/ishovkun/.local/share/vifm/Trash/000_grid.geo.opt
+	/home/ishovkun/sim/hybdrid/grid.geo.opt
+t/home/ishovkun/.local/share/vifm/Trash/000_.gmshrc
+	/home/ishovkun/.gmshrc
+t/home/ishovkun/.local/share/vifm/Trash/000_.gmsh-options
+	/home/ishovkun/.gmsh-options
+t/home/ishovkun/.local/share/vifm/Trash/001_.cquery_cached_index
+	/home/ishovkun/dev/msh2gprs/.cquery_cached_index
+t/home/ishovkun/.local/share/vifm/Trash/000_.dir-locals.el
+	/home/ishovkun/dev/msh2gprs/.dir-locals.el
+t/home/ishovkun/.local/share/vifm/Trash/000_projectile.cache
+	/home/ishovkun/.emacs.d/.local/cache/projectile.cache
+t/home/ishovkun/.local/share/vifm/Trash/000_emacs-session.10d8706163000157163866700000010750209
+	/home/ishovkun/.emacs.d/.local/cache/emacs-session.10d8706163000157163866700000010750209
+t/home/ishovkun/.local/share/vifm/Trash/000_recentf
+	/home/ishovkun/.emacs.d/.local/cache/recentf
+t/home/ishovkun/.local/share/vifm/Trash/000_projectile.projects
+	/home/ishovkun/.emacs.d/.local/cache/projectile.projects
+t/home/ishovkun/.local/share/vifm/Trash/000_init.elc
+	/home/ishovkun/.emacs.d/init.elc
+t/home/ishovkun/.local/share/vifm/Trash/000_single
+	/home/ishovkun/Dropbox/single
+t/home/ishovkun/.local/share/vifm/Trash/000_CTestTestfile.cmake
+	/home/ishovkun/dev/msh2gprs/CTestTestfile.cmake
+t/home/ishovkun/.local/share/vifm/Trash/000_Makefile
+	/home/ishovkun/dev/msh2gprs/Makefile
+t/home/ishovkun/.local/share/vifm/Trash/000_yaml-cpp.pc
+	/home/ishovkun/dev/msh2gprs/yaml-cpp.pc
+t/home/ishovkun/.local/share/vifm/Trash/001_CMakeFiles
+	/home/ishovkun/dev/msh2gprs/CMakeFiles
+t/home/ishovkun/.local/share/vifm/Trash/000_gm_bcond.txt
+	/home/ishovkun/sim/dfem/output/gm_bcond.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_TEST
+	/home/ishovkun/sim/TEST
+t/home/ishovkun/.local/share/vifm/Trash/000_OUTPUT-np2.vtk_output
+	/home/ishovkun/sim/dfem/OUTPUT-np2.vtk_output
+t/home/ishovkun/.local/share/vifm/Trash/000_libpreprocessor.a
+	/home/ishovkun/dev/msh2gprs/src/preprocessor/libpreprocessor.a
+t/home/ishovkun/.local/share/vifm/Trash/003_cmake_install.cmake
+	/home/ishovkun/dev/msh2gprs/src/preprocessor/cmake_install.cmake
+t/home/ishovkun/.local/share/vifm/Trash/000_gm_fem.txt
+	/home/ishovkun/dev/msh2gprs/examples/mech/pfem-direct-gmsh-hex/gm_fem.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_.tmux.conf
+	/home/ishovkun/.tmux.conf
+t/home/ishovkun/.local/share/vifm/Trash/000_dfm-sneddon-4.pickle
+	/home/ishovkun/sim/mech-shear-conv-plot/data/dfm-sneddon-4.pickle
+t/home/ishovkun/.local/share/vifm/Trash/000_dfm-8.pickle
+	/home/ishovkun/sim/mech-shear-conv-plot/data/dfm-8.pickle
+t/home/ishovkun/.local/share/vifm/Trash/000_.z.3483
+	/home/ishovkun/.z.3483
+t/home/ishovkun/.local/share/vifm/Trash/000_.zcompdump-space-5.7.1
+	/home/ishovkun/.zcompdump-space-5.7.1
+t/home/ishovkun/.local/share/vifm/Trash/000_.zcompdump-space-5.8
+	/home/ishovkun/.zcompdump-space-5.8
+t/home/ishovkun/.local/share/vifm/Trash/000_OUTPUT.vars.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/single_minimum/OUTPUT.vars.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_gprs.log.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/single_minimum/gprs.log.txt
+t/home/ishovkun/.local/share/vifm/Trash/001_OUTPUT.vars.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/two_phase/OUTPUT.vars.txt
+t/home/ishovkun/.local/share/vifm/Trash/001_gprs.log.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/two_phase/gprs.log.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_OUTPUT.wells
+	/home/ishovkun/Documents/gprs-tutor/lesson0/2ph_well/OUTPUT.wells
+t/home/ishovkun/.local/share/vifm/Trash/000_OUTPUT.rates.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/2ph_well/OUTPUT.rates.txt
+t/home/ishovkun/.local/share/vifm/Trash/002_OUTPUT.vars.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/2ph_well/OUTPUT.vars.txt
+t/home/ishovkun/.local/share/vifm/Trash/002_gprs.log.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/2ph_well/gprs.log.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_OUTPUT.vars.h5
+	/home/ishovkun/Documents/gprs-tutor/lesson0/dx_setup/OUTPUT.vars.h5
+t/home/ishovkun/.local/share/vifm/Trash/003_gprs.log.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/dx_setup/gprs.log.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_postprocessing
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/postprocessing
+t/home/ishovkun/.local/share/vifm/Trash/001_OUTPUT.wells
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/OUTPUT.wells
+t/home/ishovkun/.local/share/vifm/Trash/001_output
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/output
+t/home/ishovkun/.local/share/vifm/Trash/000_.wells
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/.wells
+t/home/ishovkun/.local/share/vifm/Trash/001_OUTPUT.rates.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/OUTPUT.rates.txt
+t/home/ishovkun/.local/share/vifm/Trash/003_OUTPUT.vars.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/OUTPUT.vars.txt
+t/home/ishovkun/.local/share/vifm/Trash/004_gprs.log.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/gprs.log.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_postprocessor_config.yaml
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/postprocessor_config.yaml
+t/home/ishovkun/.local/share/vifm/Trash/000_.rates.txt
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/.rates.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_relperm.dat
+	/home/ishovkun/Documents/gprs-tutor/lesson0/preproc/relperm.dat
+t/home/ishovkun/.local/share/vifm/Trash/002_output
+	/home/ishovkun/dev/msh2gprs/examples/flow/frac-wells-edfm/output
+t/home/ishovkun/.local/share/vifm/Trash/000_log.txt
+	/home/ishovkun/dev/msh2gprs/examples/flow/frac-wells-edfm/log.txt
+t/home/ishovkun/.local/share/vifm/Trash/001_postprocessor_config.yaml
+	/home/ishovkun/dev/msh2gprs/examples/flow/frac-wells-edfm/postprocessor_config.yaml
+t/home/ishovkun/.local/share/vifm/Trash/003_output
+	/home/ishovkun/dev/msh2gprs/examples/flow/simple-well-connect-edfm-2d/output
+t/home/ishovkun/.local/share/vifm/Trash/000_flow_reservoir_mesh_reference.vtk
+	/home/ishovkun/dev/msh2gprs/examples/flow/cartesian_grid_3d/flow_reservoir_mesh_reference.vtk
+t/home/ishovkun/.local/share/vifm/Trash/000_fl_cell_data_reference.txt
+	/home/ishovkun/dev/msh2gprs/examples/flow/cartesian_grid_3d/fl_cell_data_reference.txt
+t/home/ishovkun/.local/share/vifm/Trash/000_libRVlib.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/libRVlib.a
+t/home/ishovkun/.local/share/vifm/Trash/000_liblivRV-GNU.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/gcc-4.8/liblivRV-GNU.a
+t/home/ishovkun/.local/share/vifm/Trash/001_liblivRV-GNU.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/gcc-8/liblivRV-GNU.a
+t/home/ishovkun/.local/share/vifm/Trash/000_RVlibs
+	/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVlibs
+t/home/ishovkun/.local/share/vifm/Trash/000_ADETL
+	/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVLib/ADETL
+t/home/ishovkun/.local/share/vifm/Trash/000_RVLib.sln
+	/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVLib/RVLib.sln
+t/home/ishovkun/.local/share/vifm/Trash/000_RVLib.vcxproj
+	/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVLib/RVLib.vcxproj
+t/home/ishovkun/.local/share/vifm/Trash/000_RVLib.vcxproj.filters
+	/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVLib/RVLib.vcxproj.filters
+t/home/ishovkun/.local/share/vifm/Trash/000_RVLib.vcxproj.user
+	/home/ishovkun/dev/AD-GPRS/Libraries/sources/RVLib/RVLib.vcxproj.user
+t/home/ishovkun/.local/share/vifm/Trash/000_superlu-5.2.1
+	/home/ishovkun/dev/AD-GPRS/Libraries/sources/superlu-5.2.1
+t/home/ishovkun/.local/share/vifm/Trash/001_.git
+	/home/ishovkun/build/SuperLU/.git
+t/home/ishovkun/.local/share/vifm/Trash/000_libsuperlu.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/gcc-8/libsuperlu.a
+t/home/ishovkun/.local/share/vifm/Trash/001_libsuperlu.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/bin/linuxAMD64/gcc-4.8/libsuperlu.a
+t/home/ishovkun/.local/share/vifm/Trash/002_libsuperlu.a
+	/home/ishovkun/dev/AD-GPRS/Libraries/Compiled/libsuperlu.a
+
+# State:
+f
+i0
+[.0
+[F
+F
+I1
+].0
+]F
+s0

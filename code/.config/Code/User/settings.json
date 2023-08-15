@@ -1,0 +1,14 @@
+{
+    "workbench.colorTheme": "Nord",
+    "workbench.activityBar.visible": true,
+    "editor.fontFamily": "Iosevka SS04",
+    "editor.fontSize": 13,
+    "editor.lineNumbers": "relative",
+    "vscode-neovim.neovimExecutablePaths.linux": "/usr/bin/nvim",
+    "editor.columnSelection": true,
+    "window.menuBarVisibility": "toggle",
+    "grunt.autoDetect": "on",
+    "editor.minimap.enabled": false,
+    "C_Cpp.autocompleteAddParentheses": true,
+    "workbench.sideBar.location": "right",
+ }
