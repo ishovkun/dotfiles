@@ -261,4 +261,4 @@ bar {
 # App behavior
 for_window [class="Ferdium"] floating enable
 for_window [class="blueman-manager"] floating enable
-
+# for_window [class="Waydroid"] floating enable

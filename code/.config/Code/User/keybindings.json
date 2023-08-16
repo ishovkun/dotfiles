@@ -13,6 +13,14 @@
 { "key": "alt+,", "command": "workbench.action.previousEditorInGroup", "when": "!panelFocus" },
 { "key": "alt+m", "command": "workbench.action.nextPanelView", "when": "panelFocus"  },
 { "key": "alt+,", "command": "workbench.action.previousPanelView", "when": "panelFocus"  },
+
+{ "key": "j", "command": "list.focusDown", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
+{ "key": "k", "command": "list.focusUp", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
+{ "key": "h", "command": "list.collapse", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
+{ "key": "shift+h", "command": "list.collapseAll", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
+{ "key": "l", "command": "list.expand", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
+//{ "key": "ctrl+j", "command": "cursorDown", "when": "problemsVisibility"  },
+
 { "key": "j", "command": "cursorDown", "when": "panelFocus && activePanel == 'workbench.panel.output'"  },
 { "key": "k", "command": "cursorUp", "when": "panelFocus && activePanel == 'workbench.panel.output'"  },
 { "key": "l", "command": "cursorRight", "when": "panelFocus && activePanel == 'workbench.panel.output'"  },

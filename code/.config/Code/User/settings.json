@@ -6,9 +6,9 @@
     "editor.lineNumbers": "relative",
     "vscode-neovim.neovimExecutablePaths.linux": "/usr/bin/nvim",
     "editor.columnSelection": true,
-    "window.menuBarVisibility": "toggle",
     "grunt.autoDetect": "on",
     "editor.minimap.enabled": false,
     "C_Cpp.autocompleteAddParentheses": true,
     "workbench.sideBar.location": "right",
+    "window.menuBarVisibility": "toggle",
  }
