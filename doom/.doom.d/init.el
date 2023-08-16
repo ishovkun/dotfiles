@@ -146,7 +146,7 @@
        ;;kotlin                ; a better, slicker Java(Script)
        (latex +latexmk)
        ;;ledger                ; an accounting system in Emacs
-       ;;lua                   ; one-based indices? one-based indices
+       lua                     ; one-based indices? one-based indices
        markdown                ; writing docs for people to ignore
        yaml                    ; tabulate my config
        ;;nim                   ; python + lisp at the speed of c

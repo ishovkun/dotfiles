@@ -853,7 +853,7 @@
 
   (setq dap-lldb-debug-program '("/usr/bin/lldb-vscode"))
   (if (eq system-type 'darwin)
-      (setq dap-lldb-debug-program '("/usr/local/Cellar/llvm/15.0.2/bin/lldb-vscode"))
+      (setq dap-lldb-debug-program '("/opt/homebrew/opt/llvm/bin/lldb-vscode"))
       )
   ;; (dap-register-debug-template "LLDB::Run"
   ;; (list :type "lldb"
@@ -1076,6 +1076,7 @@
                     "\\`__pycache__/\\'"
                     "^.cquery"
                     "^.clangd"
+                    "^.cache"
                     "^.ccls-cache"
                     (my-counsel-ignore-extensions "pyc" "elc" "so" "o")))
   )

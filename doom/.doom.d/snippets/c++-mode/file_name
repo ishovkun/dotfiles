@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: file_name
 # uuid:
-# key: fname
+# key: fn
 # condition: t
 # --
 `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`
