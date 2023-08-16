@@ -8,18 +8,20 @@
 { "key": "ctrl+\\", "command": "workbench.action.toggleSidebarVisibility" },
 { "key": "alt+`", "command": "workbench.action.togglePanel"},
 { "key": "alt+x", "command": "workbench.action.showCommands"},
+{ "key": "alt+backspace", "command": "workbench.action.closeActiveEditor"},
+{ "key": "ctrl+shift+backspace", "command": "workbench.action.closeActiveEditor"},
 // tab switching
 { "key": "alt+m", "command": "workbench.action.nextEditorInGroup", "when": "!panelFocus"  },
 { "key": "alt+,", "command": "workbench.action.previousEditorInGroup", "when": "!panelFocus" },
 { "key": "alt+m", "command": "workbench.action.nextPanelView", "when": "panelFocus"  },
 { "key": "alt+,", "command": "workbench.action.previousPanelView", "when": "panelFocus"  },
 
+
 { "key": "j", "command": "list.focusDown", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
 { "key": "k", "command": "list.focusUp", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
 { "key": "h", "command": "list.collapse", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
 { "key": "shift+h", "command": "list.collapseAll", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
 { "key": "l", "command": "list.expand", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
-//{ "key": "ctrl+j", "command": "cursorDown", "when": "problemsVisibility"  },
 
 { "key": "j", "command": "cursorDown", "when": "panelFocus && activePanel == 'workbench.panel.output'"  },
 { "key": "k", "command": "cursorUp", "when": "panelFocus && activePanel == 'workbench.panel.output'"  },
@@ -69,7 +71,8 @@
 { "key": "ctrl+e", "command": "cursorEnd", "when": "editorTextFocus && neovim.init && neovim.mode == insert" },
 { "key": "ctrl+j", "command": "vscode-neovim.ctrl-e", "when": "editorTextFocus && neovim.init && !suggestWidgetVisible" },
 { "key": "ctrl+k", "command": "vscode-neovim.ctrl-y", "when": "editorTextFocus && neovim.init && !suggestWidgetVisible" },
-{ "key": "ctrl+w", "command": "vscode-neovim.send", "args": "<C-w>", "when": "editorTextFocus && neovim.init" },
+{ "key": "ctrl+w", "command": "vscode-neovim.send", "args": "<C-w>", "when": "editorTextFocus && neovim.init && !terminalFocus" },
+{ "key": "ctrl+w", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0017" }, "when": "terminalFocus" },
 { "key": "ctrl+y", "command": "editor.action.clipboardPasteAction", "when": "editorTextFocus && neovim.init && neovim.mode == insert" },
 
 //// LEADER /////
@@ -81,6 +84,7 @@
 { "key": "x", "command": "magit.discard-at-point", "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
 { "key": "k", "command": "-magit.discard-at-point", "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
 { "key": "tab", "command": "magit.toggle-fold", "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
+{ "key": "p", "command": "magit.pushing", "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
 { "key": "ctrl+e", "command": "-workbench.action.quickOpen" },
 // vsnetrw file manager
 { "key": "q", "command": "vsnetrw.close", "when": "editorTextFocus && editorLangId == vsnetrw && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
