@@ -23,128 +23,82 @@ if exists('g:vscode')
     " vnoremap <A-x> <Cmd>call VSCodeNotifyVisual('workbench.action.showCommands', 1)<CR>
 
     "" dired
-    nnoremap - <Cmd>call VSCodeNotifyVisual('vsnetrw.open', 1)<CR>
+    nnoremap - <Cmd>call VSCodeNotify('vsnetrw.open', 1)<CR>
 
-    nnoremap go <Cmd>call VSCodeNotifyVisual('C_Cpp.SwitchHeaderSource', 1)<CR>
-    nnoremap <leader>gg <Cmd>call VSCodeNotifyVisual('magit.status', 1)<CR>
-    vnoremap <leader>gg <Cmd>call VSCodeNotifyVisual('magit.status', 1)<CR>
+    nnoremap go <Cmd>call VSCodeNotify('C_Cpp.SwitchHeaderSource', 1)<CR>
+    nnoremap <leader>gg <Cmd>call VSCodeNotify('magit.status', 1)<CR>
+    vnoremap <leader>gg <Cmd>call VSCodeNotify('magit.status', 1)<CR>
 
     " Leader bindings
     " NOTE: more bindings at https://github.com/VSpaceCode/vscode-which-key/blob/master/package.json
     "
     " global
-    nnoremap <leader><Space> <Cmd>call VSCodeNotify('workbench.action.quickOpen')<CR>
-    vnoremap <leader><Space> <Cmd>call VSCodeNotifyVisual('workbench.action.quickOpen', 1)<CR>
-    nnoremap <leader>x <Cmd>call VSCodeNotifyVisual('workbench.action.showCommands', 1)<CR>
-    vnoremap <leader>x <Cmd>call VSCodeNotifyVisual('workbench.action.showCommands', 1)<CR>
+    noremap <leader><Space> <Cmd>call VSCodeNotify('workbench.action.quickOpen')<CR>
+    noremap <leader>x <Cmd>call VSCodeNotify('workbench.action.showCommands', 1)<CR>
     " numbers - Focus window
-    nnoremap <leader>1 <Cmd>call VSCodeNotifyVisual('workbench.action.focusFirstEditorGroup', 1)<CR>
-    vnoremap <leader>1 <Cmd>call VSCodeNotifyVisual('workbench.action.focusFirstEditorGroup', 1)<CR>
-    nnoremap <leader>2 <Cmd>call VSCodeNotifyVisual('workbench.action.focusSecondEditorGroup', 1)<CR>
-    vnoremap <leader>2 <Cmd>call VSCodeNotifyVisual('workbench.action.focusSecondEditorGroup', 1)<CR>
-    nnoremap <leader>3 <Cmd>call VSCodeNotifyVisual('workbench.action.focusThirdEditorGroup', 1)<CR>
-    vnoremap <leader>3 <Cmd>call VSCodeNotifyVisual('workbench.action.focusThirdEditorGroup', 1)<CR>
-    nnoremap <leader>4 <Cmd>call VSCodeNotifyVisual('workbench.action.focusFourthEditorGroup', 1)<CR>
-    vnoremap <leader>4 <Cmd>call VSCodeNotifyVisual('workbench.action.focusFourthEditorGroup', 1)<CR>
-    nnoremap <leader>5 <Cmd>call VSCodeNotifyVisual('workbench.action.focusFifthEditorGroup', 1)<CR>
-    vnoremap <leader>5 <Cmd>call VSCodeNotifyVisual('workbench.action.focusFifthEditorGroup', 1)<CR>
-    nnoremap <leader>6 <Cmd>call VSCodeNotifyVisual('workbench.action.focusSixthEditorGroup', 1)<CR>
-    vnoremap <leader>6 <Cmd>call VSCodeNotifyVisual('workbench.action.focusSixthEditorGroup', 1)<CR>
-    nnoremap <leader>7 <Cmd>call VSCodeNotifyVisual('workbench.action.focusSeventhEditorGroup', 1)<CR>
-    vnoremap <leader>7 <Cmd>call VSCodeNotifyVisual('workbench.action.focusSeventhEditorGroup', 1)<CR>
-    nnoremap <leader>8 <Cmd>call VSCodeNotifyVisual('workbench.action.focusEighthEditorGroup', 1)<CR>
-    vnoremap <leader>8 <Cmd>call VSCodeNotifyVisual('workbench.action.focusEighthEditorGroup', 1)<CR>
-    nnoremap <leader>9 <Cmd>call VSCodeNotifyVisual('workbench.action.focusNinthEditorGroup', 1)<CR>
-    vnoremap <leader>9 <Cmd>call VSCodeNotifyVisual('workbench.action.focusNinthEditorGroup', 1)<CR>
-    nnoremap <leader>0 <Cmd>call VSCodeNotifyVisual('workbench.action.focusTenthEditorGroup', 1)<CR>
-    vnoremap <leader>0 <Cmd>call VSCodeNotifyVisual('workbench.action.focusTenthEditorGroup', 1)<CR>
+    noremap <leader>1 <Cmd>call VSCodeNotify('workbench.action.focusFirstEditorGroup', 1)<CR>
+    noremap <leader>2 <Cmd>call VSCodeNotify('workbench.action.focusSecondEditorGroup', 1)<CR>
+    noremap <leader>3 <Cmd>call VSCodeNotify('workbench.action.focusThirdEditorGroup', 1)<CR>
+    noremap <leader>4 <Cmd>call VSCodeNotify('workbench.action.focusFourthEditorGroup', 1)<CR>
+    noremap <leader>5 <Cmd>call VSCodeNotify('workbench.action.focusFifthEditorGroup', 1)<CR>
+    noremap <leader>6 <Cmd>call VSCodeNotify('workbench.action.focusSixthEditorGroup', 1)<CR>
+    noremap <leader>7 <Cmd>call VSCodeNotify('workbench.action.focusSeventhEditorGroup', 1)<CR>
+    noremap <leader>8 <Cmd>call VSCodeNotify('workbench.action.focusEighthEditorGroup', 1)<CR>
+    noremap <leader>9 <Cmd>call VSCodeNotify('workbench.action.focusNinthEditorGroup', 1)<CR>
+    noremap <leader>0 <Cmd>call VSCodeNotify('workbench.action.focusTenthEditorGroup', 1)<CR>
     " prefix b -- Buffers
-    nnoremap <leader>bb <Cmd>call VSCodeNotifyVisual('workbench.action.showAllEditors', 1)<CR>
-    vnoremap <leader>bb <Cmd>call VSCodeNotifyVisual('workbench.action.showAllEditors', 1)<CR>
-    nnoremap <leader>bB <Cmd>call VSCodeNotifyVisual('workbench.action.showEditorsInActiveGroup', 1)<CR>
-    vnoremap <leader>bB <Cmd>call VSCodeNotifyVisual('workbench.action.showEditorsInActiveGroup', 1)<CR>
-    nnoremap <leader>bd <Cmd>call VSCodeNotifyVisual('workbench.action.closeActiveEditor', 1)<CR>
-    vnoremap <leader>bd <Cmd>call VSCodeNotifyVisual('workbench.action.closeActiveEditor', 1)<CR>
-    nnoremap <leader>bh <Cmd>call VSCodeNotifyVisual('workbench.action.moveEditorToLeftGroup', 1)<CR>
-    vnoremap <leader>bh <Cmd>call VSCodeNotifyVisual('workbench.action.moveEditorToLeftGroup', 1)<CR>
-    nnoremap <leader>bj <Cmd>call VSCodeNotifyVisual('workbench.action.moveEditorToBelowGroup', 1)<CR>
-    vnoremap <leader>bj <Cmd>call VSCodeNotifyVisual('workbench.action.moveEditorToBelowGroup', 1)<CR>
-    nnoremap <leader>bk <Cmd>call VSCodeNotifyVisual('workbench.action.moveEditorToAboveGroup', 0)<CR>
-    vnoremap <leader>bk <Cmd>call VSCodeNotifyVisual('workbench.action.moveEditorToAboveGroup', 1)<CR>
-    nnoremap <leader>bl <Cmd>call VSCodeNotifyVisual('workbench.action.moveEditorToRightGroup', 1)<CR>
-    vnoremap <leader>bl <Cmd>call VSCodeNotifyVisual('workbench.action.moveEditorToRightGroup', 1)<CR>
-    nnoremap <leader>bn <Cmd>call VSCodeNotifyVisual('workbench.action.files.newUntitledFile', 1)<CR>
-    vnoremap <leader>bn <Cmd>call VSCodeNotifyVisual('workbench.action.files.newUntitledFile', 1)<CR>
+    noremap <leader>bb <Cmd>call VSCodeNotify('workbench.action.showAllEditors', 1)<CR>
+    noremap <leader>bB <Cmd>call VSCodeNotify('workbench.action.showEditorsInActiveGroup', 1)<CR>
+    noremap <leader>bd <Cmd>call VSCodeNotify('workbench.action.closeActiveEditor', 1)<CR>
+    noremap <leader>bh <Cmd>call VSCodeNotify('workbench.action.moveEditorToLeftGroup', 1)<CR>
+    noremap <leader>bj <Cmd>call VSCodeNotify('workbench.action.moveEditorToBelowGroup', 1)<CR>
+    noremap <leader>bk <Cmd>call VSCodeNotify('workbench.action.moveEditorToAboveGroup', 0)<CR>
+    noremap <leader>bl <Cmd>call VSCodeNotify('workbench.action.moveEditorToRightGroup', 1)<CR>
+    noremap <leader>bn <Cmd>call VSCodeNotify('workbench.action.files.newUntitledFile', 1)<CR>
     " prefix e -- Errors
-    nnoremap <leader>el <Cmd>call VSCodeNotifyVisual('workbench.actions.view.problems', 1)<CR>
-    vnoremap <leader>el <Cmd>call VSCodeNotifyVisual('workbench.actions.view.problems', 1)<CR>
+    noremap <leader>el <Cmd>call VSCodeNotify('workbench.actions.view.problems', 1)<CR>
     " prefix d -- +Debug
-    nnoremap <leader>dd <Cmd>call VSCodeNotifyVisual('workbench.action.debug.start', 1)<CR>
-    vnoremap <leader>dd <Cmd>call VSCodeNotifyVisual('workbench.action.debug.start', 1)<CR>
-    nnoremap <leader>dD <Cmd>call VSCodeNotifyVisual('workbench.action.debug.run', 1)<CR>
-    vnoremap <leader>dD <Cmd>call VSCodeNotifyVisual('workbench.action.debug.run', 1)<CR>
-    nnoremap <leader>dS <Cmd>call VSCodeNotifyVisual('workbench.action.debug.stop', 1)<CR>
-    vnoremap <leader>dS <Cmd>call VSCodeNotifyVisual('workbench.action.debug.stop', 1)<CR>
-    nnoremap <leader>dx <Cmd>call VSCodeNotifyVisual('workbench.action.debug.stop', 1)<CR>
-    vnoremap <leader>dx <Cmd>call VSCodeNotifyVisual('workbench.action.debug.stop', 1)<CR>
-    nnoremap <leader>ds <Cmd>call VSCodeNotifyVisual('workbench.action.debug.stepOver', 1)<CR>
-    vnoremap <leader>ds <Cmd>call VSCodeNotifyVisual('workbench.action.debug.stepOver', 1)<CR>
-    vnoremap <leader>di <Cmd>call VSCodeNotifyVisual('workbench.action.debug.stepInto', 1)<CR>
+    noremap <leader>dd <Cmd>call VSCodeNotify('workbench.action.debug.start', 1)<CR>
+    noremap <leader>dD <Cmd>call VSCodeNotify('workbench.action.debug.run', 1)<CR>
+    noremap <leader>dS <Cmd>call VSCodeNotify('workbench.action.debug.stop', 1)<CR>
+    noremap <leader>dx <Cmd>call VSCodeNotify('workbench.action.debug.stop', 1)<CR>
+    noremap <leader>ds <Cmd>call VSCodeNotify('workbench.action.debug.stepOver', 1)<CR>
+    noremap <leader>di <Cmd>call VSCodeNotify('workbench.action.debug.stepInto', 1)<CR>
     " prefix i -- Insert
-    nnoremap <leader>is <Cmd>call VSCodeNotifyVisual('editor.action.insertSnippet', 1)<CR>
-    vnoremap <leader>is <Cmd>call VSCodeNotifyVisual('editor.action.insertSnippet', 1)<CR>
+    noremap <leader>is <Cmd>call VSCodeNotify('editor.action.insertSnippet', 1)<CR>
     " prefix f -- Files
-    nnoremap <leader>fk <Cmd>call VSCodeNotifyVisual('workbench.action.openGlobalKeybindingsFile', 1)<CR>
-    vnoremap <leader>fk <Cmd>call VSCodeNotifyVisual('workbench.action.openGlobalKeybindingsFile', 1)<CR>
-    nnoremap <leader>fs <Cmd>call VSCodeNotifyVisual('workbench.action.quickOpen', 1)<CR>
-    vnoremap <leader>fs <Cmd>call VSCodeNotifyVisual('workbench.action.quickOpen', 1)<CR>
-    nnoremap <leader>fs <Cmd>call VSCodeNotifyVisual('workbench.action.files.save', 1)<CR>
-    vnoremap <leader>fs <Cmd>call VSCodeNotifyVisual('workbench.action.files.save', 1)<CR>
-    nnoremap <leader>fr <Cmd>call VSCodeNotifyVisual('workbench.action.openRecent', 1)<CR>
-    vnoremap <leader>fr <Cmd>call VSCodeNotifyVisual('workbench.action.openRecent', 1)<CR>
-    nnoremap <leader>fy <Cmd>call VSCodeNotifyVisual('workbench.action.files.copyPathOfActiveFile', 1)<CR>
-    vnoremap <leader>fy <Cmd>call VSCodeNotifyVisual('workbench.action.files.copyPathOfActiveFile', 1)<CR>
-    nnoremap <leader>fl <Cmd>call VSCodeNotifyVisual('workbench.action.editor.changeLanguageMode', 1)<CR>
-    vnoremap <leader>fl <Cmd>call VSCodeNotifyVisual('workbench.action.editor.changeLanguageMode', 0)<CR>
-    nnoremap <leader>f= <Cmd>call VSCodeNotifyVisual('editor.action.formatDocument', 1)<CR>
-    vnoremap <leader>f= <Cmd>call VSCodeNotifyVisual('editor.action.formatDocument', 1)<CR>
+    noremap <leader>fk <Cmd>call VSCodeNotify('workbench.action.openGlobalKeybindingsFile', 1)<CR>
+    noremap <leader>fs <Cmd>call VSCodeNotify('workbench.action.quickOpen', 1)<CR>
+    noremap <leader>fs <Cmd>call VSCodeNotify('workbench.action.files.save', 1)<CR>
+    noremap <leader>fr <Cmd>call VSCodeNotify('workbench.action.openRecent', 1)<CR>
+    noremap <leader>fy <Cmd>call VSCodeNotify('workbench.action.files.copyPathOfActiveFile', 1)<CR>
+    noremap <leader>fl <Cmd>call VSCodeNotify('workbench.action.editor.changeLanguageMode', 1)<CR>
+    noremap <leader>f= <Cmd>call VSCodeNotify('editor.action.formatDocument', 1)<CR>
     " prefix h -- ?
-    nnoremap <leader>ht <Cmd>call VSCodeNotifyVisual('workbench.action.selectTheme', 1)<CR>
+    nnoremap <leader>ht <Cmd>call VSCodeNotify('workbench.action.selectTheme', 1)<CR>
     " prefix p -- Project
-    nnoremap <leader>pp <Cmd>call VSCodeNotifyVisual('projectManager.listProjects', 1)<CR>
-    vnoremap <leader>pp <Cmd>call VSCodeNotifyVisual('projectManager.listProjects', 1)<CR>
-    nnoremap <leader>pa <Cmd>call VSCodeNotifyVisual('projectManager.editProjects', 1)<CR>
-    vnoremap <leader>pa <Cmd>call VSCodeNotifyVisual('projectManager.editProjects', 1)<CR>
-    nnoremap <leader>pg <Cmd>call VSCodeNotifyVisual('workbench.action.openWorkspaceSettingsFile', 1)<CR>
-    vnoremap <leader>pg <Cmd>call VSCodeNotifyVisual('workbench.action.openWorkspaceSettingsFile', 1)<CR>
+    noremap <leader>pp <Cmd>call VSCodeNotify('projectManager.listProjects', 1)<CR>
+    noremap <leader>pa <Cmd>call VSCodeNotify('projectManager.editProjects', 1)<CR>
+    noremap <leader>pg <Cmd>call VSCodeNotify('workbench.action.openWorkspaceSettingsFile', 1)<CR>
+    noremap <leader>pf <Cmd>call VSCodeNotify('workbench.action.quickOpen', 1)<CR>
     " prefix w -- Window
-    nnoremap <leader>ws <Cmd>call VSCodeNotifyVisual('workbench.action.splitEditorDown', 1)<CR>
-    vnoremap <leader>ws <Cmd>call VSCodeNotifyVisual('workbench.action.splitEditorDown', 1)<CR>
-    nnoremap <leader>wv <Cmd>call VSCodeNotifyVisual('workbench.action.splitEditor', 1)<CR>
-    vnoremap <leader>wv <Cmd>call VSCodeNotifyVisual('workbench.action.splitEditor', 1)<CR>
-    nnoremap <leader>w= <Cmd>call VSCodeNotifyVisual('workbench.action.evenEditorWidths', 1)<CR>
-    vnoremap <leader>w= <Cmd>call VSCodeNotifyVisual('workbench.action.evenEditorWidths', 1)<CR>
-    nnoremap <leader>wz <Cmd>call VSCodeNotifyVisual('workbench.action.joinAllGroups', 1)<CR>
-    vnoremap <leader>wz <Cmd>call VSCodeNotifyVisual('workbench.action.joinAllGroups', 1)<CR>
-    nnoremap <leader>w1 <Cmd>call VSCodeNotifyVisual('workbench.action.joinAllGroups', 1)<CR>
-    vnoremap <leader>w1 <Cmd>call VSCodeNotifyVisual('workbench.action.joinAllGroups', 1)<CR>
-    nnoremap <leader>wd <Cmd>call VSCodeNotifyVisual('workbench.action.closeEditorsInGroup', 1)<CR>
-    vnoremap <leader>w1 <Cmd>call VSCodeNotifyVisual('workbench.action.joinAllGroups', 1)<CR>
-    nnoremap <leader>wx <Cmd>call VSCodeNotifyVisual('workbench.action.closeAllGroups', 1)<CR>
-    vnoremap <leader>wx <Cmd>call VSCodeNotifyVisual('workbench.action.closeAllGroups', 1)<CR>
+    noremap <leader>ws <Cmd>call VSCodeNotify('workbench.action.splitEditorDown', 1)<CR>
+    noremap <leader>wv <Cmd>call VSCodeNotify('workbench.action.splitEditor', 1)<CR>
+    noremap <leader>w= <Cmd>call VSCodeNotify('workbench.action.evenEditorWidths', 1)<CR>
+    noremap <leader>wz <Cmd>call VSCodeNotify('workbench.action.joinAllGroups', 1)<CR>
+    noremap <leader>w1 <Cmd>call VSCodeNotify('workbench.action.joinAllGroups', 1)<CR>
+    noremap <leader>wd <Cmd>call VSCodeNotify('workbench.action.closeEditorsInGroup', 1)<CR>
+    noremap <leader>wx <Cmd>call VSCodeNotify('workbench.action.closeAllGroups', 1)<CR>
     " prefix s -- Search
-    noremap  <leader>sj <Cmd>call VSCodeNotifyVisual('workbench.action.gotoSymbol', 1)<CR>
-
+    noremap  <leader>sj <Cmd>call VSCodeNotify('workbench.action.gotoSymbol', 1)<CR>
+    " prefix tab - go to prev buffer
+    noremap  <leader><tab> <Cmd>call VSCodeNotify('extension.goto-previous-buffer', 1)<CR>
 else
     " ordinary Neovim
-    nnoremap <silent> <A-k> :wincmd k<CR>
-    vnoremap <silent> <A-k> :wincmd k<CR>
-    nnoremap <silent> <A-j> :wincmd j<CR>
-    vnoremap <silent> <A-j> :wincmd j<CR>
-    nnoremap <silent> <A-h> :wincmd h<CR>
-    vnoremap <silent> <A-h> :wincmd h<CR>
-    nnoremap <silent> <A-l> :wincmd l<CR>
-    nnoremap <silent> <A-l> :wincmd l<CR>
+    noremap <silent> <A-k> :wincmd k<CR>
+    noremap <silent> <A-j> :wincmd j<CR>
+    noremap <silent> <A-h> :wincmd h<CR>
+    noremap <silent> <A-l> :wincmd l<CR>
     noremap <silent> <C-j> <C-e>
     noremap <silent> <C-k> <C-y>
     nnoremap <C-e> <C-u>
