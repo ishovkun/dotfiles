@@ -23,11 +23,10 @@ if exists('g:vscode')
     " vnoremap <A-x> <Cmd>call VSCodeNotifyVisual('workbench.action.showCommands', 1)<CR>
 
     "" dired
-    nnoremap - <Cmd>call VSCodeNotify('vsnetrw.open', 1)<CR>
+    nnoremap - <Cmd>call VSCodeCall('vsnetrw.open')<CR>
 
     nnoremap go <Cmd>call VSCodeNotify('C_Cpp.SwitchHeaderSource', 1)<CR>
-    nnoremap <leader>gg <Cmd>call VSCodeNotify('magit.status', 1)<CR>
-    vnoremap <leader>gg <Cmd>call VSCodeNotify('magit.status', 1)<CR>
+    noremap <leader>gg <Cmd>call VSCodeNotify('magit.status', 1)<CR>
 
     " Leader bindings
     " NOTE: more bindings at https://github.com/VSpaceCode/vscode-which-key/blob/master/package.json
