@@ -1,9 +1,16 @@
-call plug#begin()
-Plug 'numToStr/Comment.nvim'
-Plug 'Shougo/vimproc.vim', { 'do': 'make' }
-Plug 'goldfeld/vim-seek'
-Plug 'bkad/CamelCaseMotion'
-Plug 'tpope/vim-surround'
+if empty(glob('~/.config/nvim/autoload/plug.vim'))
+    silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall | source $MYVIMRC
+endi
+
+
+call plug#begin('~/.vim/plugged')
+    Plug 'numToStr/Comment.nvim'
+    Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+    Plug 'goldfeld/vim-seek'
+    Plug 'bkad/CamelCaseMotion'
+    Plug 'tpope/vim-surround'
 call plug#end()
 
 lua require('Comment').setup()
