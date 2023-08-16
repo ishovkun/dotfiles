@@ -65,6 +65,7 @@
    :nv "M-m"         #'awesome-tab-forward
    :nv "M-,"         #'awesome-tab-backward
    )
+  :nv "M-<backspace>" #'kill-current-buffer
   )
  (:map TeX-mode-map
   :nv "j"           #'evil-next-visual-line
