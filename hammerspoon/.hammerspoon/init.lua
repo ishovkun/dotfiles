@@ -5,7 +5,26 @@ end)
 
 hyper = {'alt', 'shift'}
 
--- require "launch"
+function increaseWidth(delta)
+  local win = hs.window.focusedWindow()
+  local f = win:frame()
+  f.x = f.x - delta / 2
+  f.w = f.w + delta
+  win:setFrame(f)
+end
+function increaseHeight(delta)
+  local win = hs.window.focusedWindow()
+  local f = win:frame()
+  f.y = f.y - delta / 2
+  f.h = f.h + delta
+  win:setFrame(f)
+end
+
+-- local winops = require("winops")
+hs.hotkey.bind(hyper, 'l', function() increaseWidth(20) end)
+hs.hotkey.bind(hyper, 'h', function() increaseWidth(-20) end)
+hs.hotkey.bind(hyper, 'k', function() increaseHeight(20) end)
+hs.hotkey.bind(hyper, 'j', function() increaseHeight(-20) end)
 
 local spaces = require("spaces")
 
