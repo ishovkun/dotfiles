@@ -111,15 +111,17 @@ exec rm -f $WOBSOCK && mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --background-co
     bindsym $mod+F8 exec playerctl play-pause
 
 ### Idle configuration
-# exec swayidle -w \
-#           timeout 300 'swaylock -f' \
-#           timeout 305 'swaymsg "output * dpms off"' after-resume 'swaymsg "output * dpms on"' \
-#           before-sleep 'swaylock -f'
-exec swayidle -w \
-         timeout 300 'swaylock -f' \
-         timeout 600 '[[ $(cat /sys/class/power_supply/AC/online) -eq 0 ]] && systemctl suspend-then-hibernate' \
-         before-sleep 'swaylock -f'
 
+# exec swayidle -w \
+#          timeout 300 'swaylock -f' \
+#          timeout 600 '[[ $(cat /sys/class/power_supply/AC/online) -eq 0 ]] && systemctl suspend-then-hibernate' \
+#          before-sleep 'swaylock -f'
+
+exec swayidle -w \
+        timeout 300 'swaylock -f -c 000000' \
+        timeout 600 'swaymsg "output * dpms off"' \
+        resume 'swaymsg "output * dpms on"' \
+        before-sleep 'swaylock -f'
 
 bindsym $mod+Return exec bash ~/dotfiles/sway/.config/sway/toggle.sh org.kde.konsole
 bindsym $mod+Shift+Return exec $term
