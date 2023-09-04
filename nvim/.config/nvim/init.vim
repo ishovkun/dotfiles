@@ -25,7 +25,9 @@ if exists('g:vscode')
     "" dired
     nnoremap - <Cmd>call VSCodeCall('vsnetrw.open')<CR>
 
+    
     nnoremap go <Cmd>call VSCodeNotify('C_Cpp.SwitchHeaderSource', 1)<CR>
+    nnoremap gr <Cmd>call VSCodeNotify('editor.action.referenceSearch.trigger', 1)<CR>
     noremap <leader>gg <Cmd>call VSCodeNotify('magit.status', 1)<CR>
 
     " Leader bindings
@@ -67,7 +69,8 @@ if exists('g:vscode')
     noremap <leader>is <Cmd>call VSCodeNotify('editor.action.insertSnippet', 1)<CR>
     " prefix f -- Files
     noremap <leader>fk <Cmd>call VSCodeNotify('workbench.action.openGlobalKeybindingsFile', 1)<CR>
-    noremap <leader>fs <Cmd>call VSCodeNotify('workbench.action.quickOpen', 1)<CR>
+    noremap <leader>fp <Cmd>call VSCodeNotify('workbench.action.openSettingsJson', 1)<CR>
+    noremap <leader>ff <Cmd>call VSCodeNotify('workbench.action.quickOpen', 1)<CR>
     noremap <leader>fs <Cmd>call VSCodeNotify('workbench.action.files.save', 1)<CR>
     noremap <leader>fr <Cmd>call VSCodeNotify('workbench.action.openRecent', 1)<CR>
     noremap <leader>fy <Cmd>call VSCodeNotify('workbench.action.files.copyPathOfActiveFile', 1)<CR>
@@ -80,10 +83,12 @@ if exists('g:vscode')
     noremap <leader>pa <Cmd>call VSCodeNotify('projectManager.editProjects', 1)<CR>
     noremap <leader>pg <Cmd>call VSCodeNotify('workbench.action.openWorkspaceSettingsFile', 1)<CR>
     noremap <leader>pf <Cmd>call VSCodeNotify('workbench.action.quickOpen', 1)<CR>
+    noremap <leader>pr <Cmd>call VSCodeNotify('editor.action.rename', 1)<CR>
     " prefix w -- Window
     noremap <leader>ws <Cmd>call VSCodeNotify('workbench.action.splitEditorDown', 1)<CR>
     noremap <leader>wv <Cmd>call VSCodeNotify('workbench.action.splitEditor', 1)<CR>
     noremap <leader>w= <Cmd>call VSCodeNotify('workbench.action.evenEditorWidths', 1)<CR>
+    noremap <leader>= <Cmd>call VSCodeNotify('workbench.action.evenEditorWidths', 1)<CR>
     noremap <leader>wz <Cmd>call VSCodeNotify('workbench.action.joinAllGroups', 1)<CR>
     noremap <leader>w1 <Cmd>call VSCodeNotify('workbench.action.joinAllGroups', 1)<CR>
     noremap <leader>wd <Cmd>call VSCodeNotify('workbench.action.closeEditorsInGroup', 1)<CR>
@@ -104,6 +109,10 @@ else
     vnoremap <C-e> <C-u>
     inoremap <C-e> <esc>$a
 endif
+
+
+" Align multi-line function arguments inside parentheses
+:set cino+=(0
 
 "
 " Comment
@@ -130,12 +139,21 @@ xmap <silent> ib <Plug>CamelCaseMotion_ib
 omap <silent> ie <Plug>CamelCaseMotion_ie
 xmap <silent> ie <Plug>CamelCaseMotion_ie
 
-nnoremap <silent> > >>
-vnoremap <silent> > >>
-nnoremap <silent> < <<
-vnoremap <silent> < <<
+" nnoremap <silent> > >>
+" vnoremap <silent> > >>
+noremap <silent> > >>
+" nnoremap <silent> < <<
+" vnoremap <silent> < <<
+noremap <silent> < <<
 nnoremap <silent> <Tab> ==
 vnoremap <silent> <Tab> =
+
+nnoremap cib ci)
+nnoremap vib vi)
+nnoremap yib yi)
+
+" go to just pasted
+nnoremap gp `[v`]
 
 " Surround
 vmap <silent> s S

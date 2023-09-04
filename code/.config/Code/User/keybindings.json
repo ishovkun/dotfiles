@@ -6,9 +6,11 @@
 { "key": "alt+shift+l", "command": "workbench.action.increaseViewWidth", "when": "!isMac" },
 { "key": "cmd+shift+l", "command": "workbench.action.increaseViewWidth", "when": "isMac" },
 { "key": "alt+shift+j", "command": "workbench.action.decreaseViewHeight", "when": "!isMac" },
-{ "key": "cmd+shift+j", "command": "workbench.action.decreaseViewHeight", "when": "isMac" },
+{ "key": "cmd+shift+j", "command": "workbench.action.decreaseViewHeight", "when": "isMac && !panelFocus" },
+{ "key": "cmd+shift+j", "command": "workbench.action.increaseViewHeight", "when": "isMac && panelFocus" },
 { "key": "alt+shift+k", "command": "workbench.action.increaseViewHeight", "when": "!isMac" },
-{ "key": "cmd+shift+k", "command": "workbench.action.increaseViewHeight", "when": "isMac" },
+{ "key": "cmd+shift+k", "command": "workbench.action.increaseViewHeight", "when": "isMac && !panelFocus" },
+{ "key": "cmd+shift+k", "command": "workbench.action.decreaseViewHeight", "when": "isMac && panelFocus" },
 
 { "key": "ctrl+shift+m", "command": "workbench.action.toggleMenuBar" },
 { "key": "ctrl+\\", "command": "workbench.action.toggleSidebarVisibility" },
@@ -16,7 +18,7 @@
 { "key": "alt+`", "command": "workbench.action.togglePanel", "when": "!isMac"},
 { "key": "cmd+`", "command": "workbench.action.togglePanel", "when": "isMac"},
 
-{ "key": "alt+backspace", "command": "workbench.action.closeActiveEditor"},
+{ "key": "alt+backspace", "command": "workbench.action.closeActiveEditor", "when": "editorTextFocus && !inCommandsPicker"},
 { "key": "alt+x", "command": "workbench.action.showCommands"},
 { "key": "cmd+x", "command": "workbench.action.showCommands", "when": "isMac"},
 // tab switching
@@ -28,7 +30,6 @@
 { "key": "cmd+m", "command": "workbench.action.nextPanelView", "when": "isMac && panelFocus"  },
 { "key": "alt+,", "command": "workbench.action.previousPanelView", "when": "!isMac && panelFocus"  },
 { "key": "cmd+,", "command": "workbench.action.previousPanelView", "when": "isMac && panelFocus"  },
-
 
 { "key": "j", "command": "list.focusDown", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
 { "key": "k", "command": "list.focusUp", "when": "panelFocus && activePanel == 'workbench.panel.markers'"  },
@@ -92,6 +93,13 @@
 { "key": "ctrl+k", "command": "vscode-neovim.ctrl-y", "when": "editorTextFocus && neovim.init && !suggestWidgetVisible" },
 { "key": "ctrl+w", "command": "vscode-neovim.send", "args": "<C-w>", "when": "editorTextFocus && neovim.init && !terminalFocus" },
 { "key": "ctrl+w", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0017" }, "when": "terminalFocus" },
+// alt+p
+{ "key": "cmd+p", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0010" }, "when": "terminalFocus && isMac" },
+{ "key": "alt+p", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0010" }, "when": "terminalFocus && !isMac" },
+// alt+e
+{ "key": "cmd+e", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u001be" }, "when": "terminalFocus && isMac" },
+{ "key": "alt+e", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u001be" }, "when": "terminalFocus && !isMac" },
+
 { "key": "ctrl+y", "command": "editor.action.clipboardPasteAction", "when": "editorTextFocus && neovim.init && neovim.mode == insert" },
 
 //// LEADER /////
@@ -112,5 +120,10 @@
 { "key": "h", "command": "vsnetrw.openParent", "when": "editorTextFocus && editorLangId == vsnetrw && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
 { "key": "shift+=", "command": "vsnetrw.createDir", "when": "editorTextFocus && editorLangId == vsnetrw && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
 { "key": "x", "command": "vsnetrw.delete", "when": "editorTextFocus && editorLangId == vsnetrw && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
+/// when nothing is open
+{ "key": "space space", "command": "workbench.action.quickOpen", "when": "inputFocus == false" },
+{ "key": "space f k", "command": "workbench.action.openGlobalKeybindingsFile", "when": "inputFocus == false" },
+{ "key": "space p p", "command": "projectManager.listProjects", "when": "inputFocus == false" },
+{ "key": "space p a", "command": "projectManager.editProjects", "when": "inputFocus == false" },
 
 ]

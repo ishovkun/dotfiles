@@ -1,7 +1,6 @@
 {
-    "workbench.colorTheme": "Nord",
     "workbench.activityBar.visible": true,
-    "editor.fontFamily": "Iosevka SS04",
+    "editor.fontFamily": "Iosevka Nerd Font",
     "editor.lineNumbers": "relative",
     "vscode-neovim.neovimExecutablePaths.linux": "/usr/bin/nvim",
     "editor.columnSelection": true,
@@ -12,5 +11,11 @@
     "window.menuBarVisibility": "toggle",
     "security.workspace.trust.untrustedFiles": "open",
     "files.autoSave": "afterDelay",
+    "cmake.configureOnOpen": true,
+    "editor.insertSpaces": false,
     "editor.fontSize": 11,
+    "git.openRepositoryInParentFolders": "never",
+    "workbench.colorTheme": "Wilmersdorf",
+    "[cpp]": {"editor.tabSize": 2},
+
  }

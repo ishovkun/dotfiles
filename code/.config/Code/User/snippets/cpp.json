@@ -29,7 +29,7 @@
 		"prefix": "nsp",
 		"body": [
 			"namespace ${1:name} {",
-			"$2",
+			"  $2",
 			"} // end namespace $1"
 		]
 	},
@@ -52,14 +52,22 @@
 			"};"
 		]
 	},
-	"Insert cpp template": {
+	".cpp template": {
 		"prefix": "st",
 		"body": [
-			"#include \"${TM_FILENAME/(.*)\\..+$/$1/}.hpp\"",
+			"#include \"$TM_FILENAME_BASE.hpp\"",
 			"",
 			"${TM_FILENAME/(.*)\\..+$/$1/}::${TM_FILENAME/(.*)\\..+$/$1/}()",
 			"{$0}",
 		]
-	}
-
+	},
+	"class method": {
+		"prefix": "cm",
+		"body": [
+			"${1:void} $TM_FILENAME_BASE::${2:$TM_FILENAME_BASE}($3)",
+			"{",
+			"  $4",
+			"}"
+		]
+	},
 }
