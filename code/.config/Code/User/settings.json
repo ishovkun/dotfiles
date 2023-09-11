@@ -16,6 +16,36 @@
     "editor.fontSize": 11,
     "git.openRepositoryInParentFolders": "never",
     "workbench.colorTheme": "Wilmersdorf",
-    "[cpp]": {"editor.tabSize": 2},
-
+    "[cpp]": {
+        "editor.tabSize": 2
+    },
+    // "catppuccin.workbenchMode": "flat",
+    "editor.semanticTokenColorCustomizations": {
+        "[Catppuccin Frappé]": {
+            "rules": {
+                "templateType": {
+                    "foreground": "#99d1db",
+                    "fontStyle": "bold"
+                },
+                "genericType": {
+                    "foreground": "#99d1db",
+                    "fontStyle": "italic bold underline"
+                },
+                "namespace": {
+                    "foreground": "#babbf1",
+                    "fontStyle": " bold"
+                },
+                "type": {
+                    "foreground": "#99d1db",
+                    "fontStyle": " bold"
+                },
+                "function": {
+                    "fontStyle": ""
+                },
+                "method": {
+                    "fontStyle": ""
+                },
+            }
+        }
+    }
  }

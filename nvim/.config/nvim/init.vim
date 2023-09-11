@@ -13,7 +13,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'tpope/vim-surround'
 call plug#end()
 
-lua require('Comment').setup()
+lua require("Comment").setup()
+
 
 let mapleader = "\<Space>"
 
@@ -93,6 +94,7 @@ if exists('g:vscode')
     noremap <leader>w1 <Cmd>call VSCodeNotify('workbench.action.joinAllGroups', 1)<CR>
     noremap <leader>wd <Cmd>call VSCodeNotify('workbench.action.closeEditorsInGroup', 1)<CR>
     noremap <leader>wx <Cmd>call VSCodeNotify('workbench.action.closeAllGroups', 1)<CR>
+    noremap <leader>wf <Cmd>call VSCodeNotify('workbench.action.duplicateWorkspaceInNewWindow', 1)<CR>
     " prefix s -- Search
     noremap  <leader>sj <Cmd>call VSCodeNotify('workbench.action.gotoSymbol', 1)<CR>
     " prefix tab - go to prev buffer
@@ -111,8 +113,6 @@ else
 endif
 
 
-" Align multi-line function arguments inside parentheses
-:set cino+=(0
 
 "
 " Comment
@@ -120,7 +120,6 @@ nmap <silent> <Space>; gcc
 vmap <silent> <Space>; gc
 nnoremap ` %
 vnoremap ` %
-
 
 " fix go back character when entering normal mode from insert mode
 :inoremap <silent> <Esc> <Esc>`^
@@ -159,5 +158,13 @@ nnoremap gp `[v`]
 vmap <silent> s S
 " use system clipboard
 set clipboard+=unnamedplus
+" Align multi-line function arguments inside parentheses
+set cino+=(0
+" search case upper/lower/match
+set smartindent
+set ignorecase
+set smartcase
 
+set autoindent
+set smartindent
 
