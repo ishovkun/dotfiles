@@ -12,10 +12,10 @@
     "security.workspace.trust.untrustedFiles": "open",
     "files.autoSave": "afterDelay",
     "cmake.configureOnOpen": true,
-    "editor.insertSpaces": false,
+    "editor.insertSpaces": true,
     "editor.fontSize": 11,
     "git.openRepositoryInParentFolders": "never",
-    "workbench.colorTheme": "Wilmersdorf",
+    "workbench.colorTheme": "Catppuccin Frappé",
     "[cpp]": {
         "editor.tabSize": 2
     },
@@ -47,5 +47,20 @@
                 },
             }
         }
+    },
+    "editor.accessibilitySupport": "on",
+    "audioCues.diffLineDeleted": "off",
+    "audioCues.diffLineInserted": "off",
+    "audioCues.diffLineModified": "off",
+    "audioCues.lineHasBreakpoint": "off",
+    "audioCues.lineHasError": "off",
+    "audioCues.lineHasFoldedArea": "off",
+    "audioCues.lineHasInlineSuggestion": "off",
+    "audioCues.noInlayHints": "off",
+    "audioCues.notebookCellCompleted": "off",
+    "audioCues.notebookCellFailed": "off",
+    "audioCues.onDebugBreak": "off",
+    "extensions.experimental.affinity": {
+        "asvetliakov.vscode-neovim": 1
     }
  }
