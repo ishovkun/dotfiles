@@ -79,11 +79,14 @@
  (:map text-mode-map
   :n "Q"         #'evil-execute-macro
   )
-  :nv "M-H"         #'shrink-window-horizontally
-  ;; :nv "S-C-<left>"  #'shrink-window-horizontally
-  :nv "M-L"         #'enlarge-window-horizontally
-  :nv "M-J"         #'shrink-window
-  :nv "M-K"         #'enlarge-window
+  ;; :nv "M-H"         #'shrink-window-horizontally
+  ;; :nv "M-L"         #'enlarge-window-horizontally
+  ;; :nv "M-J"         #'shrink-window
+  ;; :nv "M-K"         #'enlarge-window
+  :nv "M-H"         #'decrease-window-width
+  :nv "M-L"         #'increase-window-width
+  :nv "M-J"         #'decrease-window-height
+  :nv "M-K"         #'increase-window-height
   ;; indenting
   :n  "<"           #'evil-shift-left-line
   :n  ">"           #'evil-shift-right-line
