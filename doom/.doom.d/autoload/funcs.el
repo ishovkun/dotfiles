@@ -266,3 +266,24 @@ the right."
   (interactive)
   (insert (file-name-base buffer-file-name))
   )
+
+;;;###autodef
+(defun increase-window-width ()
+  (interactive)
+  (enlarge-window-horizontally 15)
+  )
+;;;###autodef
+(defun decrease-window-width ()
+  (interactive)
+  (shrink-window-horizontally 15)
+  )
+;;;###autodef
+(defun increase-window-height ()
+  (interactive)
+  (enlarge-window 7)
+  )
+;;;###autodef
+(defun decrease-window-height ()
+  (interactive)
+  (shrink-window 7)
+  )
