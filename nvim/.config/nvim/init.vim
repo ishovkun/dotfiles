@@ -35,7 +35,8 @@ if exists('g:vscode')
     " NOTE: more bindings at https://github.com/VSpaceCode/vscode-which-key/blob/master/package.json
     "
     " global
-    noremap <leader><Space> <Cmd>call VSCodeNotify('workbench.action.quickOpen')<CR>
+    noremap <leader><Space> <Cmd>call VSCodeNotify('workbench.action.showAllEditors')<CR>
+    noremap <leader><Return> <Cmd>call VSCodeNotify('workbench.action.quickOpen')<CR>
     noremap <leader>x <Cmd>call VSCodeNotify('workbench.action.showCommands', 1)<CR>
     " numbers - Focus window
     noremap <leader>1 <Cmd>call VSCodeNotify('workbench.action.focusFirstEditorGroup', 1)<CR>
@@ -137,6 +138,9 @@ omap <silent> ib <Plug>CamelCaseMotion_ib
 xmap <silent> ib <Plug>CamelCaseMotion_ib
 omap <silent> ie <Plug>CamelCaseMotion_ie
 xmap <silent> ie <Plug>CamelCaseMotion_ie
+
+" undo
+inoremap <C-/> <C-o>u
 
 " nnoremap <silent> > >>
 " vnoremap <silent> > >>

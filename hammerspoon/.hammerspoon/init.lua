@@ -21,10 +21,10 @@ function increaseHeight(delta)
 end
 
 -- local winops = require("winops")
-hs.hotkey.bind(hyper, 'l', function() increaseWidth(20) end)
-hs.hotkey.bind(hyper, 'h', function() increaseWidth(-20) end)
-hs.hotkey.bind(hyper, 'k', function() increaseHeight(20) end)
-hs.hotkey.bind(hyper, 'j', function() increaseHeight(-20) end)
+hs.hotkey.bind(hyper, 'l', function() increaseWidth(80) end)
+hs.hotkey.bind(hyper, 'h', function() increaseWidth(-80) end)
+hs.hotkey.bind(hyper, 'k', function() increaseHeight(80) end)
+hs.hotkey.bind(hyper, 'j', function() increaseHeight(-80) end)
 
 local spaces = require("spaces")
 

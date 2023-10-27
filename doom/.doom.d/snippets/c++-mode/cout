@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 #name : cout
-#key : cout
+#key : co
 #contributor : Igor
 # --
 std::cout << $1 << ${2:std::endl};
