@@ -21,13 +21,12 @@ if ! zgen saved; then
   zgen oh-my-zsh
   # specify plugins here
   zgen oh-my-zsh plugins/git
-  # zgen oh-my-zsh plugins/sudo # annoying
   zgen oh-my-zsh plugins/z
   zgen load zsh-users/zsh-syntax-highlighting
   zgen load zsh-users/zsh-completions src
   zgen load zsh-users/zsh-autosuggestions
   zgen load cal2195/q
-  zgen load xPMo/zsh-ls-colors
+  # zgen load xPMo/zsh-ls-colors
   zgen load Aloxaf/fzf-tab
   # theme
   # zgen oh-my-zsh themes/arrow
