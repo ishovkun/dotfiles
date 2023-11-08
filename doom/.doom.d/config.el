@@ -135,6 +135,7 @@
     (:map override :desc "Copy and comment" :nv "y" #'duplicate-and-comment-line)
   ) ; end prefix g
   (:after projectile :map prog-mode-map
+    :desc "Recompile" :nv "<f6>" #'recompile
     :desc "Recompile" :nv "<C-return>" #'recompile
     :desc "Recompile" :nv "C-<f9>" #'recompile ; in terminal
     )
