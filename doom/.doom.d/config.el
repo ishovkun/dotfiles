@@ -4,7 +4,14 @@
 ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 14))
 (when (string= (system-name) "space")
   ;; (setq doom-font (font-spec :family "Iosevka" :size 27 :width 'normal)))
-  (setq doom-font (font-spec :family "Iosevka SS04" :size 12)))
+  ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 25))
+  (setq doom-font (font-spec :family "IosevkaTerm Nerd Font" :size 25))
+
+  ;; (setq doom-font (font-spec :family "JetBrainsMono" :size 12 :weight 'light)
+  ;;     doom-variable-pitch-font (font-spec :family "DejaVu Sans" :size 13)
+  ;;     doom-symbol-font (font-spec :family "JuliaMono")
+  ;;     doom-big-font (font-spec :family "JetBrainsMono" :size 24))
+   )
 
 (if (eq system-type 'darwin)
     (progn
