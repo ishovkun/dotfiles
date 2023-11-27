@@ -3,6 +3,7 @@
 ;; place your private configuration here
 ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 14))
 (when (string= (system-name) "space")
+  ;; manjaro hack
   ;; (setq doom-font (font-spec :family "Iosevka" :size 27 :width 'normal)))
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 25))
   (setq doom-font (font-spec :family "IosevkaTerm Nerd Font" :size 25))
@@ -354,6 +355,7 @@
   (:prefix "t"
     :desc "toggle line wrap" :n "L" #'toggle-truncate-lines
     :desc "toggle treemacs" :nv "\\" #'treemacs
+    :desc "toggle treemacs" :nv "t" #'treemacs
   )
   (:prefix "o"
     ;; debugging
@@ -366,6 +368,9 @@
     (:after ein
      :desc "Open Ipython notebook" :n "i" #'ein:run)
     )
+  ;; (:prefix "h"
+  ;;  :desc "Which key" :nv "hk" #'which-key
+  ;;  )
 ) ; end map leader
 
 (map! :after latex

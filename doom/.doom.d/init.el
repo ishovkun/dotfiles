@@ -29,8 +29,7 @@
        ;; fill-column          ; a `fill-column' indicator
        hl-todo                 ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW tags
        ;;hydra
-       (:if IS-MAC ligatures   ; ligatures and symbols to make your code pretty again
-        +iosevka)
+       (:if IS-MAC ligatures)   ; ligatures and symbols to make your code pretty again
        indent-guides           ; highlighted indent columns
        modeline                ; snazzy, Atom-inspired modeline, plus API
        nav-flash               ; blink the current line after jumping
@@ -43,7 +42,8 @@
        (treemacs               ; a project drawer, like neotree but cooler
         +lsp)                  ; this should add breadcrumb icons
        ;;unicode               ; extended unicode support for various languages
-       vc-gutter               ; vcs diff in the fringe
+       (vc-gutter              ; vcs diff in the fringe
+        +pretty)
        vi-tilde-fringe         ; fringe tildes to mark beyond EOB
        window-select           ; visually switch windows
        workspaces              ; tab emulation, persistence & separate workspaces
@@ -82,7 +82,9 @@
        vterm                   ; another terminals in Emacs
 
        :tools
-       ;;ansible
+       ansible
+       ;;biblio            ; Writes a PhD for you (citation needed)
+       ;;collab            ; buffers with friends
        (debugger +lsp)         ; stepping through code, to help you add bugs
        ;;direnv
        docker
@@ -99,15 +101,17 @@
        ;;macos                 ; MacOS-specific commands
        (magit
         ;;+forge
-              )          ; a git porcelain for Emacs
+              )                ; a git porcelain for Emacs
        make                    ; run make tasks from Emacs
-       ;; tty                     ; improve the terminal Emacs experience
+       tty                     ; improve the terminal Emacs experience
        ;;pass                  ; password manager for nerds
        pdf                     ; pdf enhancements
        ;;prodigy               ; FIXME managing external services & code builders
        rgb                     ; creating color strings
+       ;;taskrunner        ; taskrunner for all your projects
        terraform             ; infrastructure as code
        tmux                    ; an API for interacting with tmux
+        ;;tree-sitter       ; syntax and parsing, sitting in a tree...
        ;;upload                ; map local to remote projects via ssh/ftp
        ;;wakatime
        :checkers
