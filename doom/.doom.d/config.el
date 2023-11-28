@@ -282,6 +282,7 @@
     :n "D"    #'delete-frame
     :nv "v"   #'split-window-right
     :nv "s"   #'split-window-below
+    :nv "e"   #'balance-windows
     )
 
   (:after swiper :desc "Swiper" :nv "/" #'counsel-grep-or-swiper)
