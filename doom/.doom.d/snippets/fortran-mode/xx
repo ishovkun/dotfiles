@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: exit
+# uuid:
+# key: xx
+# condition: t
+# --
+print*, "exiting"
+ call exit(0)

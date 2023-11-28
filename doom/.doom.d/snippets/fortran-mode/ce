@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: print equal
+# uuid:
+# key: ce
+# --
+print*,"$1", ${2:$1}
