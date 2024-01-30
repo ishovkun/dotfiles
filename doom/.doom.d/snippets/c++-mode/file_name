@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: file_name
-# uuid:
+# uuid: file_name
 # key: fn
 # condition: t
 # --

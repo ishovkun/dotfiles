@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: forint
 # uuid:
-# key: forint
+# key: fi
 # condition: t
 # --
-for (int $1=0; $1<$2; ++$1)
+for (int $1 = 0; $1 < $2; ++$1)

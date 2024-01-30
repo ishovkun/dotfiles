@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 #name : method
-#key : method
+#key : me
 #contributor : Igor Shovkun
 # --
 ${1:void} `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`::$2($3)

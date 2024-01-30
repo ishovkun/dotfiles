@@ -24,7 +24,7 @@
 ;; (package! mini-modeline :recipe (:host github :repo "kiennq/emacs-mini-modeline"))
 ;; (package! lsp-treemacs)
 
-(package! codeium :recipe (:host github :repo "Exafunction/codeium.el"))
+;; (package! codeium :recipe (:host github :repo "Exafunction/codeium.el"))
 
 ;; temporary fix after doom update
 ;; run thes sync to have those updated (mind the flags)

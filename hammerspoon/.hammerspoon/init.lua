@@ -19,12 +19,29 @@ function increaseHeight(delta)
   f.h = f.h + delta
   win:setFrame(f)
 end
+function moveHorizontally(delta)
+  local win = hs.window.focusedWindow()
+  local f = win:frame()
+  f.x = f.x + delta
+  win:setFrame(f)
+end
+function moveVertically(delta)
+  local win = hs.window.focusedWindow()
+  local f = win:frame()
+  f.y = f.y + delta
+  win:setFrame(f)
+end
 
 -- local winops = require("winops")
 hs.hotkey.bind(hyper, 'l', function() increaseWidth(80) end)
 hs.hotkey.bind(hyper, 'h', function() increaseWidth(-80) end)
 hs.hotkey.bind(hyper, 'k', function() increaseHeight(80) end)
 hs.hotkey.bind(hyper, 'j', function() increaseHeight(-80) end)
+
+hs.hotkey.bind({"alt","control","shift"}, 'l', function() moveHorizontally(40) end)
+hs.hotkey.bind({"alt","control","shift"}, 'h', function() moveHorizontally(-40) end)
+hs.hotkey.bind({"alt","control","shift"}, 'k', function() moveVertically(40) end)
+hs.hotkey.bind({"alt","control","shift"}, 'j', function() moveVertically(-40) end)
 
 local spaces = require("spaces")
 

@@ -791,35 +791,35 @@
   )
 
 ;; Machine learnig!
-(use-package! codeium
-   :init
-    ;; use globally
-    (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
-    :defer t
-    :config
-    ;; (setq use-dialog-box nil) ;; do not use popup boxes
-    ;; (setq use-dialog-box t) ;; do not use popup boxes
+;; (use-package! codeium
+;;    :init
+;;     ;; use globally
+;;     (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
+;;     :defer t
+;;     :config
+;;     ;; (setq use-dialog-box nil) ;; do not use popup boxes
+;;     ;; (setq use-dialog-box t) ;; do not use popup boxes
 
-    ;; (setq codeium/metadata/api_key "ae87000a-d404-4747-950d-cf4d2973a50f")
+;;     ;; (setq codeium/metadata/api_key "ae87000a-d404-4747-950d-cf4d2973a50f")
 
-    ;; use M-x codeium-diagnose to see apis/fields that would be sent to the local language server
-    (setq codeium-api-enabled
-          (lambda (api)
-            (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
+;;     ;; use M-x codeium-diagnose to see apis/fields that would be sent to the local language server
+;;     (setq codeium-api-enabled
+;;           (lambda (api)
+;;             (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
 
-    ;; You can overwrite all the codeium configs!
-    ;; for example, we recommend limiting the string sent to codeium for better performance
-    (defun my-codeium/document/text ()
-      (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
-   ;; if you change the text, you should also change the cursor_offset
-    ;; warning: this is measured by UTF-8 encoded bytes
-    (defun my-codeium/document/cursor_offset ()
-        (codeium-utf8-byte-length
-         (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
+;;     ;; You can overwrite all the codeium configs!
+;;     ;; for example, we recommend limiting the string sent to codeium for better performance
+;;     (defun my-codeium/document/text ()
+;;       (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
+;;    ;; if you change the text, you should also change the cursor_offset
+;;     ;; warning: this is measured by UTF-8 encoded bytes
+;;     (defun my-codeium/document/cursor_offset ()
+;;         (codeium-utf8-byte-length
+;;          (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
 
-    (setq codeium/document/text 'my-codeium/document/text)
-    (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset)
-  )
+;;     (setq codeium/document/text 'my-codeium/document/text)
+;;     (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset)
+;;   )
 
 ;; (after! lsp-ui
 ;;   (progn
