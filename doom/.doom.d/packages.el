@@ -43,6 +43,8 @@
 
 (package! doom-snippets :disable t)
 
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
 ;; (package! awesome-tab :recipe (:host github :repo "manateelazycat/awesome-tab"))
 ;; (package! centaur-tabs)
 ;; (package! rmsbolt)
