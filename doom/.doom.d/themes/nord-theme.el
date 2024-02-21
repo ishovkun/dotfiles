@@ -108,6 +108,13 @@
    `(spaceline-highlight-face-evil-state ((,class (:bold t :foreground ,func :background ,bg))))
    `(spacemacs-hybrid-face ((t (:foreground ,bg :background ,str :inherit 'mode-line))))
    `(spacemacs-normal-face ((t (:foreground ,bg :background ,keyword :inherit 'mode-line))))
+   ;; highlight indentation
+   ;; `(highlight-indent-guides-character-face ((t (:inherit 'hl-line))))
+   ;; `(highlight-indentation-face ((t (:inherit 'hl-line))))
+   ;; `(highlight-indentation-current-column-face ((t (:background 'fg))))
+   ;; `(highlight-indentation-guides-odd-face ((t (:inherit 'highlight-indentation-face))))
+   ;; `(highlight-indentation-guides-even-face ((t (:inherit 'highlight-indentation-face))))
+   ;; `(indent-guide-face ((t (:inherit 'highlight-indentation-face))))
    ;; term
    `(term-color-black            ((t (:foreground ,bg :background ,bg))))
    `(term-color-red              ((t (:foreground ,warning :background ,warning))))
@@ -456,9 +463,7 @@
   (custom-theme-set-variables
    'nord
    `(ansi-color-names-vector (vector "black" ,warning ,str ,misc ,func ,const ,builtin ,fg-bright))
-  ;;  ;; ["black" "red" "green" "yellow" "blue" "magenta" "cyan" "white"]
    )
-
   )
 
 

@@ -413,6 +413,11 @@
   (define-key evil-inner-text-objects-map (kbd "c") 'evil-inner-curly)
 )
 
+;; hack: remove titlebar
+;; (add-to-list 'default-frame-alist '(undecorated . t))
+(add-to-list 'default-frame-alist '(undecorated-round . t))
+
+
 ;; hack, disable tab completion for company
 ;; doesn't work via map!
 (with-eval-after-load 'company
