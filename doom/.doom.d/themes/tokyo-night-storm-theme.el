@@ -145,7 +145,7 @@
    `(lsp-ui-doc-border               ((t (:foreground ,keyword))))
    `(lsp-ui-sideline-current-symbol  ((t (:foreground ,keyword :box nil))))
    ;;
-   `(vertical-border ((,class (:foreground ,bg :background ,bg))))
+   `(vertical-border ((,class (:foreground ,bg-dark :background ,bg-dark))))
    `(minibuffer-prompt ((,class (:bold t :foreground ,keyword, :background ,bg))))
    `(default-italic ((,class (:italic t))))
    `(link ((,class (:foreground ,const :underline t))))
