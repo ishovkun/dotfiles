@@ -546,6 +546,7 @@
 
 
 ;; ------------------------------ GUI -----------------------------------------
+(setq highlight-indent-guides-auto-enabled nil)
 ;; tweaks
 (setq display-line-numbers-type 'relative)
 ;; (setq confirm-kill-emacs)
