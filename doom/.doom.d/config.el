@@ -1036,7 +1036,8 @@
 ;;   ;; Bind the custom function to <tab> in Evil's insert state
 ;;   (evil-define-key 'insert 'global (kbd "<tab>") 'my/copilot-tab-or-default))
 
-;; (add-to-list 'copilot-major-mode-alist '("enh-ruby" . "ruby"))
+
+(add-to-list 'copilot-major-mode-alist '("cuda"))
 ;; ----------------------------------- Shell -----------------------------------
 ;; (when (display-graphic-p)
 ;;   (use-package mini-modeline
