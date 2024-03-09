@@ -109,6 +109,9 @@
    `(spacemacs-hybrid-face ((t (:foreground ,bg :background ,str :inherit 'mode-line))))
    `(spacemacs-normal-face ((t (:foreground ,bg :background ,keyword :inherit 'mode-line))))
    ;; highlight indentation
+   `(highlight-indent-guides-odd-face ((t (:background ,bg :foreground ,fg-dim))))
+   `(highlight-indent-guides-even-face ((t (:background ,bg :foreground ,fg-dim))))
+   `(highlight-indent-guides-character-face ((t (:background ,bg :foreground ,region))))
    ;; `(highlight-indent-guides-character-face ((t (:inherit 'hl-line))))
    ;; `(highlight-indentation-face ((t (:inherit 'hl-line))))
    ;; `(highlight-indentation-current-column-face ((t (:background 'fg))))

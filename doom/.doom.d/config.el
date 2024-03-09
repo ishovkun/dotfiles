@@ -679,14 +679,14 @@
 ;; (load-theme 'wilmersdorf t)
 
 
-(use-package! yascroll
-  :init
-  (setq yascroll:delay-to-hide nil
-        yascroll:scroll-bar 'right-fringe) ; right-fringe / text-area
-  :config
-  (add-hook 'prog-mode-hook 'yascroll-bar-mode)
-  (add-hook 'text-mode-hook 'yascroll-bar-mode)
-    )
+;; (use-package! yascroll
+;;   :init
+;;   (setq yascroll:delay-to-hide nil
+;;         yascroll:scroll-bar 'right-fringe) ; right-fringe / text-area
+;;   :config
+;;   (add-hook 'prog-mode-hook 'yascroll-bar-mode)
+;;   (add-hook 'text-mode-hook 'yascroll-bar-mode)
+;;     )
 
 ;; posframe
 (if window-system
@@ -1022,7 +1022,10 @@
               ("<tab>" . 'copilot-accept-completion)
               ("TAB" . 'copilot-accept-completion)
               ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+              ("C-<tab>" . 'copilot-accept-completion-by-word))
+  :config
+  (add-to-list 'copilot-major-mode-alist '("cuda" . "rust"))
+  )
 
 ;; (after! (evil copilot)
 ;;   ;; Define the custom function that either accepts the completion or does the default behavior
@@ -1036,9 +1039,6 @@
 
 ;;   ;; Bind the custom function to <tab> in Evil's insert state
 ;;   (evil-define-key 'insert 'global (kbd "<tab>") 'my/copilot-tab-or-default))
-
-
-(add-to-list 'copilot-major-mode-alist '("cuda"))
 ;; ----------------------------------- Shell -----------------------------------
 ;; (when (display-graphic-p)
 ;;   (use-package mini-modeline

@@ -112,6 +112,7 @@
 { "key": "alt+;", "command": "vscode-neovim.send", "args": "gcA", "when": "!isMac && editorTextFocus && neovim.init && neovim.mode == normal" },
 { "key": "cmd+;", "command": "vscode-neovim.send", "args": "gcA", "when": "isMac && editorTextFocus && neovim.init && neovim.mode == normal" },
 { "key": "ctrl+enter", "command": "cmake.build", "when": "editorTextFocus && cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
+{ "key": "ctrl+enter", "command": "code-runner.run", "when": "editorTextFocus && !cmake:enableFullFeatureSet" },
 { "key": "ctrl+c ctrl+k", "command": "cmake.stop", "when": "editorTextFocus && cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
 { "key": "ctrl+c ctrl+c", "command": "cmake.outline.stopAll", "when": "editorTextFocus && cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
 { "key": "x", "command": "magit.discard-at-point", "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },

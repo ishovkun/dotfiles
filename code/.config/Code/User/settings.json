@@ -1,5 +1,4 @@
 {
-    "workbench.activityBar.visible": true,
     "editor.fontFamily": "Iosevka Nerd Font",
     "editor.lineNumbers": "relative",
     "vscode-neovim.neovimExecutablePaths.linux": "/usr/bin/nvim",
@@ -15,7 +14,7 @@
     "editor.insertSpaces": true,
     "editor.fontSize": 11,
     "git.openRepositoryInParentFolders": "never",
-    "workbench.colorTheme": "Catppuccin Frappé",
+    "workbench.colorTheme": "Catppuccin Macchiato",
     "[cpp]": {
         "editor.tabSize": 2
     },
@@ -48,7 +47,7 @@
             }
         }
     },
-    "editor.accessibilitySupport": "on",
+    "editor.accessibilitySupport": "off",
     "audioCues.diffLineDeleted": "off",
     "audioCues.diffLineInserted": "off",
     "audioCues.diffLineModified": "off",
@@ -62,5 +61,6 @@
     "audioCues.onDebugBreak": "off",
     "extensions.experimental.affinity": {
         "asvetliakov.vscode-neovim": 1
-    }
+    },
+    "cmake.options.statusBarVisibility": "compact"
  }

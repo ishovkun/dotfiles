@@ -304,11 +304,8 @@ key_bindings:
   - { key: Return,    mods: Shift,         chars: "\x00c"          } # send tmux prefix + c to create new tmux window
   - { key: Space,     mods: Shift,         chars: "\x1b[32;2u"          } # Shirt + Space
   - { key: Space,     mods: Control,       chars: "\x00"                } # Ctrl + Space
-  - { key: Grave,     mods: Alt,           chars: "\x1b`"               } # Alt + `
+  - { key: Grave,     mods: Command,       chars: "\x1b`"               }
   - { key: Grave,     mods: Alt|Shift,     chars: "\x1b~"               } # Alt + ~
-  - { key: Period,    mods: Alt,           chars: "\x1b."               } # Alt + .
-  # - { key: Period,    mods: Control,       chars: "\x0b."           }
-  # - { key: Period,        mods: Control,       chars: "tmux next-window\n"               } # Alt + .
   - { key: Key8,      mods: Alt|Shift,     chars: "\x1b*"               } # Alt + *
   - { key: Key3,      mods: Alt|Shift,     chars: "\x1b#"               } # Alt + #
   - { key: Period,    mods: Alt|Shift,     chars: "\x1b>"               } # Alt + >
