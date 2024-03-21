@@ -557,7 +557,7 @@
 (setq display-line-numbers-type 'relative)
 ;; (add-hook 'c-mode-common-hook 'display-line-numbers-mode)
 ;; (add-hook 'cuda-mode-hook 'display-line-numbers-mode)
-(add-hook 'prog 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 ;; (setq confirm-kill-emacs)
 (setq confirm-kill-emacs nil)
