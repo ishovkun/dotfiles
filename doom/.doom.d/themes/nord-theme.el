@@ -45,6 +45,7 @@
       (region  polar-night-lighter)         ;; basically selection
       (var     aurora-green)
       (warning aurora-red)
+      (error   aurora-red)
       (success frost-green)      ;; bright green
       (search-current frost-dark-blue)      ;; current match
       (misc aurora-yellow)      ;; latex equations
@@ -81,14 +82,14 @@
    `(doom-modeline-evil-normal-state   ((,class (:foreground ,bg-dark :background ,keyword ))))
    `(doom-modeline-evil-insert-state   ((,class (:foreground ,bg-dark :background ,str ))))
    `(doom-modeline-evil-visual-state   ((,class (:foreground ,bg-dark :background ,fg ))))
-   `(doom-modeline-urgent              ((,class (:foreground ,warning :background ,bg-dark ))))
+   `(doom-modeline-urgent              ((,class (:foreground ,error :background ,bg-dark ))))
    `(doom-modeline-warning             ((,class (:foreground ,warning :background ,bg-dark ))))
    `(doom-modeline-buffer-modified     ((,class (:foreground ,warning :background ,bg-dark ))))
    `(success                           ((,class (:foreground ,success))))
-   `(doom-modeline-lsp-error           ((,class (:foreground ,warning :background ,bg-dark ))))
+   `(doom-modeline-lsp-error           ((,class (:foreground ,error :background ,bg-dark ))))
    `(doom-modeline-lsp-warning         ((,class (:foreground ,warning :background ,bg-dark ))))
    `(compilation-mode-line-exit        ((,class (:foreground ,success :background ,bg-dark ))))
-   `(compilation-mode-line-fail        ((,class (:foreground ,warning :background ,bg-dark ))))
+   `(compilation-mode-line-fail        ((,class (:foreground ,error :background ,bg-dark ))))
    `(compilation-mode-line-run         ((,class (:foreground ,builtin :background ,bg-dark ))))
    ;; modeline git branch color
    `(doom-modeline-info  ((,class (:foreground ,success :weight bold))))
@@ -120,7 +121,7 @@
    ;; `(indent-guide-face ((t (:inherit 'highlight-indentation-face))))
    ;; term
    `(term-color-black            ((t (:foreground ,bg :background ,bg))))
-   `(term-color-red              ((t (:foreground ,warning :background ,warning))))
+   `(term-color-red              ((t (:foreground ,error :background ,error))))
    `(term-color-green            ((t (:foreground ,str :background ,str))))
    `(term-color-yellow           ((t (:foreground ,misc :background ,misc))))
    `(term-color-blue             ((t (:foreground ,type :background ,type))))
@@ -129,12 +130,12 @@
    `(term-color-white            ((t (:foreground ,fg-bright :background ,fg-bright))))
    ;; term-color-black
    ;; `(error ((t (:foreground ,warning :background ,bg))))
-   `(error ((t (:foreground ,warning))))
+   `(error ((t (:foreground ,error))))
    ;; vterm
    `(vterm-color-default-fg ((,class (:foreground ,fg))))
    `(vterm-color-default-bg ((,class (:background ,bg))))
    ;; compilation
-   `(compilation-error ((t (:foreground ,warning :background ,bg))))
+   `(compilation-error ((t (:foreground ,error :background ,bg))))
    `(compilation-info ((t (:foreground ,keyword :background ,bg))))
    `(compilation-warning ((t (:foreground ,builtin :background ,bg))))
    ;; `(compilation-column-number ((t (:inherit ,comment))))
@@ -224,8 +225,8 @@
    `(js2-function-param ((,class (:inherit ,font-lock-variable-name-face))))
    `(js2-jsdoc-value ((,class (:foreground ,str))))
    `(js2-private-member ((,class (:foreground ,fg-bright))))
-   `(js3-warning-face ((,class (:underline ,keyword))))
-   `(js3-error-face ((,class (:underline ,warning))))
+   `(js3-warning-face ((,class (:underline ,warning))))
+   `(js3-error-face ((,class (:underline ,error))))
    `(js3-external-variable-face ((,class (:foreground ,var))))
    `(js3-function-param-face ((,class (:foreground ,success))))
    `(js3-jsdoc-tag-face ((,class (:foreground ,keyword))))
@@ -279,7 +280,7 @@
    `(term-color-magenta ((,class (:foreground ,builtin :background ,builtin))))
    `(term-color-cyan ((,class (:foreground ,str :background ,str))))
    `(term-color-white ((,class (:foreground ,fg-dim :background ,fg-dim))))
-   `(rainbow-delimiters-unmatched-face ((,class :foreground ,warning)))
+   `(rainbow-delimiters-unmatched-face ((,class :foreground ,error)))
    ;; ediff
    `(ediff-even-diff-A    ((,class (:background ,bg-light))))
    `(ediff-even-diff-B    ((,class (:background ,bg-light))))

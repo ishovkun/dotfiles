@@ -536,7 +536,6 @@
        (string-prefix-p " *temp" name)
        (string-prefix-p "*Help" name)
        ;; (string-prefix-p "*mybuf" name)
-
        ;; Is not magit buffer.
        (and (string-prefix-p "magit" name)
             (not (file-name-extension name)))
@@ -544,11 +543,22 @@
   (centaur-tabs-mode t)
 )
 
-
+(use-package highlight-indent-guides
+  :ensure t
+  :hook ((prog-mode . highlight-indent-guides-mode)
+         (yaml-mode . highlight-indent-guides-mode))
+  :custom
+  (highlight-indent-guides-method 'bitmap)
+  (highlight-indent-guides-responsive 'top)
+  (highlight-indent-guides-bitmap-function 'highlight-indent-guides--bitmap-dots)
+  )
 ;; ------------------------------ GUI -----------------------------------------
-(setq highlight-indent-guides-auto-enabled nil)
 ;; tweaks
 (setq display-line-numbers-type 'relative)
+;; (add-hook 'c-mode-common-hook 'display-line-numbers-mode)
+;; (add-hook 'cuda-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog 'display-line-numbers-mode)
+
 ;; (setq confirm-kill-emacs)
 (setq confirm-kill-emacs nil)
 
@@ -882,9 +892,6 @@
         ;; :cwd nil))
   )
 (use-package! dap-cpptools)
-;; CUDA
-(add-hook 'c-mode-common-hook 'display-line-numbers-mode)
-(add-hook 'cuda-mode-hook 'display-line-numbers-mode)
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
@@ -1016,29 +1023,17 @@
   )
 ;; ----------------------------------- Copilot ---------------------------------
 ;; accept completion from copilot and fallback to company
-(use-package! copilot
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word))
-  :config
-  (add-to-list 'copilot-major-mode-alist '("cuda" . "rust"))
-  )
+;; (use-package! copilot
+;;   :hook (prog-mode . copilot-mode)
+;;   :bind (:map copilot-completion-map
+;;               ("<tab>" . 'copilot-accept-completion)
+;;               ("TAB" . 'copilot-accept-completion)
+;;               ("C-TAB" . 'copilot-accept-completion-by-word)
+;;               ("C-<tab>" . 'copilot-accept-completion-by-word))
+;;   :config
+;;   (add-to-list 'copilot-major-mode-alist '("cuda" . "rust"))
+;;   )
 
-;; (after! (evil copilot)
-;;   ;; Define the custom function that either accepts the completion or does the default behavior
-;;   (defun my/copilot-tab-or-default ()
-;;     (interactive)
-;;     (if (and (bound-and-true-p copilot-mode)
-;;              ;; Add any other conditions to check for active copilot suggestions if necessary
-;;              )
-;;         (copilot-accept-completion)
-;;       (evil-insert 1))) ; Default action to insert a tab. Adjust as needed.
-
-;;   ;; Bind the custom function to <tab> in Evil's insert state
-;;   (evil-define-key 'insert 'global (kbd "<tab>") 'my/copilot-tab-or-default))
 ;; ----------------------------------- Shell -----------------------------------
 ;; (when (display-graphic-p)
 ;;   (use-package mini-modeline
