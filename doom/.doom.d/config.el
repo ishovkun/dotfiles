@@ -55,8 +55,8 @@
   :nv "M-h"         #'evil-window-left
   :nv "M-M"           #'+workspace/switch-left
   :nv "M-<"           #'+workspace/switch-right
-  :nvi "<mouse-4>"      #'scroll-up-line
-  :nvi "<mouse-5>"      #'scroll-down-line
+  :nvi "<mouse-5>"      #'scroll-up-line
+  :nvi "<mouse-4>"      #'scroll-down-line
 
   (:after centaur-tabs
    :nv "M-m"         #'centaur-tabs-forward
