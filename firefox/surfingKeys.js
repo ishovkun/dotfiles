@@ -42,6 +42,7 @@ api.addSearchAlias('aw', 'Arch Wiki', 'https://wiki.archlinux.org/index.php?sear
 api.addSearchAlias('gh', 'Github', 'https://github.com/search?utf8=✓&q=');
 api.addSearchAlias('s', 'Scholar', 'https://scholar.google.com/scholar?hl=en&as_sdt=0,44&q=');
 api.addSearchAlias('sl', 'Stanford Libs', 'https://library.stanford.edu/all/?q=');
+api.addSearchAlias('cnp', 'MyHub People Search', 'https://slb001.sharepoint.com/_layouts/15/search.aspx/people?q=');
 
 // omnibar
 api.cmap('<Ctrl-j>', '<Ctrl-n>');
