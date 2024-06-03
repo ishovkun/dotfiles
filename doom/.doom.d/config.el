@@ -662,7 +662,7 @@
   ;; my own modeline
   (doom-modeline-def-modeline 'ishovkun-line
     '(bar workspace-name window-number-evil matches buffer-info remote-host buffer-position word-count parrot selection-info)
-    '(misc-info persp-name buffer-encoding major-mode indent-info process vcs lsp checker))
+    '(misc-info persp-name buffer-encoding major-mode indent-info process vcs lsp check))
 
     (defun setup-custom-doom-modeline ()
       (doom-modeline-set-modeline 'ishovkun-line 'default))
