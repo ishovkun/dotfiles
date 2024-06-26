@@ -550,9 +550,13 @@
   :hook ((prog-mode . highlight-indent-guides-mode)
          (yaml-mode . highlight-indent-guides-mode))
   :custom
+  ;; (highlight-indent-guides-auto-enabled nil)
   (highlight-indent-guides-method 'bitmap)
   (highlight-indent-guides-responsive 'top)
   (highlight-indent-guides-bitmap-function 'highlight-indent-guides--bitmap-dots)
+  ;; :config
+  ;; (set-face-foreground 'highlight-indent-guides-character-face "#f8fce8")
+  ;; (set-face-foreground 'highlight-indent-guides-odd-face "#fcba03")
   )
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
@@ -563,6 +567,8 @@
 
 ;; (setq confirm-kill-emacs)
 (setq confirm-kill-emacs nil)
+
+(after! magit (setq magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")))
 
 (after! ivy-rich
   (setq ivy-rich-display-transformers-list
@@ -802,6 +808,9 @@
   ;; (set-face-attribute 'lsp-ui-doc-global nil :height 0.75)
   (lsp-ui-doc-mode)
   )
+
+;; ----------------------------- File associations (extensions) ----------------------------------
+(add-to-list 'auto-mode-alist '("\\.xdmf\\'" . xml-mode))
 
 ;; Machine learnig!
 ;; (use-package! codeium
