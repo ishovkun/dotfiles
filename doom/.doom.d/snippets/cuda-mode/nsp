@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+#name : nsp
+#key : nsp
+#contributor : Igor
+# --
+namespace $1 {
+
+ $2
+
+}  // end namespace $1
