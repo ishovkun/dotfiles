@@ -26,6 +26,8 @@
 
 ;; (package! codeium :recipe (:host github :repo "Exafunction/codeium.el"))
 
+(package! highlight2clipboard)
+
 ;; temporary fix after doom update
 ;; run thes sync to have those updated (mind the flags)
 ;; doom sync -u

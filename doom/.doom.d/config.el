@@ -203,8 +203,17 @@
    :desc "jump to tab number"  :nv "gt" #'centaur-tabs-ace-jump
    )
   (:map vterm-mode-map
-   :desc "C-k" :nvi "C-k"          #'vterm-send-C-k
-   :desc "C-k" :nvi "C-j"          #'vterm-send-C-j
+   :desc "send C-k"                :nvi "C-k"  #'vterm-send-C-k
+   :desc "send C-j"                :nvi "C-j"  #'vterm-send-C-j
+   :desc "Switch to 1st workspace" :nv "M-1"   #'+workspace/switch-to-0
+   :desc "Switch to 2nd workspace" :nv "M-2"   #'+workspace/switch-to-1
+   :desc "Switch to 3rd workspace" :nv "M-3"   #'+workspace/switch-to-2
+   :desc "Switch to 4th workspace" :nv "M-4"   #'+workspace/switch-to-3
+   :desc "Switch to 5th workspace" :nv "M-5"   #'+workspace/switch-to-4
+   :desc "Switch to 6th workspace" :nv "M-6"   #'+workspace/switch-to-5
+   :desc "Switch to 7th workspace" :nv "M-7"   #'+workspace/switch-to-6
+   :desc "Switch to 8th workspace" :nv "M-8"   #'+workspace/switch-to-7
+   :desc "Switch to 9th workspace" :nv "M-9"   #'+workspace/switch-to-8
    )
 )
 (map! :leader
