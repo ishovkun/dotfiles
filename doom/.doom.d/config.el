@@ -36,6 +36,10 @@
   "M-h"         #'evil-window-left
   )
  :desc "Invoke deer" :n  "-" #'dirvish-dwim
+ (:map dirvish-mode-map
+  :desc "up directory" :nv "h" #'dired-up-directory
+  :desc "open"         :n "l" #'dired-find-file
+  )
  ;; window management
  (:map override
   :nv "M-k"         #'evil-window-up
@@ -1038,16 +1042,16 @@
   )
 ;; ----------------------------------- Copilot ---------------------------------
 ;; accept completion from copilot and fallback to company
-;; (use-package! copilot
-;;   :hook (prog-mode . copilot-mode)
-;;   :bind (:map copilot-completion-map
-;;               ("<tab>" . 'copilot-accept-completion)
-;;               ("TAB" . 'copilot-accept-completion)
-;;               ("C-TAB" . 'copilot-accept-completion-by-word)
-;;               ("C-<tab>" . 'copilot-accept-completion-by-word))
-;;   :config
-;;   (add-to-list 'copilot-major-mode-alist '("cuda" . "rust"))
-;;   )
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word))
+  :config
+  (add-to-list 'copilot-major-mode-alist '("cuda" . "rust"))
+  )
 
 ;; ----------------------------------- Shell -----------------------------------
 ;; (when (display-graphic-p)
