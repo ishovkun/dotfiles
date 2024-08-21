@@ -11,7 +11,7 @@
 
 (if (eq system-type 'darwin)
     (progn
-       (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 11))
+       (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 12))
         ;;; I prefer cmd key for meta
        (setq mac-option-key-is-meta nil
              mac-command-key-is-meta t
@@ -35,18 +35,7 @@
   "M-l"         #'evil-window-right
   "M-h"         #'evil-window-left
   )
-  ;; ranger
-  (:after ranger
-   :desc "Invoke deer" :n  "-" #'deer
-   (:map ranger-mode-map
-    "M-k" #'evil-window-up
-    "M-j" #'evil-window-down
-    "M-l" #'evil-window-right
-    "M-h" #'evil-window-left
-    :desc "Open in external app" "<C-return>" #'ranger-open-in-external-app
-    [escape] #'doom/escape
-    )
-   )
+ :desc "Invoke deer" :n  "-" #'dirvish-dwim
  ;; window management
  (:map override
   :nv "M-k"         #'evil-window-up
@@ -223,7 +212,7 @@
    )
 )
 (map! :leader
-  (:when (featurep! :ui workspaces)
+  (:when (modulep! :ui workspaces)
     (:prefix-map ("`" . "workspace")
       :desc "Display tab bar"           "`"   #'+workspace/display
       :desc "Switch workspace"          "."   #'+workspace/switch-to
