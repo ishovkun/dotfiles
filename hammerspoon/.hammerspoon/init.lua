@@ -61,6 +61,10 @@ hs.hotkey.bind('alt', 'l', function() focus.focusEast() end)
 hs.hotkey.bind('alt', 'h', function() focus.focusWest() end)
 hs.hotkey.bind('alt', 'j', function() focus.focusSouth() end)
 hs.hotkey.bind('alt', 'k', function() focus.focusNorth() end)
+-- hs.hotkey.bind('alt', 'l', function() hs.window:focusWindowEast() end)
+-- hs.hotkey.bind('alt', 'h', function() hs.window:focusWindowWest() end)
+-- hs.hotkey.bind('alt', 'j', function() hs.window:focusWindowSouth() end)
+-- hs.hotkey.bind('alt', 'k', function() hs.window:focusWindowNorth() end)
 
 local launch = require("launch")
 

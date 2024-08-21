@@ -28,7 +28,9 @@ function M.toggleApp(appName, moveToCurrentSpace)
           hs.spaces.moveWindowToSpace(win:id(), focused_space_id)
         end
       end
+      app:unhide()
       app:activate()
+      win:raise()
     end
   end
 end
