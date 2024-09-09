@@ -46,10 +46,12 @@
   :nv "M-j"         #'evil-window-down
   :nv "M-l"         #'evil-window-right
   :nv "M-h"         #'evil-window-left
-  :nv "M-M"           #'+workspace/switch-left
-  :nv "M-<"           #'+workspace/switch-right
-  :nvi "<mouse-5>"      #'scroll-up-line
-  :nvi "<mouse-4>"      #'scroll-down-line
+  :nv "M-M"         #'+workspace/switch-left
+  :nv "M-<"         #'+workspace/switch-right
+  :nvi "<mouse-5>"  #'scroll-up-line
+  :nvi "<mouse-4>"  #'scroll-down-line
+  :nv "M-="          #'increase-font-size-global
+  :nv "M--"          #'decrease-font-size-global
 
   (:after centaur-tabs
    :nv "M-m"         #'centaur-tabs-forward
@@ -216,6 +218,15 @@
    )
 )
 (map! :leader
+  (:after swiper :desc "Swiper" :nv "/" #'counsel-grep-or-swiper)
+  ;; commenting
+  :desc "comment single line" :n ";" #'evil-commentary-line
+  :desc "comment block"       :v ";" #'evil-commentary
+  ;; buffers
+  :desc "Switch to previous buffer" :nv "<tab>" #'spacemacs/alternate-buffer
+  :desc "Switch to previous buffer" :nv "TAB" #'spacemacs/alternate-buffer ; duplicated for terminal behavior
+  (:after dirvish :desc "Bookmarks" :nv "<return>" #'dirvish-quick-access)
+
   (:when (modulep! :ui workspaces)
     (:prefix-map ("`" . "workspace")
       :desc "Display tab bar"           "`"   #'+workspace/display
@@ -289,14 +300,6 @@
     :nv "s"   #'split-window-below
     :nv "e"   #'balance-windows
     )
-
-  (:after swiper :desc "Swiper" :nv "/" #'counsel-grep-or-swiper)
-  ;; commenting
-  :desc "comment single line" :n ";" #'evil-commentary-line
-  :desc "comment block"       :v ";" #'evil-commentary
-  ;; buffers
-  :desc "Switch to previous buffer" :nv "<tab>" #'spacemacs/alternate-buffer
-  :desc "Switch to previous buffer" :nv "TAB" #'spacemacs/alternate-buffer ; duplicated for terminal behavior
   (:after ivy :nv "SPC" #'+ivy/switch-workspace-buffer)
   (:prefix "b"
     :desc "kill current buffer"          :nv "d" #'kill-this-buffer
@@ -374,9 +377,6 @@
     (:after ein
      :desc "Open Ipython notebook" :n "i" #'ein:run)
     )
-  ;; (:prefix "h"
-  ;;  :desc "Which key" :nv "hk" #'which-key
-  ;;  )
 ) ; end map leader
 
 (map! :after latex
@@ -695,8 +695,8 @@
 ;; regular behavior of s
 (after! evil-snipe
   ;; (evil-snipe-mode -1)
-  (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-override-mode)
-  (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-mode)
+  ;; (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-override-mode)
+  ;; (add-hook 'ranger-mode-hook 'turn-off-evil-snipe-mode)
   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode))
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
@@ -738,9 +738,27 @@
 ))
 
 ;; ----------------------------- dired ----------------------------------
+(after! dirvish
+  (setq! dirvish-quick-access-entries
+         `(("h" "~/"                          "Home")
+           ("e" ,user-emacs-directory         "Emacs user directory")
+           ("c" "~/dev/"                      "Code")
+           ("b" "~/build/"                    "Build")
+           ("l" "~/Downloads/"                "Downloads")
+           ("m" "/mnt/"                       "Mounted drives")
+           ("t" "~/.local/share/Trash/files/" "Trash"))))
 ;; ranger
-(setq ranger-deer-show-details nil)
-(setq ranger-show-hidden nil)
+;; (setq ranger-deer-show-details nil)
+;; (setq ranger-show-hidden nil)
+;; (use-package! dirvish
+;;   :custom
+;;   '(("h" "~/"                          "Home")
+;;      ("d" "~/dev/"                     "development")
+;;      ("l" "~/Downloads/"                "Downloads")
+;;      ("m" "/mnt/"                       "Drives")
+;;      ("t" "~/.local/share/Trash/files/" "TrashCan")
+;;      )
+;;   )
 
 ;; scroll one line at a time (less "jumpy" than defaults)
 (setq mouse-wheel-scroll-amount '(2 ((shift) . 1))) ;; two lines at a time
