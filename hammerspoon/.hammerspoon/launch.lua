@@ -25,6 +25,7 @@ function M.toggleApp(appName, moveToCurrentSpace)
         local win = app:mainWindow()
         if not onActiveSpace(win:id()) then
           local focused_space_id = hs.spaces.focusedSpace()
+          app:unhide()
           hs.spaces.moveWindowToSpace(win:id(), focused_space_id)
         end
       end
