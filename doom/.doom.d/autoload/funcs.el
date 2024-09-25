@@ -295,3 +295,6 @@ the right."
   (interactive)
   (doom/decrease-font-size +0.5)
   )
+(defun my-display-numbers-hook ()
+  (display-line-numbers-mode 1)
+  )

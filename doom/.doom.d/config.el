@@ -570,8 +570,8 @@
 ;; tweaks
 (setq display-line-numbers-type 'relative)
 ;; (add-hook 'c-mode-common-hook 'display-line-numbers-mode)
-(add-hook 'cuda-mode-hook 'display-line-numbers-mode)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'cuda-mode-hook 'my-display-numbers-hook)
+(add-hook 'prog-mode-hook 'my-display-numbers-hook)
 
 ;; (setq confirm-kill-emacs)
 (setq confirm-kill-emacs nil)
