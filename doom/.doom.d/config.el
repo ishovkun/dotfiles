@@ -93,7 +93,7 @@
   :nv "M-L"         #'increase-window-width
   :nv "M-J"         #'decrease-window-height
   :nv "M-K"         #'increase-window-height
-  (:map evil-org-mode-map
+  (:after org :map org-mode-map
    :nv "M-H"         #'decrease-window-width
    :nv "M-L"         #'increase-window-width
    :nv "M-J"         #'decrease-window-height
