@@ -40,6 +40,7 @@
   :desc "up directory" :nv "h" #'dired-up-directory
   :desc "open"         :n "l" #'dired-find-file
   )
+
  ;; window management
  (:map override
   :nv "M-k"         #'evil-window-up
@@ -50,8 +51,6 @@
   :nv "M-<"         #'+workspace/switch-right
   :nvi "<mouse-5>"  #'scroll-up-line
   :nvi "<mouse-4>"  #'scroll-down-line
-  :nv "M-="          #'increase-font-size-global
-  :nv "M--"          #'decrease-font-size-global
 
   (:after centaur-tabs
    :nv "M-m"         #'centaur-tabs-forward
@@ -66,6 +65,13 @@
    :nv "M-,"         #'awesome-tab-backward
    )
   :nv "M-<backspace>" #'kill-current-buffer
+  )
+ :nv "M-="         #'increase-font-size-global
+ :nv "M--"         #'decrease-font-size-global
+ (:map image-mode-map :after image-mode
+  :desc "Zoom in" :nv "M-="         #'increase-font-size-global
+  :desc "Zoom out" :nv "M--"          #'image-decrease-size
+  :desc "Invoke deer" :n "-" #'dirvish-dwim
   )
  (:map TeX-mode-map
   :nv "j"           #'evil-next-visual-line
@@ -235,7 +241,7 @@
       :desc "Load workspace from file"  "l"   #'+workspace/load
       :desc "Save workspace to file"    "s"   #'+workspace/save
       :desc "Delete session"            "x"   #'+workspace/kill-session
-      :desc "Delete this workspace"     "d"   #'+workspace/delete
+      :desc "Delete this workspace"     "d"   #'+workspace:delete
       :desc "Rename workspace"          "r"   #'+workspace/rename
       :desc "Restore last session"      "R"   #'+workspace/restore-last-session
       :desc "Next workspace"            "]"   #'+workspace/switch-right
@@ -257,7 +263,7 @@
       :desc "Load workspace from file"  "l"   #'+workspace/load
       :desc "Save workspace to file"    "s"   #'+workspace/save
       :desc "Delete session"            "x"   #'+workspace/kill-session
-      :desc "Delete this workspace"     "d"   #'+workspace/delete
+      :desc "Delete this workspace"     "d"   #'+workspace:delete
       :desc "Rename workspace"          "r"   #'+workspace/rename
       :desc "Restore last session"      "R"   #'+workspace/restore-last-session
       :desc "Next workspace"            "]"   #'+workspace/switch-right
