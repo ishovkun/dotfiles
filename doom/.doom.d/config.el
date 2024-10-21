@@ -562,6 +562,8 @@
   (highlight-indent-guides-method 'bitmap)
   (highlight-indent-guides-responsive 'top)
   (highlight-indent-guides-bitmap-function 'highlight-indent-guides--bitmap-dots)
+  ;; (setq org-ellipsis "…")
+  ;; (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
   ;; :config
   ;; (set-face-foreground 'highlight-indent-guides-character-face "#f8fce8")
   ;; (set-face-foreground 'highlight-indent-guides-odd-face "#fcba03")
@@ -950,7 +952,17 @@
      (setq org-agenda-files (list org-directory))
     (when (string= (system-name) "space")
       (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
-  )))
+      )
+    (add-hook 'org-mode-hook #'org-modern-mode)
+    (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+    (setq org-ellipsis "…")
+    (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
+    (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
+    (setq org-hide-emphasis-markers t
+          org-pretty-entities t)
+
+
+    ))
 ;; ----------------------------------- Org-Roam -----------------------------
 ;; (setq org-roam-directory "~/")
 ;; ---------------------------------- Calendar ------------------------------

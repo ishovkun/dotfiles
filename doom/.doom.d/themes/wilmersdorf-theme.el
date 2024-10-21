@@ -160,7 +160,16 @@
    `(org-footnote  ((,class (:underline t :foreground ,const))))
    `(org-link ((,class (:underline t :foreground ,type ))))
    `(org-special-keyword ((,class (:foreground ,func))))
-   `(org-block ((,class (:foreground ,fg-bright))))
+   ;; `(org-block ((,class (:foreground ,fg-bright))))
+
+   `(org-block                               ((,class :inherit fixed-pitch :background ,bg-dark)))
+   `(org-block-begin-line                    ((,class :inherit org-block :weight semi-bold :height 0.9)))
+   `(org-block-end-line                      ((,class :inherit org-block-begin-line)))
+   `(org-modern-symbol                       ((,class :inherit bold)))
+   `(org-modern-priority                     ((,class :inherit (org-priority))))
+   `(org-modern-block-name                   ((,class :inherit (org-block-begin-line) :foreground ,fg)))
+   `(org-inline-src-block                    ((,class :box (:line-width 1 :color ,fg-bright) )))
+
    `(org-quote ((,class (:inherit org-block :slant italic))))
    `(org-kbd ((,class (:foreground ,keyword :background ,bg))))
    `(org-verse ((,class (:inherit org-block :slant italic))))

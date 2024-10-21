@@ -27,6 +27,7 @@
 ;; (package! codeium :recipe (:host github :repo "Exafunction/codeium.el"))
 
 (package! highlight2clipboard)
+(package! highlight-indent-guides )
 
 ;; temporary fix after doom update
 ;; run thes sync to have those updated (mind the flags)
@@ -53,5 +54,6 @@
 ;; (package! awesome-tab :recipe (:host github :repo "manateelazycat/awesome-tab"))
 ;; (package! centaur-tabs)
 ;; (package! rmsbolt)
+(package! org-modern)
 
 ;;; packages.el ends here
