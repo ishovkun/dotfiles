@@ -51,9 +51,9 @@
 
 (package! copilot
   :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
-;; (package! awesome-tab :recipe (:host github :repo "manateelazycat/awesome-tab"))
-;; (package! centaur-tabs)
-;; (package! rmsbolt)
+(package! compiler-explorer
+  :recipe (:host github :repo "mkcms/compiler-explorer.el" :files ("*.el" "dist")))
+
 (package! org-modern)
 
 ;;; packages.el ends here
