@@ -378,6 +378,7 @@
     :desc "Open vterm" :n "t" #'+vterm/here
     :desc "Open calendar" :n "c" #'=calendar
     :desc "Open calc" :n "'" #'calc
+    :desc "Open godbol" :n "'" #'compiler-explorer
     (:after dap-mode :map c++-mode-map
      :desc "Edit default dap config" :nv "j" #'dap-debug-create-or-edit-json-template)
     (:after ein
