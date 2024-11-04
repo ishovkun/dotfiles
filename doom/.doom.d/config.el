@@ -378,7 +378,7 @@
     :desc "Open vterm" :n "t" #'+vterm/here
     :desc "Open calendar" :n "c" #'=calendar
     :desc "Open calc" :n "'" #'calc
-    :desc "Open godbol" :n "'" #'compiler-explorer
+    :desc "Open godbolt" :n "'" #'compiler-explorer
     (:after dap-mode :map c++-mode-map
      :desc "Edit default dap config" :nv "j" #'dap-debug-create-or-edit-json-template)
     (:after ein
@@ -710,7 +710,8 @@
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes/")
 ;; (load-theme 'one-dark t)
-(load-theme 'nord t)
+;; (load-theme 'nord t)
+(load-theme 'doom-nord-aurora-mod t)
 ;; (load-theme 'wilmersdorf t)
 
 
