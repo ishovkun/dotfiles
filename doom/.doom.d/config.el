@@ -116,9 +116,9 @@
   (:after lsp :map lsp-mode-map :nv "C-j" #'scroll-up-line :nv "C-k" #'scroll-down-line)
   (:after ccls :map (c-mode-map c++-mode-map)
    :nv "C-j" #'scroll-up-line
-   :nv "C-k" #'scroll-down-line)
-
-  :nv "g s"         #'evil-avy-goto-char-timer
+   :nv "C-k" #'scroll-down-line
+   )
+  :nv "gs"          #'evil-avy-goto-char-timer
   :nv "g["          #'avy-goto-char-2-above
   :nv "g]"          #'avy-goto-char-2-below
   :n  "S"           #'avy-goto-char-in-line
@@ -222,7 +222,26 @@
    :desc "Switch to 8th workspace" :nv "M-8"   #'+workspace/switch-to-7
    :desc "Switch to 9th workspace" :nv "M-9"   #'+workspace/switch-to-8
    )
-)
+) ; end map!
+(use-package! compiler-explorer
+  :defer t
+  :config
+
+  ;; (defvar compiler-explorer-mode-map
+  ;;   (let ((map (make-sparse-keymap)))
+  ;;     ;; (set-keymap-parent map tabulated-list-mode-map)
+  ;;     (evil-define-key 'normal 'visual 'compiler-explorer-mode-map (kbd "ga") 'compiler-explorer-jump)
+  ;;     ;; (define-key map (kbd "RET") #'dogears-list-go)
+  ;;     ;; (define-key map (kbd "k") #'dogears-list-delete)
+  ;;     map)
+  ;;   )
+
+  (evil-define-key 'normal 'visual 'compiler-explorer-mode-map (kbd "ga") 'compiler-explorer-jump)
+  ; (evil-define-key 'normal 'visual compiler-explorer--local-mode-map (kbd "ga") 'compiler-explorer-jump)
+  ;; :desc "goto asm" :nv "ga" #'compiler-explorer-jump
+  )
+
+
 (map! :leader
   (:after swiper :desc "Swiper" :nv "/" #'counsel-grep-or-swiper)
   ;; commenting
@@ -372,6 +391,16 @@
     :desc "toggle treemacs" :nv "\\" #'treemacs
     :desc "toggle treemacs" :nv "t" #'treemacs
   )
+  (:prefix "m"
+    (:after compiler-explorer :map compiler-explorer-mode-map
+     :desc "goto asm" :nv "a" #'compiler-explorer-jump
+     :desc "goto asm" :nv "r" #'compiler-explorer-previous-session
+     :desc "goto asm" :nv "n" #'compiler-explorer-new-session
+     :desc "goto asm" :nv "u" #'compiler-explorer-make-link
+     :desc "goto asm" :nv "l" #'compiler-explorer-restore-from-link
+     :desc "goto asm" :nv "q" #'compiler-explorer-exit
+    )
+  )
   (:prefix "o"
     ;; debugging
     (:after realgud :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
@@ -463,6 +492,7 @@
 ;;   )  ;; end awesome tab
 
 (use-package! centaur-tabs
+  :if window-system
   :init
   ;;(set-face-attribute 'centaur-tabs-active-bar-face nil :background "#c586d8")
   :config
