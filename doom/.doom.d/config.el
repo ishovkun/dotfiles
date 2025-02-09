@@ -13,7 +13,7 @@
   ;; manjaro hack
   ;; (setq doom-font (font-spec :family "Iosevka" :size 27 :width 'normal)))
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 25))
-  (setq doom-font (font-spec :family "IosevkaTerm Nerd Font" :size 25))
+  (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 25))
   (setq-default line-spacing 5)
   )
 
