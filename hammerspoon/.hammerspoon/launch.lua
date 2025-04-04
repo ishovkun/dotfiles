@@ -15,24 +15,42 @@ end
 
 function M.toggleApp(appName, moveToCurrentSpace)
   local app = hs.appfinder.appFromName(appName)
+  -- print("======================")
+  -- print("app is", app)
   if not app:isRunning() then
     hs.application.launchOrFocus(appName)
+    -- print("return")
+    return
+  end
+  if app == hs.application.frontmostApplication() and app:mainWindow() ~= nil then
+    -- print("frontmost, return")
+    local win = app:mainWindow()
+    -- print("main window: ", win)
+    app:hide()
   else
-    if app == hs.application.frontmostApplication() then
-      app:hide()
-    else
-      if moveToCurrentSpace then
-        local win = app:mainWindow()
-        if not onActiveSpace(win:id()) then
-          local focused_space_id = hs.spaces.focusedSpace()
-          app:unhide()
-          hs.spaces.moveWindowToSpace(win:id(), focused_space_id)
+    local win = app:mainWindow()
+    if app:mainWindow() == nil then
+      for idx, w in pairs(app:allWindows()) do
+        print(idx, w, w:isStandard())
+        if w:isStandard() then
+          -- print("Unminimizing")
+          print(idx, w)
+          w:unminimize()
+          win = w
+          -- print("win inside", win)
         end
       end
-      app:unhide()
-      app:activate()
-      win:raise()
     end
+    -- print("win", win)
+    if moveToCurrentSpace then
+      if not onActiveSpace(win:id()) then
+        local focused_space_id = hs.spaces.focusedSpace()
+        app:unhide()
+        hs.spaces.moveWindowToSpace(win:id(), focused_space_id)
+      end
+    end
+    app:activate()
+    win:raise()
   end
 end
 
