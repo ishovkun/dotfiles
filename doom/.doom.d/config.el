@@ -149,6 +149,7 @@
   (:after projectile :map prog-mode-map
     :desc "Recompile" :nv "<f6>" #'recompile
     :desc "Recompile" :nv "<C-return>" #'recompile
+    :desc "Recompile" :nv "<return>" #'recompile
     :desc "Recompile" :nv "C-<f9>" #'recompile ; in terminal
     )
   (:after tex :map LaTeX-mode-map :desc "Recompile" :nv "<C-return>" #'latex/build)
