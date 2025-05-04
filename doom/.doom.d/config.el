@@ -7,6 +7,7 @@
   ;; (setq doom-font (font-spec :family "Iosevka" :size 27 :width 'normal)))
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 25))
   (setq doom-font (font-spec :family "IosevkaTerm Nerd Font" :size 25))
+  (setq-default line-spacing 5)
   )
 
 (if (eq system-type 'darwin)
@@ -17,6 +18,7 @@
              mac-command-key-is-meta t
              mac-command-modifier 'meta
              mac-option-modifier 'none)
+       (setq-default line-spacing 5)
        (set-ligatures! 'python-mode
          ;; Types
          :null "None"
