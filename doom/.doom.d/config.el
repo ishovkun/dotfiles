@@ -371,6 +371,7 @@
       ;; :desc "Project find file" :nv "f" #'+ivy/projectile-find-file
       :desc "Project find file" :nv "f" #'projectile-find-file
       :desc "Project replace"   :n  "R" #'projectile-replace
+      :desc "Open list of projects"   :n  "P" #'open-projects-list
       )
     )
   (:prefix "i"
