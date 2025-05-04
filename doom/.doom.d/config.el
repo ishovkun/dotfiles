@@ -108,6 +108,8 @@
   :v "<tab>"        #'evil-indent
   ;; moving around
   :nv "C-e"         #'evil-scroll-up
+  :nv "M-e"         #'evil-scroll-up
+  :nv "M-d"         #'evil-scroll-down
   :nv "`"           #'evil-jump-item
   :i  "C-f"         #'evil-forward-char
   :i  "C-b"         #'evil-backward-char
