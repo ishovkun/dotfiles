@@ -19,7 +19,7 @@
                         "type": "frontmost_application_if",
                     "bundle_identifiers": ["^com.google.Chrome", "^com.microsoft.Word",
                                            "^com.eltima.cmd1", "org.mozilla.firefoxdeveloperedition",
-                                          "com.binarynights.ForkLift-3"]
+                                           "com.binarynights.ForkLift-3", "com.microsoft.Powerpoint"]
                     }
                 ]
             }
@@ -38,7 +38,7 @@
                     {
                         "type": "frontmost_application_if",
                         "bundle_identifiers": ["^com.google.Chrome", "^com.microsoft.Word", "^com.eltima.cmd1", "org.mozilla.firefoxdeveloperedition",
-                                          "com.binarynights.ForkLift-3"]
+                                          "com.binarynights.ForkLift-3", "com.microsoft.Powerpoint"]
                     }
                 ]
             }
@@ -57,7 +57,7 @@
                     {
                         "type": "frontmost_application_if",
                         "bundle_identifiers": ["^com.google.Chrome", "^com.microsoft.Word", "org.mozilla.firefoxdeveloperedition",
-                                          "com.binarynights.ForkLift-3"]
+                                          "com.binarynights.ForkLift-3", "com.microsoft.Powerpoint"]
                     }
                 ]
             }
@@ -77,7 +77,7 @@
                         "type": "frontmost_application_if",
                         "bundle_identifiers": ["^^com.google.Chrome", "^com.microsoft.Word",
                                                "^org.mozilla.firefoxdeveloperedition", "org.mozilla.firefoxdeveloperedition",
-                                          "com.binarynights.ForkLift-3"]
+                                               "com.binarynights.ForkLift-3", "com.microsoft.Powerpoint"]
                     }
                 ]
             }
@@ -97,7 +97,7 @@
                     {
                         "type": "frontmost_application_if",
                         "bundle_identifiers": ["^^com.google.Chrome", "^org.mozilla.firefoxdeveloperedition",
-                                          "com.binarynights.ForkLift-3"]
+                                          "com.binarynights.ForkLift-3", "com.microsoft.Powerpoint"]
                     }
                 ]
             }
@@ -117,7 +117,7 @@
                     {
                         "type": "frontmost_application_if",
                         "bundle_identifiers": ["^^com.google.Chrome", "^org.mozilla.firefoxdeveloperedition",
-                                          "com.binarynights.ForkLift-3"]
+                                               "com.binarynights.ForkLift-3", "com.microsoft.Powerpoint"]
                     }
                 ]
             }
