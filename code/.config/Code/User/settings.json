@@ -14,7 +14,7 @@
     "editor.insertSpaces": true,
     "editor.fontSize": 11,
     "git.openRepositoryInParentFolders": "never",
-    "workbench.colorTheme": "Catppuccin Macchiato",
+    "workbench.colorTheme": "Quiet Light",
     "[cpp]": {
         "editor.tabSize": 2
     },
@@ -84,5 +84,14 @@
     },
     "accessibility.signals.diffLineModified": {
         "sound": "off"
-    }
+    },
+    "telemetry.feedback.enabled": false,
+    "editor.stickyScroll.enabled": false,
+    "window.density.editorTabHeight": "compact",
+    "breadcrumbs.enabled": false,
+    "cmake.allowUnsupportedPresetsVersions": true,
+    "cmake.automaticReconfigure": false,
+    "workbench.activityBar.location": "bottom",
+    "debug.disassemblyView.showSourceCode": false,
+    "C_Cpp.default.cppStandard": "c++23"
  }

@@ -70,6 +70,14 @@
 { "key": "alt+l", "command": "workbench.action.navigateRight", "when": "!isMac" },
 { "key": "cmd+l", "command": "workbench.action.navigateRight", "when": "isMac" },
 
+// zooming
+{ "key": "cmd+=", "command": "editor.action.fontZoomIn", "when": "isMac && editorTextFocus" },
+{ "key": "cmd+-", "command": "editor.action.fontZoomOut", "when": "isMac && editorTextFocus" },
+{ "key": "ctrl+=", "command": "editor.action.fontZoomIn", "when": "isMac && editorTextFocus" },
+{ "key": "ctrl+-", "command": "editor.action.fontZoomOut", "when": "isMac && editorTextFocus" },
+{ "key": "cmd+shift+=", "command": "workbench.action.zoomIn", "when": "isMac" },
+{ "key": "cmd+shift+-", "command": "workbench.action.zoomOut", "when": "isMac" },
+
 { "key": "alt+a", "command": "vscode-neovim.send", "args": "<a-a>", "when": "!isMac && editorTextFocus && neovim.init" },
 { "key": "alt+b", "command": "vscode-neovim.send", "args": "<a-b>", "when": "!isMac && editorTextFocus && neovim.init" },
 { "key": "alt+c", "command": "vscode-neovim.send", "args": "<a-c>", "when": "!isMac && editorTextFocus && neovim.init" },
@@ -113,11 +121,17 @@
 { "key": "space", "command": "vscode-neovim.send", "args": "<Space>", "when": "editorTextFocus && neovim.init && neovim.mode != insert" },
 { "key": "alt+;", "command": "vscode-neovim.send", "args": "gcA", "when": "!isMac && editorTextFocus && neovim.init && neovim.mode == normal" },
 { "key": "cmd+;", "command": "vscode-neovim.send", "args": "gcA", "when": "isMac && editorTextFocus && neovim.init && neovim.mode == normal" },
-{ "key": "ctrl+enter", "command": "cmake.build", "when": "editorTextFocus && cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
-{ "key": "ctrl+enter", "command": "code-runner.run", "when": "editorTextFocus && !cmake:enableFullFeatureSet" },
-{ "key": "enter", "command": "cmake.build", "when": "editorTextFocus && cmake:enableFullFeatureSet && editorLangId != vsnetrw && !cmake:hideBuildCommand && neovim.init && neovim.mode != insert" },
-{ "key": "ctrl+c ctrl+k", "command": "cmake.stop", "when": "editorTextFocus && cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
-{ "key": "ctrl+c ctrl+c", "command": "cmake.outline.stopAll", "when": "editorTextFocus && cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
+// { "key": "space w e", "command": "workbench.action.evenEditorWidths", "when": "editorTextFocus && neovim.init && neovim.mode == normal" },
+// { "key": "shift+f5", "command": "cmake.debugTarget", "when": "cmake:enableFullFeatureSet && inCMakeProject && !cmake:hideDebugCommand && !inDebugMode" }
+{ "key": "ctrl+enter", "command": "cmake.build", "when": "editorTextFocus && inCMakeProject && cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
+{ "key": "ctrl+enter", "command": "workbench.action.tasks.reRunTask", "when": "!inCMakeProject && editorLangId != vsnetrw && neovim.init && neovim.mode != insert && !panelFocus" },
+ 
+// { "key": "ctrl+enter", "command": "workbench.action.tasks.reRunTask", "when": "editorTextFocus && !inCMakeProject && editorLangId != vsnetrw && neovim.init && neovim.mode != insert && !panelFocus" },
+// { "key": "ctrl+enter", "command": "code-runner.run", "when": "editorTextFocus && inCMakeProject && !cmake:enableFullFeatureSet" },
+{ "key": "enter", "command": "cmake.build", "when": "editorTextFocus && inCMakeProject && cmake:enableFullFeatureSet && editorLangId != vsnetrw && !cmake:hideBuildCommand && neovim.init && neovim.mode != insert && !panelFocus" },
+{ "key": "enter", "command": "workbench.action.tasks.reRunTask", "when": "editorTextFocus && !inCMakeProject && editorLangId != vsnetrw && neovim.init && neovim.mode != insert && !panelFocus" },
+{ "key": "ctrl+c ctrl+k", "command": "cmake.stop", "when": "editorTextFocus && inCMakeProject && cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
+{ "key": "ctrl+c ctrl+c", "command": "cmake.outline.stopAll", "when": "editorTextFocus && inCMakeProject && cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
 { "key": "x", "command": "magit.discard-at-point", "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
 { "key": "k", "command": "-magit.discard-at-point", "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
 { "key": "tab", "command": "magit.toggle-fold", "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/" },
@@ -134,5 +148,25 @@
 { "key": "space f k", "command": "workbench.action.openGlobalKeybindingsFile", "when": "inputFocus == false" },
 { "key": "space p p", "command": "projectManager.listProjects", "when": "inputFocus == false" },
 { "key": "space p a", "command": "projectManager.editProjects", "when": "inputFocus == false" },
+// vim navigation in terminal
+// { "key": "ctrl+space", "command": "setContext", "args": { "key": "terminalNavigationMode", "value": true }, "when": "terminalFocus !terminalNavigationMode" },
+// { "key": "ctrl+space", "command": "setContext", "args": { "key": "terminalNavigationMode", "value": false}, "when": "terminalFocus terminalNavigationMode" },
+// { "key": "j", "command": "workbench.action.terminal.scrollDown", "when": "terminalFocus && terminalNavigationMode" },
+// { "key": "k", "command": "workbench.action.terminal.scrollUp", "when": "terminalFocus && terminalNavigationMode" },
+// { "key": "ctrl+space", "command": "setContext", "args": { "key": "terminalNavigationMode", "value": true }, "when": "terminalFocus && !terminalNavigationMode" },
+// { "key": "ctrl+space", "command": "setContext", "args": { "key": "terminalNavigationMode", "value": true }, "when": "terminalFocus && !terminalNavigationMode" },
 
+// { "key": "ctrl+f", "command": "notifications.showList", "when": "terminalFocus" },
+// { "key": "ctrl+f", "command": "notifications.showList", "when": "editorFocus" },
+       
+
+// { "key": "ctrl+space", "command": "workbench.action.showNotification", "args": { "message": "Navigation mode ON" }, "when": "terminalFocus && !terminalNavigationMode" },
+// Toggle navigation mode OFF
+// { "key": "ctrl+space", "command": "setContext", "args": { "key": "terminalNavigationMode", "value": false }, "when": "terminalFocus && terminalNavigationMode" },
+// // Scroll down in navigation mode
+// { "key": "j", "command": "workbench.action.terminal.scrollDown", "when": "terminalFocus && terminalNavigationMode" },
+// // Scroll up in navigation mode
+// { "key": "k", "command": "workbench.action.terminal.scrollUp", "when": "terminalFocus && terminalNavigationMode" },
+// // Exit navigation mode with Escape
+// { "key": "escape", "command": "setContext", "args": { "key": "terminalNavigationMode", "value": false }, "when": "terminalFocus && terminalNavigationMode" }
 ]

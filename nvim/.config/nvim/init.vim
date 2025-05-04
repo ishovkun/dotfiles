@@ -83,13 +83,15 @@ if exists('g:vscode')
     " prefix p -- Project
     noremap <leader>pp <Cmd>call VSCodeNotify('projectManager.listProjects', 1)<CR>
     noremap <leader>pa <Cmd>call VSCodeNotify('projectManager.editProjects', 1)<CR>
-    noremap <leader>pg <Cmd>call VSCodeNotify('workbench.action.openWorkspaceSettingsFile', 1)<CR>
+    " noremap <leader>pg <Cmd>call VSCodeNotify('workbench.action.tasks.configureTaskRunner', 1)<CR>
+    noremap <leader>pg <Cmd>call VSCodeNotify('workbench.action.tasks.configureDefaultBuildTask', 1)<CR>
     noremap <leader>pf <Cmd>call VSCodeNotify('workbench.action.quickOpen', 1)<CR>
     noremap <leader>pr <Cmd>call VSCodeNotify('editor.action.rename', 1)<CR>
     " prefix w -- Window
     noremap <leader>ws <Cmd>call VSCodeNotify('workbench.action.splitEditorDown', 1)<CR>
     noremap <leader>wv <Cmd>call VSCodeNotify('workbench.action.splitEditor', 1)<CR>
     noremap <leader>w= <Cmd>call VSCodeNotify('workbench.action.evenEditorWidths', 1)<CR>
+    noremap <leader>we <Cmd>call VSCodeNotify('workbench.action.evenEditorWidths', 1)<CR>
     noremap <leader>= <Cmd>call VSCodeNotify('workbench.action.evenEditorWidths', 1)<CR>
     noremap <leader>wz <Cmd>call VSCodeNotify('workbench.action.joinAllGroups', 1)<CR>
     noremap <leader>w1 <Cmd>call VSCodeNotify('workbench.action.joinAllGroups', 1)<CR>
