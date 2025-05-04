@@ -298,3 +298,7 @@ the right."
 (defun my-display-numbers-hook ()
   (display-line-numbers-mode 1)
   )
+(defun open-projects-list ()
+  (interactive)
+  (find-file "~/.config/emacs/.local/cache/projectile.projects")
+  )
