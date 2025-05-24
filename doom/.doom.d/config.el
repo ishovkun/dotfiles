@@ -1164,6 +1164,9 @@
 ;;     )
 ;; )
 ;; --------------------------------- Fixes -----------------------------------
+;; Do not copy on paste in visual mode
+(setq evil-kill-on-visual-paste nil)
+
 ;; (setq evil-respect-visual-line-mode t)
 ;; (setq evil-respect-visual-line-mode 0) ;; otherwise  deletes line on cc
 (setq evil-move-cursor-back nil)
