@@ -113,6 +113,7 @@
   :nv "`"           #'evil-jump-item
   :i  "C-f"         #'evil-forward-char
   :i  "C-b"         #'evil-backward-char
+  :nvi  "M-v"         #'evil-paste-before
   :nv "g l "        #'goto-line
   :nv "C-j"         #'scroll-up-line
   :nv "C-k"         #'scroll-down-line
@@ -122,7 +123,8 @@
    :nv "C-j" #'scroll-up-line
    :nv "C-k" #'scroll-down-line
    )
-  :nv "gs"          #'evil-avy-goto-char-timer
+  :nv "gc"          #'evil-avy-goto-char-timer
+  :nv "gs"          #'counsel-imenu
   :nv "g["          #'avy-goto-char-2-above
   :nv "g]"          #'avy-goto-char-2-below
   :n  "S"           #'avy-goto-char-in-line
@@ -999,6 +1001,7 @@
       )
     (add-hook 'org-mode-hook #'org-modern-mode)
     (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+    (+org-pretty-mode nil)
     (setq org-ellipsis "…")
     (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
     (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
@@ -1125,6 +1128,8 @@
               ("C-<tab>" . 'copilot-accept-completion-by-word))
   :config
   (add-to-list 'copilot-major-mode-alist '("cuda" . "rust"))
+  (add-to-list 'copilot-indentation-alist '(python-mode 2))
+  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2))
   )
 
 ;; ----------------------------------- Shell -----------------------------------
