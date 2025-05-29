@@ -84,26 +84,6 @@
             , {
                 "type": "basic" ,
                 "from": {
-                    "key_code": "w",
-                    "modifiers": {
-                        "mandatory": ["control"]
-                    }
-                },
-                "to" : [{
-                    "key_code": "w",
-                    "modifiers":  ["left_command"]
-                }],
-                "conditions": [
-                    {
-                        "type": "frontmost_application_if",
-                        "bundle_identifiers": ["^^com.google.Chrome", "^org.mozilla.firefoxdeveloperedition",
-                                          "com.binarynights.ForkLift-3", "com.microsoft.Powerpoint"]
-                    }
-                ]
-            }
-            , {
-                "type": "basic" ,
-                "from": {
                     "key_code": "t",
                     "modifiers": {
                         "mandatory": ["control"]
