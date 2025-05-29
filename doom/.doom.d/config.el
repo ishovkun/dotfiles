@@ -55,16 +55,16 @@
   :nvi "<mouse-4>"  #'scroll-down-line
 
   (:after centaur-tabs
-   :nv "M-m"         #'centaur-tabs-forward
-   :nv "M-,"         #'centaur-tabs-backward
+   :nv "M-n"         #'centaur-tabs-forward
+   :nv "M-p"         #'centaur-tabs-backward
    :nv "C-<tab>"     #'centaur-tabs-forward
    :nv "C-S-<tab>"   #'centaur-tabs-backward
    )
   (:after awesome-tab
    :nv "C-<tab>"     #'awesome-tab-forward
    :nv "C-S-<tab>"   #'awesome-tab-backward
-   :nv "M-m"         #'awesome-tab-forward
-   :nv "M-,"         #'awesome-tab-backward
+   :nv "M-n"         #'awesome-tab-forward
+   :nv "M-p"         #'awesome-tab-backward
    )
   :nv "M-<backspace>" #'kill-current-buffer
   )
