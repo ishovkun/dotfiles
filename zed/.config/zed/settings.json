@@ -1,0 +1,149 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run the `open default settings` command
+// from the command palette or from `Zed` application menu.
+{
+  "agent": {
+    "inline_assistant_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4-thinking-latest"
+    },
+    "model_parameters": [],
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "gpt-4.1"
+    },
+    "version": "2"
+  },
+  "features": {
+    "edit_prediction_provider": "copilot"
+  },
+  "tab_bar": {
+    "show": false
+  },
+  "theme": "Frappé Nord",
+  "cursor_blink": false,
+  "vim_mode": true,
+  "ui_font_size": 13,
+  "buffer_font_size": 13,
+  "buffer_font_family": "Iosevka Nerd Font",
+  "scrollbar": {
+    "axes": {
+      "horizontal": false
+    }
+  },
+  "toolbar": {
+    //   // set these two to false to hide the toolbar
+    //   // "breadcrumbs": false,
+    //   // "selections_menu": true,
+    //   // "quick_actions": true
+  },
+  "active_pane_modifiers": {
+    "border_size": 1.0,
+    "inactive_opacity": 1.0
+  },
+
+  "vim": {
+    "default_mode": "normal",
+    "toggle_relative_line_numbers": true,
+    "use_system_clipboard": "on_yank",
+    "use_multiline_find": false,
+    "use_smartcase_find": true,
+    "highlight_on_yank_duration": 200,
+    "custom_digraphs": {}
+  },
+  "autosave": "on_focus_change",
+  "snippet_sort_order": "top",
+  "terminal": {
+    "option_as_meta": true,
+    "vim_mode": true,
+    "detect_venv": {
+      "on": {
+        "directories": [".env", "env", ".venv", "venv"],
+        "activate_script": "default"
+      }
+    }
+  },
+  "lsp": {
+    "clangd": {
+      "binary": {
+        "path_lookup": true,
+        "path": "clangd",
+        "arguments": ["--header-insertion=never"]
+      }
+    },
+    "pyright": {
+      "settings": {
+        "python.analysis": {
+          "diagnosticMode": "workspace",
+          "typeCheckingMode": "strict"
+        }
+      }
+    }
+  },
+  "languages": {
+    "C++": {
+      "tab_size": 2,
+      // clang-format -style=google -dump-config > ~/.clang-format
+      "formatter": {
+        "external": {
+          "command": "clang-format",
+          "arguments": ["--style=file", "--assume-filename={buffer_path}"]
+        }
+      }
+    },
+    "Python": {
+      "language_servers": ["pyright"]
+    }
+  },
+  "file_types": {
+    "C++": ["hpp", "h", "hxx", "cpp", "cxx", "cu", "cuh"]
+  },
+  "git": {
+    "inline_blame": { "enabled": false },
+    "hunk_style": "unstaged_hollow"
+  },
+  // "format_on_save": "on",
+  "ssh_connections": [
+    {
+      "host": "az24a100",
+      "username": "ishovkun",
+      "projects": [
+        {
+          "paths": [
+            "~/code/flash-attention-minimal"
+          ]
+        },
+        {
+          "paths": [
+            "~/code/hpc-ishovkun-nudft"
+          ]
+        },
+        {
+          "paths": [
+            "~/code/petrel"
+          ]
+        }
+      ]
+    },
+    {
+      "host": "azh100",
+      "projects": [
+        {
+          "paths": [
+            "/home/ishovkun/code/hetero"
+          ]
+        },
+        {
+          "paths": [
+            "/home/ishovkun/code/tma"
+          ]
+        }
+      ]
+    }
+  ]
+}

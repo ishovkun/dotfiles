@@ -1,0 +1,23 @@
+{
+  "std::cout": {
+    "prefix": "co",
+    "body": ["std::cout << $1 << std::endl;", "$0"],
+    "description": "Prints to the console"
+  },
+  "Named": {
+    "prefix": "ce",
+    "body": ["std::cout << \"${2:$1 = }\" << $1 << std::endl;", "$0"],
+    "description": "Prints to the console"
+  },
+  "main": {
+    "prefix": "main",
+    "body": [
+      "#include <iostream>",
+      "",
+      "auto main(int argc, char *argv[]) -> int {",
+      "",
+      "  return EXIT_SUCCESS;",
+      "}"
+    ]
+  }
+}
