@@ -25,7 +25,7 @@
   "tab_bar": {
     "show": false
   },
-  "theme": "Frappé Nord",
+  "theme": "Wilmersdorf",
   "cursor_blink": false,
   "vim_mode": true,
   "ui_font_size": 13,
@@ -38,7 +38,7 @@
   },
   "toolbar": {
     //   // set these two to false to hide the toolbar
-    //   // "breadcrumbs": false,
+    "breadcrumbs": true
     //   // "selections_menu": true,
     //   // "quick_actions": true
   },
@@ -59,6 +59,7 @@
   "autosave": "on_focus_change",
   "snippet_sort_order": "top",
   "terminal": {
+    "font_family": "Iosevka Nerd Font Mono",
     "option_as_meta": true,
     "vim_mode": true,
     "detect_venv": {
@@ -66,6 +67,9 @@
         "directories": [".env", "env", ".venv", "venv"],
         "activate_script": "default"
       }
+    },
+    "toolbar": {
+      "breadcrumbs": false
     }
   },
   "lsp": {
@@ -114,19 +118,13 @@
       "username": "ishovkun",
       "projects": [
         {
-          "paths": [
-            "~/code/flash-attention-minimal"
-          ]
+          "paths": ["~/code/flash-attention-minimal"]
         },
         {
-          "paths": [
-            "~/code/hpc-ishovkun-nudft"
-          ]
+          "paths": ["~/code/hpc-ishovkun-nudft"]
         },
         {
-          "paths": [
-            "~/code/petrel"
-          ]
+          "paths": ["~/code/petrel"]
         }
       ]
     },
@@ -134,14 +132,10 @@
       "host": "azh100",
       "projects": [
         {
-          "paths": [
-            "/home/ishovkun/code/hetero"
-          ]
+          "paths": ["/home/ishovkun/code/hetero"]
         },
         {
-          "paths": [
-            "/home/ishovkun/code/tma"
-          ]
+          "paths": ["/home/ishovkun/code/tma"]
         }
       ]
     }

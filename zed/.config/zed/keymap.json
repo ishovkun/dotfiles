@@ -33,7 +33,9 @@
       "cmd-_": ["zed::DecreaseUiFontSize", { "persist": false }],
       "cmd-`": "workspace::ToggleBottomDock",
       "ctrl-`": "workspace::ToggleBottomDock",
-      "ctrl-\\": "workspace::ToggleLeftDock"
+      "ctrl-\\": "workspace::ToggleLeftDock",
+      "cmd-\\": "workspace::ToggleLeftDock",
+      "cmd-[": "workspace::ToggleRightDock"
     }
   },
   {
@@ -109,6 +111,8 @@
       "ctrl-k": "editor::LineUp",
       "cmd-n": "tab_switcher::ToggleAll",
       "enter": "task::Rerun",
+      "j": ["vim::Down", { "display_lines": true }],
+      "k": ["vim::Up", { "display_lines": true }],
       // "tab": "editor::AutoIndent",
       // "tab": "vim::AutoIndent",
       "tab": "editor::Format",
@@ -118,6 +122,10 @@
       "g e": "vim::PreviousSubwordEnd",
       "g o": "editor::SwitchSourceHeader",
       "g r": "editor::FindAllReferences",
+      "g a": "vim::FirstNonWhitespace",
+      "g h": "vim::FirstNonWhitespace",
+      "space g d": "editor::GoToDefinitionSplit",
+      ", s": "project_symbols::Toggle",
       "space 1": ["workspace::ActivatePane", 0],
       "space 2": ["workspace::ActivatePane", 1],
       "space 3": ["workspace::ActivatePane", 2],
@@ -241,6 +249,8 @@
     "bindings": {
       "cmd-n": "tab_switcher::Toggle",
       "cmd-b": ["terminal::SendKeystroke", "alt-b"],
+      "cmd-f": ["terminal::SendKeystroke", "alt-f"],
+      "cmd-d": ["terminal::SendKeystroke", "alt-d"],
       "cmd-shift-j": "vim::ResizePaneDown",
       "cmd-shift-k": "vim::ResizePaneUp"
     }
@@ -250,7 +260,8 @@
     "bindings": {
       "ctrl-space": "terminal::ToggleViMode",
       "cmd-e": ["terminal::SendKeystroke", "alt-e"],
-      "cmd-p": ["terminal::SendKeystroke", "alt-p"]
+      "cmd-p": ["terminal::SendKeystroke", "alt-p"],
+      "cmd-t": "workspace::NewTerminal"
     }
   },
   {
@@ -258,11 +269,15 @@
     "bindings": {
       // "ctrl-e": ["terminal::SendKeystroke", "ctrl-u"],
       "ctrl-e": "terminal::ScrollPageUp",
+      "cmd-e": "terminal::ScrollPageUp",
+      "cmd-d": "terminal::ScrollPageDown",
       "shift-e": ["terminal::SendKeystroke", "e"],
       "shift-B": ["terminal::SendKeystroke", "b"],
       "enter": "terminal::ToggleViMode",
       "space tab": "pane::AlternateFile",
-      "ctrl-space": "terminal::ToggleViMode"
+      "cmd-t": "workspace::NewTerminal",
+      // "/": "search::FocusSearch",
+      "/": "buffer_search::Deploy"
     }
   },
   {
@@ -305,6 +320,8 @@
       "ctrl-j": "editor::MoveToStartOfNextExcerpt",
       "ctrl-k": "editor::MoveToStartOfExcerpt",
       "enter": "editor::OpenExcerpts",
+      "tab": "editor::ToggleFold",
+      "shift-tab": "editor::FoldAll",
       "q": "pane::CloseActiveItem"
     }
   },
