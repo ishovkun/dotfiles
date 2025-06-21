@@ -231,6 +231,14 @@
     "context": "vim_mode == visual",
     "bindings": {
       "tab": "editor::FormatSelections",
+      "(": ["workspace::SendKeystrokes", "S ("],
+      ")": ["workspace::SendKeystrokes", "S )"],
+      "[": ["workspace::SendKeystrokes", "S ["],
+      "]": ["workspace::SendKeystrokes", "S ]"],
+      "<": ["workspace::SendKeystrokes", "S <"],
+      ">": ["workspace::SendKeystrokes", "S >"],
+      "{": ["workspace::SendKeystrokes", "S {"],
+      "}": ["workspace::SendKeystrokes", "S }"],
       "s": ["vim::PushAddSurrounds", {}],
       "S": ["vim::PushAddSurrounds", {}]
     }

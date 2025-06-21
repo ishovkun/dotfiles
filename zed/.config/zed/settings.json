@@ -25,7 +25,7 @@
   "tab_bar": {
     "show": false
   },
-  "theme": "Wilmersdorf",
+  "theme": "Frappé",
   "cursor_blink": false,
   "vim_mode": true,
   "ui_font_size": 13,
@@ -46,7 +46,7 @@
     "border_size": 1.0,
     "inactive_opacity": 1.0
   },
-
+  "use_smartcase_search": true,
   "vim": {
     "default_mode": "normal",
     "toggle_relative_line_numbers": true,
@@ -56,8 +56,15 @@
     "highlight_on_yank_duration": 200,
     "custom_digraphs": {}
   },
+  "resize_all_panels_in_dock": ["left", "right", "bottom"],
   "autosave": "on_focus_change",
   "snippet_sort_order": "top",
+  "pane_split_direction_vertical": "right",
+  "close_on_file_delete": true,
+  // Determines when the mouse cursor should be hidden in an editor or input box.
+  "hide_mouse": "never",
+  // The default number of lines to expand excerpts in the multibuffer by.
+  "expand_excerpt_lines": 4,
   "terminal": {
     "font_family": "Iosevka Nerd Font Mono",
     "option_as_meta": true,
