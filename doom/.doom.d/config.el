@@ -334,7 +334,7 @@
     )
   (:after ivy :nv "SPC" #'+ivy/switch-workspace-buffer)
   (:prefix "b"
-    :desc "kill current buffer"          :nv "d" #'kill-this-buffer
+    :desc "kill current buffer"          :nv "d" #'kill-current-buffer
     :desc "switch to compilation buffer" :nv "c" #'switch-to-compilation-buffer
     :desc "switch to messages buffer"    :nv "m" #'switch-to-messages-buffer
     :desc "switch buffer"                :nv "b" #'+ivy/switch-buffer
