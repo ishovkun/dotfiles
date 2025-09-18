@@ -2,7 +2,6 @@
     "editor.fontFamily": "Iosevka Nerd Font",
     "editor.lineNumbers": "relative",
     "vscode-neovim.neovimExecutablePaths.linux": "/usr/bin/nvim",
-    "editor.columnSelection": true,
     "grunt.autoDetect": "on",
     "editor.minimap.enabled": false,
     "C_Cpp.autocompleteAddParentheses": true,
@@ -14,7 +13,7 @@
     "editor.insertSpaces": true,
     "editor.fontSize": 11,
     "git.openRepositoryInParentFolders": "never",
-    "workbench.colorTheme": "Quiet Light",
+    "workbench.colorTheme": "Catppuccin Frappé",
     "[cpp]": {
         "editor.tabSize": 2
     },
@@ -88,10 +87,10 @@
     "telemetry.feedback.enabled": false,
     "editor.stickyScroll.enabled": false,
     "window.density.editorTabHeight": "compact",
-    "breadcrumbs.enabled": false,
     "cmake.allowUnsupportedPresetsVersions": true,
     "cmake.automaticReconfigure": false,
     "workbench.activityBar.location": "bottom",
     "debug.disassemblyView.showSourceCode": false,
-    "C_Cpp.default.cppStandard": "c++23"
+    "C_Cpp.default.cppStandard": "c++23",
+    "github.copilot.nextEditSuggestions.enabled": true
  }
