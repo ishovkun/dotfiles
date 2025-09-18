@@ -7,7 +7,68 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  "inlay_hints": {
+    "enabled": true,
+    "show_value_hints": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true,
+    "show_background": false,
+    "edit_debounce_ms": 700,
+    "scroll_debounce_ms": 50,
+    "toggle_on_modifiers_press": {
+      "control": false,
+      "alt": false,
+      "shift": false,
+      "platform": false,
+      "function": false
+    }
+  },
+  "base_keymap": "Emacs",
+  "collaboration_panel": {
+    "dock": "right"
+  },
   "agent": {
+    "always_allow_tool_actions": true,
+    "play_sound_when_agent_done": true,
+    "profiles": {
+      "ask": {
+        "name": "Ask",
+        "tools": {
+          "delete_path": true,
+          "copy_path": true,
+          "create_directory": false,
+          "contents": true,
+          "diagnostics": true,
+          "fetch": true,
+          "list_directory": true,
+          "project_notifications": false,
+          "now": true,
+          "find_path": true,
+          "read_file": true,
+          "open": true,
+          "grep": true,
+          "thinking": true,
+          "web_search": true,
+          "edit_file": false
+        },
+        "enable_all_context_servers": false,
+        "context_servers": {}
+      },
+      "minimal": {
+        "name": "Minimal",
+        "tools": {
+          "delete_path": true,
+          "diagnostics": true,
+          "edit_file": true,
+          "grep": true,
+          "find_path": true
+        },
+        "enable_all_context_servers": false,
+        "context_servers": {}
+      }
+    },
+    "default_profile": "ask",
     "inline_assistant_model": {
       "provider": "zed.dev",
       "model": "claude-sonnet-4-thinking-latest"
@@ -16,8 +77,10 @@
     "default_model": {
       "provider": "copilot_chat",
       "model": "gpt-4.1"
-    },
-    "version": "2"
+    }
+  },
+  "edit_predictions": {
+    "mode": "subtle"
   },
   "features": {
     "edit_prediction_provider": "copilot"
@@ -28,9 +91,10 @@
   "theme": "Frappé",
   "cursor_blink": false,
   "vim_mode": true,
-  "ui_font_size": 13,
+  "ui_font_size": 12,
   "buffer_font_size": 13,
   "buffer_font_family": "Iosevka Nerd Font",
+  "buffer_line_height": "comfortable",
   "scrollbar": {
     "axes": {
       "horizontal": false
@@ -46,55 +110,80 @@
     "border_size": 1.0,
     "inactive_opacity": 1.0
   },
+  // "search": {
+  //   // Whether to show the project search button in the status bar.
+  //   "button": true,
+  //   "whole_word": false,
+  //   "case_sensitive": false,
+  //   "include_ignored": false,
+  //   "regex": false
+  // },
   "use_smartcase_search": true,
   "vim": {
     "default_mode": "normal",
     "toggle_relative_line_numbers": true,
     "use_system_clipboard": "on_yank",
-    "use_multiline_find": false,
     "use_smartcase_find": true,
     "highlight_on_yank_duration": 200,
     "custom_digraphs": {}
   },
+  "hover_popover_enabled": false,
   "resize_all_panels_in_dock": ["left", "right", "bottom"],
   "autosave": "on_focus_change",
   "snippet_sort_order": "top",
   "pane_split_direction_vertical": "right",
   "close_on_file_delete": true,
+  "current_line_highlight": "all",
   // Determines when the mouse cursor should be hidden in an editor or input box.
   "hide_mouse": "never",
   // The default number of lines to expand excerpts in the multibuffer by.
   "expand_excerpt_lines": 4,
   "terminal": {
     "font_family": "Iosevka Nerd Font Mono",
+    "line_height" : "standard",
     "option_as_meta": true,
-    "vim_mode": true,
+    // "vim_mode": true,
     "detect_venv": {
       "on": {
         "directories": [".env", "env", ".venv", "venv"],
         "activate_script": "default"
       }
     },
+    // "font_fallbacks": ["FiraCode Nerd Fonts"],
     "toolbar": {
       "breadcrumbs": false
     }
   },
+  "title_bar": {
+    // Whether to show the branch icon beside branch switcher in the titlebar.
+    "show_branch_icon": true,
+    // Whether to show the branch name button in the titlebar.
+    "show_branch_name": true,
+    // Whether to show the project host and name in the titlebar.
+    "show_project_items": true,
+    // Whether to show onboarding banners in the titlebar.
+    "show_onboarding_banner": true,
+    // Whether to show user picture in the titlebar.
+    "show_user_picture": true,
+    // Whether to show the sign in button in the titlebar.
+    "show_sign_in": true
+  },
+  "confirm_quit": true,
   "lsp": {
     "clangd": {
       "binary": {
-        "path_lookup": true,
         "path": "clangd",
         "arguments": ["--header-insertion=never"]
       }
-    },
-    "pyright": {
-      "settings": {
-        "python.analysis": {
-          "diagnosticMode": "workspace",
-          "typeCheckingMode": "strict"
-        }
-      }
     }
+    // "pyright": {
+    //   "settings": {
+    //     "python.analysis": {
+    //       "diagnosticMode": "workspace",
+    //       "typeCheckingMode": "strict"
+    //     }
+    //   }
+    // }
   },
   "languages": {
     "C++": {
@@ -106,10 +195,10 @@
           "arguments": ["--style=file", "--assume-filename={buffer_path}"]
         }
       }
-    },
-    "Python": {
-      "language_servers": ["pyright"]
     }
+    // "Python": {
+    //   "language_servers": ["pyright"]
+    // }
   },
   "file_types": {
     "C++": ["hpp", "h", "hxx", "cpp", "cxx", "cu", "cuh"]
@@ -118,20 +207,26 @@
     "inline_blame": { "enabled": false },
     "hunk_style": "unstaged_hollow"
   },
-  // "format_on_save": "on",
+  "format_on_save": "off",
   "ssh_connections": [
     {
       "host": "az24a100",
       "username": "ishovkun",
       "projects": [
         {
-          "paths": ["~/code/flash-attention-minimal"]
+          "paths": [
+            "~/code/flash-attention-minimal"
+          ]
         },
         {
-          "paths": ["~/code/hpc-ishovkun-nudft"]
+          "paths": [
+            "~/code/hpc-ishovkun-nudft"
+          ]
         },
         {
-          "paths": ["~/code/petrel"]
+          "paths": [
+            "~/code/petrel"
+          ]
         }
       ]
     },
@@ -139,10 +234,29 @@
       "host": "azh100",
       "projects": [
         {
-          "paths": ["/home/ishovkun/code/hetero"]
+          "paths": [
+            "/home/ishovkun/code/assignment1-basics"
+          ]
         },
         {
-          "paths": ["/home/ishovkun/code/tma"]
+          "paths": [
+            "/home/ishovkun/code/assignment2-systems"
+          ]
+        },
+        {
+          "paths": [
+            "/home/ishovkun/code/hetero"
+          ]
+        },
+        {
+          "paths": [
+            "/home/ishovkun/code/hpc-meshgen"
+          ]
+        },
+        {
+          "paths": [
+            "/home/ishovkun/code/tma"
+          ]
         }
       ]
     }
