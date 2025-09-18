@@ -57,6 +57,32 @@ local function tileHorizontally(fraction, idx)
     win:setFrame(curFrame)
 end
 
+local function centerWindow()
+    local win = hs.window.focusedWindow()
+    if win == nil then
+        return
+    end
+    local curFrame = win:frame()
+    local screen = win:screen()
+    if screen == nil then
+        return
+    end
+    local s = screen:frame()
+    if curFrame.w == 0 then
+        return
+    end
+
+    -- hs.alert.show(tostring((max.w-curFrame.w)))
+    -- curFrame.w = max.w * fraction
+    curFrame.x = s.x + s.w/2 - curFrame.w/2
+    curFrame.y = s.y + s.h/2 - curFrame.h/2
+
+    -- hs.alert.show(tostring((max.h-curFrame.h)))
+    -- curFrame.h = max.h
+    -- curFrame.y = 0
+    win:setFrame(curFrame)
+end
+
 function windowNextScreen()
     local win = hs.window.focusedWindow()
     local currentScreen = win:screen()
@@ -77,6 +103,7 @@ hs.hotkey.bind(hyper, '=', function() increaseHeight(80) end)
 hs.hotkey.bind(hyper, '-', function() increaseHeight(-80) end)
 
 hs.hotkey.bind(hyper, 'n', function() windowNextScreen() end)
+hs.hotkey.bind(hyper, 'j', function() windowNextScreen() end)
 
 hs.hotkey.bind(hyper, 'h', function() tileHorizontally(0.5, 1) end)
 hs.hotkey.bind(hyper, 'l', function() tileHorizontally(0.5, 2) end)
@@ -85,6 +112,7 @@ hs.hotkey.bind(hyper, 'y', function() tileHorizontally(0.3333333, 1) end)
 hs.hotkey.bind(hyper, 'u', function() tileHorizontally(0.6666666, 1) end)
 hs.hotkey.bind(hyper, 'i', function() tileHorizontally(0.6666666, 1.5) end)
 hs.hotkey.bind(hyper, 'o', function() tileHorizontally(0.3333333, 3) end)
+hs.hotkey.bind('alt', 'c', function() centerWindow() end)
 
 hs.hotkey.bind({"alt","control","shift"}, 'l', function() moveHorizontally(40) end)
 hs.hotkey.bind({"alt","control","shift"}, 'h', function() moveHorizontally(-40) end)
