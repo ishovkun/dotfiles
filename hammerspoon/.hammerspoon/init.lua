@@ -32,11 +32,59 @@ function moveVertically(delta)
   win:setFrame(f)
 end
 
--- local winops = require("winops")
-hs.hotkey.bind(hyper, 'l', function() increaseWidth(80) end)
-hs.hotkey.bind(hyper, 'h', function() increaseWidth(-80) end)
-hs.hotkey.bind(hyper, 'k', function() increaseHeight(80) end)
-hs.hotkey.bind(hyper, 'j', function() increaseHeight(-80) end)
+local function tileHorizontally(fraction, idx)
+    local win = hs.window.focusedWindow()
+    if win == nil then
+        return
+    end
+    local curFrame = win:frame()
+    local screen = win:screen()
+    if screen == nil then
+        return
+    end
+    local max = screen:frame()
+    if curFrame.w == 0 then
+        return
+    end
+
+    -- hs.alert.show(tostring((max.w-curFrame.w)))
+    curFrame.w = max.w * fraction
+    curFrame.x = max.x + max.w * fraction * (idx - 1)
+
+    -- hs.alert.show(tostring((max.h-curFrame.h)))
+    curFrame.h = max.h
+    curFrame.y = 0
+    win:setFrame(curFrame)
+end
+
+function windowNextScreen()
+    local win = hs.window.focusedWindow()
+    local currentScreen = win:screen()
+    local allScreens = hs.screen.allScreens()
+    currentScreenIndex = hs.fnutils.indexOf(allScreens, currentScreen)
+    nextScreenIndex = currentScreenIndex + 1
+
+    if allScreens[nextScreenIndex] then
+        win:moveToScreen(allScreens[nextScreenIndex])
+    else
+        win:moveToScreen(allScreens[1])
+    end
+end
+
+hs.hotkey.bind('alt', '=', function() increaseWidth(80) end)
+hs.hotkey.bind('alt', '-', function() increaseWidth(-80) end)
+hs.hotkey.bind(hyper, '=', function() increaseHeight(80) end)
+hs.hotkey.bind(hyper, '-', function() increaseHeight(-80) end)
+
+hs.hotkey.bind(hyper, 'n', function() windowNextScreen() end)
+
+hs.hotkey.bind(hyper, 'h', function() tileHorizontally(0.5, 1) end)
+hs.hotkey.bind(hyper, 'l', function() tileHorizontally(0.5, 2) end)
+hs.hotkey.bind(hyper, 'return', function() tileHorizontally(1.0, 1) end)
+hs.hotkey.bind(hyper, 'y', function() tileHorizontally(0.3333333, 1) end)
+hs.hotkey.bind(hyper, 'u', function() tileHorizontally(0.6666666, 1) end)
+hs.hotkey.bind(hyper, 'i', function() tileHorizontally(0.6666666, 1.5) end)
+hs.hotkey.bind(hyper, 'o', function() tileHorizontally(0.3333333, 3) end)
 
 hs.hotkey.bind({"alt","control","shift"}, 'l', function() moveHorizontally(40) end)
 hs.hotkey.bind({"alt","control","shift"}, 'h', function() moveHorizontally(-40) end)
@@ -73,10 +121,17 @@ hs.hotkey.bind('alt', 'e', function() launch.toggleApp("Ferdium", true) end)
 hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Forklift", true) end)
 hs.hotkey.bind('alt', 'return', function() launch.toggleApp("Alacritty", true) end)
 hs.hotkey.bind('alt', 't', function() launch.toggleApp("Terminal", true) end)
-hs.hotkey.bind('alt', 'r', function() launch.toggleApp("KeeWeb", true) end)
+-- hs.hotkey.bind('alt', 'r', function() launch.toggleApp("KeeWeb", true) end)
+hs.hotkey.bind('alt', 'r', function() launch.toggleApp("Bitwarden", true) end)
+
+-- hs.hotkey.bind('alt', '1', function() spaces.switoToSpace(1) end)
+-- hs.hotkey.bind('alt', '2', function() spaces.switoToSpace(2) end)
+-- hs.hotkey.bind('alt', '3', function() spaces.switoToSpace(3) end)
+-- hs.hotkey.bind('alt', '2', function() hs.spaces.gotoSpace(2) end)
 
 -- reload
 hs.hotkey.bind(hyper, 'r', function()
     hs.reload()
 end)
 hs.alert.show("Config reloaded")
+

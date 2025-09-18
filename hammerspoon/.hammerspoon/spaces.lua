@@ -42,4 +42,19 @@ function M.moveCurrentWindowToSpace(space_index)
 
 end
 
+function getIndexFromValue(tbl, value)
+  for index, val in ipairs(tbl) do
+      if val == value then
+          return index
+      end
+  end
+  return nil  -- return nil if the value is not found
+end
+
+function M.switoToSpace(space_id)
+  local screen = hs.screen.mainScreen()
+  local spacesInScreen = hs.spaces.spacesForScreen(currentScreen)
+  hs.spaces.gotoSpace(spacesInScreen[space_id])
+end
+
 return M

@@ -3,7 +3,7 @@ local M = {}
 function onActiveSpace(win_id)
   local active_spaces = hs.spaces.activeSpaces()
   local win_spaces = hs.spaces.windowSpaces(win_id)
-  for _,win_space in pairs(win_spaces) do
+  for _, win_space in pairs(win_spaces) do
     for screen, screen_space in pairs(active_spaces) do
       if win_space == screen_space then
         return true
@@ -31,20 +31,20 @@ function M.toggleApp(appName, moveToCurrentSpace)
     local win = app:mainWindow()
     if app:mainWindow() == nil then
       for idx, w in pairs(app:allWindows()) do
-        print(idx, w, w:isStandard())
+        -- print(idx, w, w:isStandard())
         if w:isStandard() then
           -- print("Unminimizing")
-          print(idx, w)
+          -- print(idx, w)
           w:unminimize()
           win = w
           -- print("win inside", win)
         end
       end
     end
-    -- print("win", win)
     if moveToCurrentSpace then
       if not onActiveSpace(win:id()) then
         local focused_space_id = hs.spaces.focusedSpace()
+        -- print("focused space", focused_space_id)
         app:unhide()
         hs.spaces.moveWindowToSpace(win:id(), focused_space_id)
       end

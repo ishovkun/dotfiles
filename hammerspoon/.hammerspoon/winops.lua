@@ -393,3 +393,29 @@ local function winReduce()
     curFrame.y =curFrame.y+inscH/2
     win:setFrame(curFrame)
 end
+
+local function tileHorizontally(fraction, idx)
+    local win = hs.window.focusedWindow()
+    if win == nil then
+        return
+    end
+    local curFrame = win:frame()
+    local screen = win:screen()
+    if screen == nil then
+        return
+    end
+    local max = screen:frame()
+    local inscW = 100
+    if curFrame.w == 0 then
+        return
+    end
+
+    -- hs.alert.show(tostring((max.w-curFrame.w)))
+    curFrame.w = max.w * fraction
+    curFrame.x = max.w * fraction * (idx - 1)
+
+    -- hs.alert.show(tostring((max.h-curFrame.h)))
+    curFrame.h = max.h
+    curFrame.y = 0
+    win:setFrame(curFrame)
+end
