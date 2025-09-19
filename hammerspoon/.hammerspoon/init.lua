@@ -99,8 +99,8 @@ end
 
 hs.hotkey.bind('alt', '=', function() increaseWidth(80) end)
 hs.hotkey.bind('alt', '-', function() increaseWidth(-80) end)
-hs.hotkey.bind(hyper, '=', function() increaseHeight(80) end)
-hs.hotkey.bind(hyper, '-', function() increaseHeight(-80) end)
+hs.hotkey.bind(hyper, '=', function() increaseHeight(40) end)
+hs.hotkey.bind(hyper, '-', function() increaseHeight(-40) end)
 
 hs.hotkey.bind(hyper, 'n', function() windowNextScreen() end)
 hs.hotkey.bind(hyper, 'j', function() windowNextScreen() end)
