@@ -93,7 +93,7 @@
       "space t c": "workspace::ToggleCenteredLayout",
       "space t h": "editor::ToggleInlayHints",
       "space t a": "editor::ToggleEditPrediction", // toggle copilot
-      "space t s": "editor::ToggleAutoSignatureHelp", // toggle copilot
+      "space t s": "editor::ToggleAutoSignatureHelp",
       "space t n": "editor::ToggleLineNumbers",
       "space [": "workspace::ToggleLeftDock",
       "space `": "workspace::ToggleBottomDock",
@@ -169,6 +169,8 @@
       "space o e": "dev::OpenKeyContextView",
       "space o a": "agent::ToggleFocus",
       "space o f": "pane::RevealInProjectPanel",
+      "space o s": "outline_panel::ToggleFocus",
+
       ">": "vim::Indent",
       "=": "vim::AutoIndent",
       "<": "editor::Outdent",
@@ -366,6 +368,12 @@
     "bindings": {
       "q": "workspace::ToggleLeftDock",
       "x": "project_panel::Delete"
+    }
+  },
+  {
+    "context": "(GitPanel && ChangesList) || (OutlinePanel && not_editing)",
+    "bindings": {
+      "q": "workspace::ToggleLeftDock"
     }
   },
   {

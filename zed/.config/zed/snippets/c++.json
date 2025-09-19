@@ -4,10 +4,15 @@
     "body": ["std::cout << $1 << std::endl;", "$0"],
     "description": "Prints to the console"
   },
-  "Named": {
+  "cout equal": {
     "prefix": "ce",
     "body": ["std::cout << \"${2:$1 = }\" << $1 << std::endl;", "$0"],
     "description": "Prints to the console"
+  },
+  "newline": {
+    "prefix": "nl",
+    "body": ["std::cout << std::endl;", "$0"],
+    "description": "Prints newline to the console"
   },
   "main": {
     "prefix": "main",
