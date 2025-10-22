@@ -7,8 +7,10 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  "agent_buffer_font_size": 13.0,
+  "agent_ui_font_size": 18.0,
   "inlay_hints": {
-    "enabled": true,
+    "enabled": false,
     "show_value_hints": true,
     "show_type_hints": true,
     "show_parameter_hints": true,
@@ -76,7 +78,7 @@
     "model_parameters": [],
     "default_model": {
       "provider": "copilot_chat",
-      "model": "gpt-4.1"
+      "model": "claude-sonnet-4"
     }
   },
   "edit_predictions": {
@@ -88,10 +90,10 @@
   "tab_bar": {
     "show": false
   },
-  "theme": "Tokyo Night Storm",
+  "theme": "Frappé",
   "cursor_blink": false,
   "vim_mode": true,
-  "ui_font_size": 12,
+  "ui_font_size": 14,
   "buffer_font_size": 13,
   "buffer_font_family": "Iosevka Nerd Font",
   "buffer_line_height": "comfortable",

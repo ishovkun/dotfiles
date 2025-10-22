@@ -1,7 +1,8 @@
 {
   "std::cout": {
     "prefix": "co",
-    "body": ["std::cout << $1 << std::endl;", "$0"],
+    // "body": ["std::cout << $1 << std::endl;", "$0"],
+    "body": ["std::cout << $1 << ${2:std::endl};", "$0"],
     "description": "Prints to the console"
   },
   "cout equal": {
@@ -11,8 +12,13 @@
   },
   "newline": {
     "prefix": "nl",
-    "body": ["std::cout << std::endl;", "$0"],
+    "body": ["std::cout << std::endl;"],
     "description": "Prints newline to the console"
+  },
+  "namespace": {
+    "prefix": "nsp",
+    "body": ["namespace $1 {", "$0", "}  // end namespace $1"],
+    "description": "Namespace declaration"
   },
   "main": {
     "prefix": "main",
