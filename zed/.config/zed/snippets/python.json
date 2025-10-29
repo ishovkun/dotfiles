@@ -1,0 +1,12 @@
+{
+  "Print equal": {
+    "prefix": "pe",
+    "body": ["print(f\"${2:$1} = {$1}\")", "$0"],
+    "description": "Prints to the console"
+  },
+  "Print": {
+    "prefix": "pr",
+    "body": ["print(f\"$0\")"],
+    "description": "Prints to the console"
+  }
+}
