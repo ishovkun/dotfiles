@@ -43,6 +43,7 @@ api.addSearchAlias('gh', 'Github', 'https://github.com/search?utf8=✓&q=');
 api.addSearchAlias('s', 'Scholar', 'https://scholar.google.com/scholar?hl=en&as_sdt=0,44&q=');
 api.addSearchAlias('sl', 'Stanford Libs', 'https://library.stanford.edu/all/?q=');
 api.addSearchAlias('cnp', 'MyHub People Search', 'https://slb001.sharepoint.com/_layouts/15/search.aspx/people?q=');
+api.addSearchAlias('nv', 'Glean Search', 'https://nvidia.glean.com/search?q=');
 
 // omnibar
 api.cmap('<Ctrl-j>', '<Ctrl-n>');
