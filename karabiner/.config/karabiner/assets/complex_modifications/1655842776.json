@@ -1,48 +1,43 @@
 {
-  "title": "e0da Caps Lock",
-  "rules": [
+  "description": "lgui+caps_lock->caps_lock; caps_lock+[...keys] -> control+[..keys]; caps_lock -> escape",
+  "manipulators": [
     {
-      "description": "lgui+caps_lock->caps_lock; caps_lock+[...keys] -> control+[..keys]; caps_lock -> escape",
-      "manipulators": [
-        {
-          "type": "basic",
-          "from": {
-            "key_code": "caps_lock",
-            "modifiers": {
-              "mandatory": [
-                "left_gui"
-              ],
-              "optional": [
-                "caps_lock"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "caps_lock"
-            }
-          ]
-        },
-        {
-          "type": "basic",
-          "from": {
-            "key_code": "caps_lock",
-            "modifiers": {
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "left_control"
-            }
+      "type": "basic",
+      "from": {
+        "key_code": "caps_lock",
+        "modifiers": {
+          "mandatory": [
+            "left_gui"
           ],
-          "to_if_alone": [
-            {
-              "key_code": "escape"
-            }
+          "optional": [
+            "caps_lock"
           ]
+        }
+      },
+      "to": [
+        {
+          "key_code": "caps_lock"
+        }
+      ]
+    },
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "caps_lock",
+        "modifiers": {
+          "optional": [
+            "any"
+          ]
+        }
+      },
+      "to": [
+        {
+          "key_code": "left_control"
+        }
+      ],
+      "to_if_alone": [
+        {
+          "key_code": "escape"
         }
       ]
     }
