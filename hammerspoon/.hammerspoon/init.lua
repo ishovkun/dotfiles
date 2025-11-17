@@ -146,7 +146,8 @@ local launch = require("launch")
 
 -- second argument meand whether to bring the app to the current workspace
 hs.hotkey.bind('alt', 'e', function() launch.toggleApp("Ferdium", true) end)
-hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Forklift", true) end)
+-- hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Forklift", true) end)
+hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Marta", true) end)
 hs.hotkey.bind('alt', 'return', function() launch.toggleApp("Alacritty", true) end)
 hs.hotkey.bind('alt', 't', function() launch.toggleApp("Terminal", true) end)
 -- hs.hotkey.bind('alt', 'r', function() launch.toggleApp("KeeWeb", true) end)
