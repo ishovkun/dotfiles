@@ -7,6 +7,110 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  "icon_theme": "Catppuccin Frappé",
+  "agent_servers": {
+    "claude-acp": {
+      "favorite_config_option_values": {
+        "model": [
+          "opus[1m]"
+        ]
+      },
+      "type": "registry",
+      "default_model": "opus[1m]",
+      "default_config_options": {
+        "model": "opus[1m]"
+      }
+    }
+  },
+  "language_models": {
+    "openai_compatible": {
+      "Inference Hub": {
+        "api_url": "https://inference-api.nvidia.com",
+        "available_models": [
+          {
+            "name": "aws/anthropic/claude-opus-4-5",
+            "max_tokens": 32000,
+            "max_output_tokens": 31000,
+            "max_completion_tokens": 63000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          },
+          {
+            "name": "gcp/google/gemini-3-pro",
+            "max_tokens": 32000,
+            "max_output_tokens": 31000,
+            "max_completion_tokens": 63000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          }
+        ]
+      }
+    }
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "ssh_connections": [
+    {
+      "host": "computelab-session",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu"
+          ]
+        },
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu/code/TensorRT-LLM"
+          ]
+        },
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu/code/flashinfer-dev"
+          ]
+        },
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu/code/selective_state"
+          ]
+        },
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu/code/sglang"
+          ]
+        }
+      ]
+    }
+  ],
+  "agent": {
+    "commit_message_model": {
+      "provider": "copilot_chat",
+      "model": "claude-sonnet-4.6"
+    },
+    "tool_permissions": {
+      "default": "allow"
+    },
+    "default_profile": "write",
+    "default_model": {
+      "effort": "high",
+      "enable_thinking": true,
+      "provider": "copilot_chat",
+      "model": "claude-opus-4.6"
+    },
+    "model_parameters": []
+  },
+  "use_system_path_prompts": false,
+  "use_system_prompts": false,
   "agent_buffer_font_size": 13.0,
   "agent_ui_font_size": 18.0,
   "inlay_hints": {
@@ -30,67 +134,71 @@
   "collaboration_panel": {
     "dock": "right"
   },
-  "agent": {
-    "always_allow_tool_actions": true,
-    "play_sound_when_agent_done": true,
-    "profiles": {
-      "ask": {
-        "name": "Ask",
-        "tools": {
-          "delete_path": true,
-          "copy_path": true,
-          "create_directory": false,
-          "contents": true,
-          "diagnostics": true,
-          "fetch": true,
-          "list_directory": true,
-          "project_notifications": false,
-          "now": true,
-          "find_path": true,
-          "read_file": true,
-          "open": true,
-          "grep": true,
-          "thinking": true,
-          "web_search": true,
-          "edit_file": false
-        },
-        "enable_all_context_servers": false,
-        "context_servers": {}
-      },
-      "minimal": {
-        "name": "Minimal",
-        "tools": {
-          "delete_path": true,
-          "diagnostics": true,
-          "edit_file": true,
-          "grep": true,
-          "find_path": true
-        },
-        "enable_all_context_servers": false,
-        "context_servers": {}
-      }
-    },
-    "default_profile": "ask",
-    "inline_assistant_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4-thinking-latest"
-    },
-    "model_parameters": [],
-    "default_model": {
-      "provider": "copilot_chat",
-      "model": "claude-sonnet-4"
-    }
-  },
+  // "agent": {
+  //   "always_allow_tool_actions": true,
+  //   "play_sound_when_agent_done": true,
+  //   "profiles": {
+  //     "ask": {
+  //       "name": "Ask",
+  //       "tools": {
+  //         "delete_path": true,
+  //         "copy_path": true,
+  //         "create_directory": false,
+  //         "contents": true,
+  //         "diagnostics": true,
+  //         "fetch": true,
+  //         "list_directory": true,
+  //         "project_notifications": false,
+  //         "now": true,
+  //         "find_path": true,
+  //         "read_file": true,
+  //         "open": true,
+  //         "grep": true,
+  //         "thinking": true,
+  //         "web_search": true,
+  //         "edit_file": false
+  //       },
+  //       "enable_all_context_servers": false,
+  //       "context_servers": {}
+  //     },
+  //     "minimal": {
+  //       "name": "Minimal",
+  //       "tools": {
+  //         "delete_path": true,
+  //         "diagnostics": true,
+  //         "edit_file": true,
+  //         "grep": true,
+  //         "find_path": true
+  //       },
+  //       "enable_all_context_servers": false,
+  //       "context_servers": {}
+  //     }
+  //   },
+  //   "default_profile": "ask",
+  //   "inline_assistant_model": {
+  //     "provider": "zed.dev",
+  //     "model": "claude-sonnet-4-thinking-latest"
+  //   },
+  //   "model_parameters": [],
+  //   "default_model": {
+  //     "provider": "copilot_chat",
+  //     "model": "claude-sonnet-4"
+  //   }
+  // },
   "edit_predictions": {
-    "mode": "subtle"
-  },
-  "features": {
-    "edit_prediction_provider": "copilot"
+    "provider": "copilot",
+    "mode": "eager"
   },
   "tab_bar": {
-    "show": false
+    "show": true
   },
-  "theme": "Frappé",
+  "which_key": {
+    // Whether to show the which-key popup when holding down key combinations.
+    "enabled": true,
+    // Delay in milliseconds before showing the which-key popup.
+    "delay_ms": 200,
+  },
+  "theme": "Catppuccin Frappé",
   "cursor_blink": false,
   "vim_mode": true,
   "ui_font_size": 14,
@@ -104,8 +212,9 @@
   },
   "toolbar": {
     //   // set these two to false to hide the toolbar
-    "breadcrumbs": true
-    //   // "selections_menu": true,
+    "breadcrumbs": true,
+    "selections_menu": false,
+    "code_actions": true
     //   // "quick_actions": true
   },
   "active_pane_modifiers": {
@@ -141,7 +250,7 @@
   // The default number of lines to expand excerpts in the multibuffer by.
   "expand_excerpt_lines": 4,
   "terminal": {
-    "font_family": "Iosevka Nerd Font Mono",
+    "font_family": "IosevkaTerm Nerd Font Mono",
     "line_height" : "standard",
     "option_as_meta": true,
     // "vim_mode": true,
@@ -168,7 +277,9 @@
     // Whether to show user picture in the titlebar.
     "show_user_picture": true,
     // Whether to show the sign in button in the titlebar.
-    "show_sign_in": true
+    "show_sign_in": false,
+    // Whether to show the menus in the titlebar.
+    "show_menus": true
   },
   "confirm_quit": true,
   "lsp": {
@@ -188,6 +299,11 @@
     // }
   },
   "languages": {
+    "CMake": {
+      "tasks": {
+        "enabled": false
+      }
+    },
     "C++": {
       "tab_size": 2,
       // clang-format -style=google -dump-config > ~/.clang-format
@@ -198,69 +314,13 @@
         }
       }
     }
-    // "Python": {
-    //   "language_servers": ["pyright"]
-    // }
   },
   "file_types": {
-    "C++": ["hpp", "h", "hxx", "cpp", "cxx", "cu", "cuh"]
+    "C++": ["hpp", "h", "hxx", "cpp", "cxx", "cu", "cuh", "conf", "keymap", "jinja"]
   },
   "git": {
     "inline_blame": { "enabled": false },
     "hunk_style": "unstaged_hollow"
   },
-  "format_on_save": "off",
-  "ssh_connections": [
-    {
-      "host": "az24a100",
-      "username": "ishovkun",
-      "projects": [
-        {
-          "paths": [
-            "~/code/flash-attention-minimal"
-          ]
-        },
-        {
-          "paths": [
-            "~/code/hpc-ishovkun-nudft"
-          ]
-        },
-        {
-          "paths": [
-            "~/code/petrel"
-          ]
-        }
-      ]
-    },
-    {
-      "host": "azh100",
-      "projects": [
-        {
-          "paths": [
-            "/home/ishovkun/code/assignment1-basics"
-          ]
-        },
-        {
-          "paths": [
-            "/home/ishovkun/code/assignment2-systems"
-          ]
-        },
-        {
-          "paths": [
-            "/home/ishovkun/code/hetero"
-          ]
-        },
-        {
-          "paths": [
-            "/home/ishovkun/code/hpc-meshgen"
-          ]
-        },
-        {
-          "paths": [
-            "/home/ishovkun/code/tma"
-          ]
-        }
-      ]
-    }
-  ]
+  "format_on_save": "off"
 }

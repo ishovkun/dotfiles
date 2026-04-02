@@ -15,19 +15,19 @@
       // "cmd-shift-j": "vim::ResizePaneDown",
       "cmd-shift-l": [
         "workspace::SendKeystrokes",
-        "ctrl-w > ctrl-w > ctrl-w > ctrl-w > ctrl-w > ctrl-w > ctrl-w >"
+        "ctrl-w > ctrl-w > ctrl-w > ctrl-w > ctrl-w > ctrl-w > ctrl-w >",
       ],
       "cmd-shift-h": [
         "workspace::SendKeystrokes",
-        "ctrl-w < ctrl-w < ctrl-w < ctrl-w < ctrl-w < ctrl-w < ctrl-w <"
+        "ctrl-w < ctrl-w < ctrl-w < ctrl-w < ctrl-w < ctrl-w < ctrl-w <",
       ],
       "cmd-shift-k": [
         "workspace::SendKeystrokes",
-        "ctrl-w + ctrl-w + ctrl-w + ctrl-w + ctrl-w + ctrl-w + ctrl-w +"
+        "ctrl-w + ctrl-w + ctrl-w + ctrl-w + ctrl-w + ctrl-w + ctrl-w +",
       ],
       "cmd-shift-j": [
         "workspace::SendKeystrokes",
-        "ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w -"
+        "ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w -",
       ],
       "cmd-+": ["zed::IncreaseUiFontSize", { "persist": false }],
       "cmd-_": ["zed::DecreaseUiFontSize", { "persist": false }],
@@ -35,8 +35,9 @@
       "ctrl-`": "workspace::ToggleBottomDock",
       "ctrl-\\": "workspace::ToggleLeftDock",
       "cmd-\\": "workspace::ToggleLeftDock",
-      "cmd-[": "workspace::ToggleRightDock",
-    }
+      // "cmd-[": "workspace::ToggleRightDock",
+      "cmd-[": "agent::ToggleFocus",
+    },
   },
   {
     "context": "TabSwitcher",
@@ -45,9 +46,9 @@
       "ctrl-j": "menu::SelectNext",
       "cmd-p": "menu::SelectPrevious",
       "cmd-n": "menu::SelectNext",
-      "k": "menu::SelectPrevious",
-      "j": "menu::SelectNext"
-    }
+      // "k": "menu::SelectPrevious",
+      // "j": "menu::SelectNext"
+    },
   },
   {
     "context": "Picker",
@@ -55,8 +56,8 @@
       "ctrl-k": "menu::SelectPrevious",
       "ctrl-j": "menu::SelectNext",
       "cmd-p": "menu::SelectPrevious",
-      "cmd-n": "menu::SelectNext"
-    }
+      "cmd-n": "menu::SelectNext",
+    },
   },
   {
     "context": "VimControl || EmptyPane",
@@ -70,13 +71,19 @@
       "space o o": "outline_panel::ToggleFocus",
       "space t p": "workspace::ToggleLeftDock",
       "space t f": "project_panel::ToggleFocus",
-      "space g g": "git::Diff",
+      "space t c": "workspace::ToggleCenteredLayout",
+      "space t h": "editor::ToggleInlayHints",
+      "space t H": "editor::ToggleSelectedDiffHunks",
+      "space t a": "editor::ToggleEditPrediction", // toggle copilot
+      "space t s": "editor::ToggleAutoSignatureHelp",
+      "space t n": "editor::ToggleLineNumbers",
       "space t g": "git_panel::ToggleFocus",
       "space t m": "editor::ToggleMinimap",
+      "space t t": "editor::ToggleTabBar",
+      "space g g": "git::Diff",
       "space w v": "pane::SplitVertical",
       "space w s": "pane::SplitHorizontal",
       "space w o": "workspace::ActivateNextWindow",
-      "space t t": "editor::ToggleTabBar",
       "space c c": "task::Spawn",
       "space b b": "tab_switcher::Toggle",
       "space b a": "tab_switcher::ToggleAll",
@@ -92,24 +99,20 @@
       "space f ,": "zed::OpenSettingsFile",
       "space f .": "zed::OpenDefaultSettings",
       // "space t c": "collab_panel::ToggleFocus",
-      "space t c": "workspace::ToggleCenteredLayout",
-      "space t h": "editor::ToggleInlayHints",
-      "space t H": "editor::ToggleSelectedDiffHunks",
-      "space t a": "editor::ToggleEditPrediction", // toggle copilot
-      "space t s": "editor::ToggleAutoSignatureHelp",
-      "space t n": "editor::ToggleLineNumbers",
       "space [": "workspace::ToggleLeftDock",
       "space `": "workspace::ToggleBottomDock",
       "space h t": "theme_selector::Toggle",
       "space g b": "git::Blame",
       "space z r": "auto_update::ViewReleaseNotesLocally",
       "space z R": "auto_update::ViewReleaseNotes",
+      "space '": "search::PreviousHistoryQuery",
       ", r": "vim::ToggleRegistersView",
-      ", m": "vim::ToggleMarksView"
-    }
+      ", m": "vim::ToggleMarksView",
+      "cmd-g": "git_panel::ToggleFocus",
+    },
   },
   {
-    "context": "VimControl && !menu",
+    "context": "VimControl && !menu && !AgentPanel",
     "bindings": {
       "`": "vim::Matching",
       "ctrl-s": "workspace::Save",
@@ -119,7 +122,9 @@
       "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
       "ctrl-j": "editor::LineDown",
       "ctrl-k": "editor::LineUp",
-      "cmd-n": "tab_switcher::ToggleAll",
+      "cmd-n": "pane::ActivateNextItem",
+      "cmd-p": "pane::ActivatePreviousItem",
+      // "cmd-n": "tab_switcher::ToggleAll",
       // "enter": "task::Rerun",
       // Save file and run
       // "enter": ["workspace::SendKeystrokes", "cms-s cmd-alt-r"],
@@ -129,8 +134,8 @@
       "j": ["vim::Down", { "display_lines": true }],
       "k": ["vim::Up", { "display_lines": true }],
       // "tab": "editor::AutoIndent",
-      // "tab": "vim::AutoIndent",
-      "tab": "editor::Format",
+      "tab": "vim::AutoIndent",
+      // "tab": "editor::Format",
       "w": "vim::NextSubwordStart",
       "b": "vim::PreviousSubwordStart",
       // "e": "vim::NextSubwordEnd",
@@ -155,10 +160,12 @@
       "space f n": "workspace::NewFile",
       "space b d": "pane::CloseActiveItem",
       "space space": "file_finder::Toggle",
+      // "space space": "tab_switcher::ToggleAll",
       "space s j": "outline::Toggle",
       "space ;": "vim::ToggleComments",
       "space h t": "theme_selector::Toggle",
       "space g g": "git::Diff",
+      "space g h": "git::FileHistory",
       "space t g": "git_panel::ToggleFocus",
       "space t p": "workspace::ToggleLeftDock",
       "space w d": "pane::CloseAllItems",
@@ -168,7 +175,7 @@
       "space w v": "pane::SplitVertical",
       "space w s": "pane::SplitHorizontal",
       "space p s": "project_symbols::Toggle",
-      "space p ,": "zed::OpenProjectSettings",
+      "space p ,": "zed::OpenProjectSettingsFile",
       "space t t": "editor::ToggleTabBar",
       "space t d": "editor::ToggleInlineDiagnostics",
       "space t w": "editor::ToggleSoftWrap",
@@ -182,42 +189,53 @@
       ">": "vim::Indent",
       "=": "vim::AutoIndent",
       "<": "editor::Outdent",
-      "-": [
-        "task::Spawn",
-        { "task_name": "File Manager", "reveal_target": "center" }
-      ],
+      "-": "project_panel::ToggleFocus",
+      // "-": [
+      //   "task::Spawn",
+      //   { "task_name": "File Manager", "reveal_target": "center" }
+      // ],
       "space o g": [
         "task::Spawn",
-        { "task_name": "gitu", "reveal_target": "center" }
-      ]
-    }
+        { "task_name": "gitu", "reveal_target": "center" },
+      ],
+    },
   },
   {
     "context": "VimControl && extension==md",
     "bindings": {
-      "enter": "markdown::OpenPreview"
-    }
+      "enter": "markdown::OpenPreview",
+    },
   },
   {
     "context": "MarkdownPreview",
     "bindings": {
       "q": "pane::CloseActiveItem",
       // "j": "vim::Down"
-      "j": "editor::MoveDown"
-    }
+      "d": "markdown::ScrollPageDown",
+      "e": "markdown::ScrollPageUp",
+      "j": "markdown::ScrollDown",
+      "k": "markdown::ScrollUp",
+      "space space": "file_finder::Toggle",
+      "cmd-n": "pane::ActivateNextItem",
+      "cmd-p": "pane::ActivatePreviousItem",
+      "space f k": "zed::OpenKeymapFile",
+      "space w v": "pane::SplitVertical",
+      "space w s": "pane::SplitHorizontal",
+      "space w d": "pane::CloseAllItems",
+    },
   },
   {
     "context": "vim_mode == visual",
     "bindings": {
-      "p": ["vim::Paste", { "preserve_clipboard": true }]
-    }
+      "p": ["vim::Paste", { "preserve_clipboard": true }],
+    },
   },
   {
     "context": "VimControl && VimCount",
     "bindings": {
       ">": ["workspace::SendKeystrokes", "> >"],
-      "space ;": ["workspace::SendKeystrokes", "g c c"]
-    }
+      "space ;": ["workspace::SendKeystrokes", "g c c"],
+    },
   },
   {
     "context": "vim_operator == a || vim_operator == i || vim_operator == cs",
@@ -227,15 +245,15 @@
       "b": "vim::AnyBrackets",
       "'": "vim::AnyQuotes",
       "<": "vim::AngleBrackets",
-      ">": "vim::AngleBrackets"
-    }
+      ">": "vim::AngleBrackets",
+    },
   },
   {
     "context": "Editor && (showing_code_actions || showing_completions)",
     "bindings": {
       "ctrl-j": "editor::ContextMenuNext",
-      "ctrl-k": "editor::ContextMenuPrevious"
-    }
+      "ctrl-k": "editor::ContextMenuPrevious",
+    },
   },
   {
     "context": "vim_mode == normal",
@@ -246,24 +264,24 @@
       "ctrl-n": "editor::GoToDiagnostic",
       ", p": "editor::GoToPreviousDiagnostic",
       "ctrl-p": "editor::GoToPreviousDiagnostic",
-      "cmd-;": ["workspace::SendKeystrokes", "shift-a space space"]
-    }
+      "cmd-;": ["workspace::SendKeystrokes", "shift-a space space"],
+    },
   },
   {
     "context": "vim_mode == visual",
     "bindings": {
       "tab": "editor::FormatSelections",
-      "(": ["workspace::SendKeystrokes", "S ("],
-      ")": ["workspace::SendKeystrokes", "S )"],
-      "[": ["workspace::SendKeystrokes", "S ["],
-      "]": ["workspace::SendKeystrokes", "S ]"],
+      // "(": ["workspace::SendKeystrokes", "S ("],
+      // ")": ["workspace::SendKeystrokes", "S )"],
+      // "[": ["workspace::SendKeystrokes", "S ["],
+      // "]": ["workspace::SendKeystrokes", "S ]"],
       // "<": ["workspace::SendKeystrokes", "S <"],
       // ">": ["workspace::SendKeystrokes", "S >"],
-      "{": ["workspace::SendKeystrokes", "S {"],
-      "}": ["workspace::SendKeystrokes", "S }"],
+      // "{": ["workspace::SendKeystrokes", "S {"],
+      // "}": ["workspace::SendKeystrokes", "S }"],
       "s": ["vim::PushAddSurrounds", {}],
-      "S": ["vim::PushAddSurrounds", {}]
-    }
+      "S": ["vim::PushAddSurrounds", {}],
+    },
   },
   {
     "context": "vim_mode == insert",
@@ -272,19 +290,20 @@
       "ctrl-/": "vim::Undo",
       "ctrl-d": "vim::DeleteRight",
       "ctrl-e": "editor::MoveToEndOfLine",
-      "escape": ["workspace::SendKeystrokes", "ctrl-[ l"]
-    }
+      "escape": ["workspace::SendKeystrokes", "ctrl-[ l"],
+    },
   },
   {
     "context": "Terminal",
     "bindings": {
-      "cmd-n": "tab_switcher::Toggle",
+      // "cmd-n": "tab_switcher::Toggle",
+      "cmd-n": ["terminal::SendKeystroke", "alt-n"],
       "cmd-b": ["terminal::SendKeystroke", "alt-b"],
       "cmd-f": ["terminal::SendKeystroke", "alt-f"],
       "cmd-d": ["terminal::SendKeystroke", "alt-d"],
       "cmd-shift-j": "vim::ResizePaneDown",
-      "cmd-shift-k": "vim::ResizePaneUp"
-    }
+      "cmd-shift-k": "vim::ResizePaneUp",
+    },
   },
   {
     "context": "Terminal && !vi_mode",
@@ -292,8 +311,8 @@
       "ctrl-space": "terminal::ToggleViMode",
       "cmd-e": ["terminal::SendKeystroke", "alt-e"],
       "cmd-p": ["terminal::SendKeystroke", "alt-p"],
-      "cmd-t": "workspace::NewTerminal"
-    }
+      "cmd-t": "workspace::NewTerminal",
+    },
   },
   {
     "context": "Terminal && vi_mode",
@@ -308,8 +327,8 @@
       "space tab": "pane::AlternateFile",
       "cmd-t": "workspace::NewTerminal",
       // "/": "search::FocusSearch",
-      "/": "buffer_search::Deploy"
-    }
+      "/": "buffer_search::Deploy",
+    },
   },
   {
     "context": "Picker > Editor",
@@ -319,8 +338,8 @@
       "ctrl-backspace": "editor::DeleteToPreviousSubwordStart",
       "ctrl-u": "editor::DeleteToBeginningOfLine",
       "ctrl-enter": ["picker::ConfirmInput", { "secondary": false }],
-      "shift-enter": ["picker::ConfirmInput", { "secondary": false }]
-    }
+      "shift-enter": ["picker::ConfirmInput", { "secondary": false }],
+    },
   },
   {
     "context": "RemoteServerModal",
@@ -328,8 +347,8 @@
       "ctrl-k": "menu::SelectPrevious",
       "ctrl-j": "menu::SelectNext",
       "cmd-k": "menu::SelectPrevious",
-      "cmd-j": "menu::SelectNext"
-    }
+      "cmd-j": "menu::SelectNext",
+    },
   },
   {
     "context": "(GitDiff > Editor) && VimControl",
@@ -347,8 +366,8 @@
       "enter": "editor::OpenExcerpts",
       "ctrl-j": "editor::GoToHunk",
       "ctrl-k": "editor::GoToPreviousHunk",
-      "x": "git::Restore"
-    }
+      "x": "git::Restore",
+    },
   },
   {
     "context": "Editor && VimControl && multibuffer && vim_mode != insert",
@@ -358,8 +377,8 @@
       "enter": "editor::OpenExcerpts",
       "tab": "editor::ToggleFold",
       "shift-tab": "editor::FoldAll",
-      "q": "pane::CloseActiveItem"
-    }
+      "q": "pane::CloseActiveItem",
+    },
   },
   {
     "context": "(Diagnostics > Editor) && VimControl",
@@ -368,39 +387,61 @@
       "enter": "editor::OpenExcerpts",
       "ctrl-j": "editor::GoToDiagnostic",
       "ctrl-k": "editor::GoToPreviousDiagnostic",
-      "x": "git::Restore"
-    }
+      "x": "git::Restore",
+    },
   },
   {
     "context": "(GitPanel || ProjectPanel || Dock) && not_editing",
     "bindings": {
       "q": "workspace::ToggleLeftDock",
-      "x": "project_panel::Delete"
-    }
+      "x": "project_panel::Delete",
+    },
   },
   {
     "context": "(GitPanel && ChangesList) || (OutlinePanel && not_editing)",
     "bindings": {
-      "q": "workspace::ToggleLeftDock"
-    }
+      "q": "workspace::ToggleLeftDock",
+    },
+  },
+  {
+    "context": "FileHistoryView",
+    "bindings": {
+      "q": "pane::CloseActiveItem",
+    },
   },
   {
     "context": "(CollabPanel > Editor)",
     "bindings": {
       "ctrl-k": "menu::SelectPrevious",
-      "ctrl-j": "menu::SelectNext"
-    }
+      "ctrl-j": "menu::SelectNext",
+    },
   },
   {
     "context": "EmptyPane",
     "bindings": {
-      "q": "pane::CloseActiveItem"
-    }
+      "q": "pane::CloseActiveItem",
+    },
   },
   {
     "context": "ThemePreview || KeyContextView",
     "bindings": {
-      "q": "pane::CloseActiveItem"
-    }
-  }
+      "q": "pane::CloseActiveItem",
+    },
+  },
+  {
+    "context": "ImageViewer",
+    "bindings": {
+      "=": "image_viewer::ZoomIn",
+      "+": "image_viewer::ResetZoom",
+      "-": "image_viewer::ZoomOut",
+      "0": "image_viewer::ResetZoom",
+      "1": "image_viewer::ZoomToActualSize",
+      "shift-0": "image_viewer::FitToView",
+      "q": "pane::CloseActiveItem",
+      "space space": "file_finder::Toggle",
+      "cmd-p": "menu::SelectPrevious",
+      "cmd-n": "menu::SelectNext",
+      "space t f": "project_panel::ToggleFocus",
+    },
+  },
 ]
