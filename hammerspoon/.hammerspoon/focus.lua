@@ -31,6 +31,8 @@ function M.focusEast()
     end
   end
 
+  -- next_window:application():activate()
+  -- next_window:becomeMain()
   next_window:focus()
 end
 
