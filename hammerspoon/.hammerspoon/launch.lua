@@ -33,18 +33,14 @@ function M.toggleApp(appName, moveToCurrentSpace)
       for idx, w in pairs(app:allWindows()) do
         -- print(idx, w, w:isStandard())
         if w:isStandard() then
-          -- print("Unminimizing")
-          -- print(idx, w)
           w:unminimize()
           win = w
-          -- print("win inside", win)
         end
       end
     end
     if moveToCurrentSpace then
       if not onActiveSpace(win:id()) then
         local focused_space_id = hs.spaces.focusedSpace()
-        -- print("focused space", focused_space_id)
         app:unhide()
         hs.spaces.moveWindowToSpace(win:id(), focused_space_id)
       end
