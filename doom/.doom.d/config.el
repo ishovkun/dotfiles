@@ -981,7 +981,7 @@
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
 (after! deft
- (setq deft-directory "~/Dropbox/enotes")
+ (setq deft-directory "~/notes")
  (setq deft-extensions '("org" "md"))
  (setq deft-auto-save-interval 60.0)
  (setq deft-use-filename-as-title nil)
