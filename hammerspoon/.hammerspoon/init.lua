@@ -1,3 +1,4 @@
+local notify = require("notify")
 
 hs.hotkey.bind({"cmd", "alt", "ctrl"}, "W", function()
   hs.notify.new({title="Hammerspoon", informativeText="Hello World"}):send()
@@ -97,10 +98,11 @@ function windowNextScreen()
     end
 end
 
-hs.hotkey.bind('alt', '=', function() increaseWidth(80) end)
-hs.hotkey.bind('alt', '-', function() increaseWidth(-80) end)
-hs.hotkey.bind(hyper, '=', function() increaseHeight(40) end)
-hs.hotkey.bind(hyper, '-', function() increaseHeight(-40) end)
+
+hs.hotkey.bind('alt', '=', function() increaseWidth(150) end)
+hs.hotkey.bind('alt', '-', function() increaseWidth(-150) end)
+hs.hotkey.bind(hyper, '=', function() increaseHeight(60) end)
+hs.hotkey.bind(hyper, '-', function() increaseHeight(-60) end)
 
 hs.hotkey.bind(hyper, 'n', function() windowNextScreen() end)
 hs.hotkey.bind(hyper, 'j', function() windowNextScreen() end)
@@ -121,20 +123,34 @@ hs.hotkey.bind({"alt","control","shift"}, 'j', function() moveVertically(-40) en
 
 local spaces = require("spaces")
 
-hs.hotkey.bind({"alt", "shift"}, "1", function() spaces.moveCurrentWindowToSpace(1) end)
-hs.hotkey.bind({"alt", "shift"}, "2", function() spaces.moveCurrentWindowToSpace(2) end)
-hs.hotkey.bind({"alt", "shift"}, "3", function() spaces.moveCurrentWindowToSpace(3) end)
-hs.hotkey.bind({"alt", "shift"}, "4", function() spaces.moveCurrentWindowToSpace(4) end)
-hs.hotkey.bind({"alt", "shift"}, "5", function() spaces.moveCurrentWindowToSpace(5) end)
-hs.hotkey.bind({"alt", "shift"}, "6", function() spaces.moveCurrentWindowToSpace(6) end)
-hs.hotkey.bind({"alt", "shift"}, "7", function() spaces.moveCurrentWindowToSpace(7) end)
-hs.hotkey.bind({"alt", "shift"}, "8", function() spaces.moveCurrentWindowToSpace(8) end)
-hs.hotkey.bind({"alt", "shift"}, "9", function() spaces.moveCurrentWindowToSpace(9) end)
-hs.hotkey.bind({"alt", "shift"}, "0", function() spaces.moveCurrentWindowToSpace(10) end)
+-- hs.hotkey.bind({"alt", "shift"}, "1", function() spaces.moveCurrentWindowToSpace(1) end)
+-- hs.hotkey.bind({"alt", "shift"}, "2", function() spaces.moveCurrentWindowToSpace(2) end)
+-- hs.hotkey.bind({"alt", "shift"}, "3", function() spaces.moveCurrentWindowToSpace(3) end)
+-- hs.hotkey.bind({"alt", "shift"}, "4", function() spaces.moveCurrentWindowToSpace(4) end)
+-- hs.hotkey.bind({"alt", "shift"}, "5", function() spaces.moveCurrentWindowToSpace(5) end)
+-- hs.hotkey.bind({"alt", "shift"}, "6", function() spaces.moveCurrentWindowToSpace(6) end)
+-- hs.hotkey.bind({"alt", "shift"}, "7", function() spaces.moveCurrentWindowToSpace(7) end)
+-- hs.hotkey.bind({"alt", "shift"}, "8", function() spaces.moveCurrentWindowToSpace(8) end)
+-- hs.hotkey.bind({"alt", "shift"}, "9", function() spaces.moveCurrentWindowToSpace(9) end)
+-- hs.hotkey.bind({"alt", "shift"}, "0", function() spaces.moveCurrentWindowToSpace(10) end)
+
+-- Move focused app (all its windows) to space N via SLSProcessAssignToSpace
+hs.hotkey.bind({"alt", "shift"}, "1", function() spaces.moveCurrentAppToSpace(1) end)
+hs.hotkey.bind({"alt", "shift"}, "2", function() spaces.moveCurrentAppToSpace(2) end)
+hs.hotkey.bind({"alt", "shift"}, "3", function() spaces.moveCurrentAppToSpace(3) end)
+hs.hotkey.bind({"alt", "shift"}, "4", function() spaces.moveCurrentAppToSpace(4) end)
+hs.hotkey.bind({"alt", "shift"}, "5", function() spaces.moveCurrentAppToSpace(5) end)
+hs.hotkey.bind({"alt", "shift"}, "6", function() spaces.moveCurrentAppToSpace(6) end)
+hs.hotkey.bind({"alt", "shift"}, "7", function() spaces.moveCurrentAppToSpace(7) end)
+hs.hotkey.bind({"alt", "shift"}, "8", function() spaces.moveCurrentAppToSpace(8) end)
+hs.hotkey.bind({"alt", "shift"}, "9", function() spaces.moveCurrentAppToSpace(9) end)
+hs.hotkey.bind({"alt", "shift"}, "0", function() spaces.moveCurrentAppToSpace(10) end)
 
 local focus = require("focus")
 hs.hotkey.bind('alt', 'l', function() focus.focusEast() end)
+hs.hotkey.bind('alt', 'right', function() focus.focusEast() end)
 hs.hotkey.bind('alt', 'h', function() focus.focusWest() end)
+hs.hotkey.bind('alt', 'left', function() focus.focusWest() end)
 hs.hotkey.bind('alt', 'j', function() focus.focusSouth() end)
 hs.hotkey.bind('alt', 'k', function() focus.focusNorth() end)
 -- hs.hotkey.bind('alt', 'l', function() hs.window:focusWindowEast() end)
@@ -146,7 +162,6 @@ local launch = require("launch")
 
 -- second argument meand whether to bring the app to the current workspace
 hs.hotkey.bind('alt', 'e', function() launch.toggleApp("Ferdium", true) end)
--- hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Forklift", true) end)
 hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Marta", true) end)
 hs.hotkey.bind('alt', 'return', function() launch.toggleApp("Alacritty", true) end)
 hs.hotkey.bind('alt', 't', function() launch.toggleApp("Terminal", true) end)
@@ -158,9 +173,21 @@ hs.hotkey.bind('alt', 'r', function() launch.toggleApp("Bitwarden", true) end)
 -- hs.hotkey.bind('alt', '3', function() spaces.switoToSpace(3) end)
 -- hs.hotkey.bind('alt', '2', function() hs.spaces.gotoSpace(2) end)
 
+-- spotilike: Option + Play/Pause to toggle like on current Spotify track
+hs.eventtap.new({hs.eventtap.event.types.systemDefined}, function(event)
+    local data = event:systemKey()
+    if data.key == "PLAY" and data.down and event:getFlags().alt then
+        hs.task.new("/Users/ishovkun/code/spotihack/spotilike", function(_, stdOut)
+            if stdOut and #stdOut > 0 then
+                notify.show(stdOut:gsub("%s+$", ""), 1)
+            end
+        end):start()
+        return true
+    end
+end):start()
+
 -- reload
 hs.hotkey.bind(hyper, 'r', function()
     hs.reload()
 end)
-hs.alert.show("Config reloaded")
-
+notify.show("Config reloaded")
