@@ -72,7 +72,8 @@ x = 0
 y = 0
 
 [font.normal]
-family = "Iosevka Nerd Font"
+family = "Iosevka Nerd Font" # brew install font-iosevka-nerd-font
+# family = " IosevkaTerm Nerd Font"
 
 [font.offset]
 x = 0
