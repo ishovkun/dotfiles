@@ -73,6 +73,10 @@ nnn-navigate () {
 zle -N nnn-navigate
 bindkey '\ee' nnn-navigate
 
+# Make Shift-Enter (CSI u: ESC[13;2u) act as Enter in zsh,
+# while apps like Claude Code that understand the sequence use it for newline.
+bindkey '\e[13;2u' accept-line
+
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
 export EDITOR='vim'
