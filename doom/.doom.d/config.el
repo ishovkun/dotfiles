@@ -49,6 +49,11 @@
   :nv "M-j"         #'evil-window-down
   :nv "M-l"         #'evil-window-right
   :nv "M-h"         #'evil-window-left
+  ;; resize — in override so org-mode's M-S-j/k line-swap doesn't win
+  :nv "M-H"         #'decrease-window-width
+  :nv "M-L"         #'increase-window-width
+  :nv "M-J"         #'decrease-window-height
+  :nv "M-K"         #'increase-window-height
   :nv "M-M"         #'+workspace/switch-left
   :nv "M-<"         #'+workspace/switch-right
   :nvi "<mouse-5>"  #'scroll-up-line
@@ -87,20 +92,6 @@
  (:map text-mode-map
   :n "Q"         #'evil-execute-macro
   )
-  ;; :nv "M-H"         #'shrink-window-horizontally
-  ;; :nv "M-L"         #'enlarge-window-horizontally
-  ;; :nv "M-J"         #'shrink-window
-  ;; :nv "M-K"         #'enlarge-window
-  :nv "M-H"         #'decrease-window-width
-  :nv "M-L"         #'increase-window-width
-  :nv "M-J"         #'decrease-window-height
-  :nv "M-K"         #'increase-window-height
-  (:after org :map evil-org-mode-map
-   :nv "M-H"         #'decrease-window-width
-   :nv "M-L"         #'increase-window-width
-   :nv "M-J"         #'decrease-window-height
-   :nv "M-K"         #'increase-window-height
-   )
   ;; indenting
   :n  "<"           #'evil-shift-left-line
   :n  ">"           #'evil-shift-right-line
