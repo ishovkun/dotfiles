@@ -19,7 +19,7 @@ function M.focusEast()
   --   end
   -- end
   for _, window in pairs(windows) do
-    if window ~= hs.window.desktop() then
+    if window ~= hs.window.desktop() and window:isStandard() then
       local f = window:frame()
       if f.y < f_cur.y + f_cur.h and f.y + f.h > f_cur.y then
         local diff = f.x - f_cur.x
@@ -45,7 +45,7 @@ function M.focusWest()
 
   local windows = hs.window.visibleWindows()
   for _, window in pairs(windows) do
-    if window ~= hs.window.desktop() then
+    if window ~= hs.window.desktop() and window:isStandard() then
       local f = window:frame()
       if f.y < f_cur.y + f_cur.h and f.y + f.h > f_cur.y then
         local diff = f_cur.x - f.x
@@ -69,7 +69,7 @@ function M.focusSouth()
 
   local windows = hs.window.visibleWindows()
   for _, window in pairs(windows) do
-    if window ~= hs.window.desktop() then
+    if window ~= hs.window.desktop() and window:isStandard() then
       local f = window:frame()
       if f.x < f_cur.x + f_cur.w and f.x + f.w > f_cur.x then
         local diff = f.y - f_cur.y
@@ -104,7 +104,7 @@ function M.focusNorth()
   -- end
 
   for _, window in pairs(windows) do
-    if window ~= hs.window.desktop() then
+    if window ~= hs.window.desktop() and window:isStandard() then
       local f = window:frame()
       if f.x < f_cur.x + f_cur.w and f.x + f.w > f_cur.x then
         local diff = f_cur.y - f.y

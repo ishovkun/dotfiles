@@ -6,12 +6,17 @@ end)
 
 hyper = {'alt', 'shift'}
 
+hs.window.animationDuration = 0
+
+local border = require("border")
+
 function increaseWidth(delta)
   local win = hs.window.focusedWindow()
   local f = win:frame()
   f.x = f.x - delta / 2
   f.w = f.w + delta
   win:setFrame(f)
+  border.update()
 end
 function increaseHeight(delta)
   local win = hs.window.focusedWindow()
@@ -19,18 +24,21 @@ function increaseHeight(delta)
   f.y = f.y - delta / 2
   f.h = f.h + delta
   win:setFrame(f)
+  border.update()
 end
 function moveHorizontally(delta)
   local win = hs.window.focusedWindow()
   local f = win:frame()
   f.x = f.x + delta
   win:setFrame(f)
+  border.update()
 end
 function moveVertically(delta)
   local win = hs.window.focusedWindow()
   local f = win:frame()
   f.y = f.y + delta
   win:setFrame(f)
+  border.update()
 end
 
 local function tileHorizontally(fraction, idx)
@@ -56,6 +64,7 @@ local function tileHorizontally(fraction, idx)
     curFrame.h = max.h
     curFrame.y = 0
     win:setFrame(curFrame)
+    border.update()
 end
 
 local function centerWindow()
@@ -82,6 +91,7 @@ local function centerWindow()
     -- curFrame.h = max.h
     -- curFrame.y = 0
     win:setFrame(curFrame)
+    border.update()
 end
 
 function windowNextScreen()
@@ -96,6 +106,7 @@ function windowNextScreen()
     else
         win:moveToScreen(allScreens[1])
     end
+    border.update()
 end
 
 
@@ -173,10 +184,18 @@ hs.hotkey.bind('alt', 'r', function() launch.toggleApp("Bitwarden", true) end)
 -- hs.hotkey.bind('alt', '3', function() spaces.switoToSpace(3) end)
 -- hs.hotkey.bind('alt', '2', function() hs.spaces.gotoSpace(2) end)
 
+-- Track alt key state independently (external keyboards don't always pass
+-- modifier flags through on systemDefined media-key events).
+local altDown = false
+hs.eventtap.new({hs.eventtap.event.types.flagsChanged}, function(event)
+    altDown = event:getFlags().alt or false
+    return false
+end):start()
+
 -- spotilike: Option + Play/Pause to toggle like on current Spotify track
 hs.eventtap.new({hs.eventtap.event.types.systemDefined}, function(event)
     local data = event:systemKey()
-    if data.key == "PLAY" and data.down and event:getFlags().alt then
+    if data.key == "PLAY" and data.down and altDown then
         hs.task.new("/Users/ishovkun/code/spotihack/spotilike", function(_, stdOut)
             if stdOut and #stdOut > 0 then
                 notify.show(stdOut:gsub("%s+$", ""), 1)
@@ -190,4 +209,4 @@ end):start()
 hs.hotkey.bind(hyper, 'r', function()
     hs.reload()
 end)
-notify.show("Config reloaded")
+hs.alert.show("Config reloaded")

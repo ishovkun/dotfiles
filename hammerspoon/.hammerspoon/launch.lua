@@ -1,5 +1,7 @@
 local M = {}
 
+local spaces = require("spaces")
+
 function onActiveSpace(win_id)
   local active_spaces = hs.spaces.activeSpaces()
   local win_spaces = hs.spaces.windowSpaces(win_id)
@@ -42,7 +44,7 @@ function M.toggleApp(appName, moveToCurrentSpace)
       if not onActiveSpace(win:id()) then
         local focused_space_id = hs.spaces.focusedSpace()
         app:unhide()
-        hs.spaces.moveWindowToSpace(win:id(), focused_space_id)
+        spaces.moveProcessToSpaceID(win:pid(), focused_space_id)
       end
     end
     app:activate()

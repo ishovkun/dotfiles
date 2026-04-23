@@ -1,27 +1,26 @@
 local M = {}
 
-local hackmac_python = "/Users/ishovkun/code/playground/hackmac/.venv/bin/python"
-local hackmac_script = "/Users/ishovkun/code/playground/hackmac/hackmac.py"
+local hackmac = require("hackmac_hs")
+local border = require("border")
 
-function M.getSpaceID(space_index)
-  local all_spaces = hs.spaces.allSpaces()
-  ispace = 1
-  for screen_uuid, spaces in pairs(all_spaces) do
-    for _, space_id in ipairs(spaces) do
-      if ispace == space_index then
-        return space_id
-      end
-      ispace = ispace + 1
-    end
-  end
-  return -1
+-- Screens sorted left-to-right, then top-to-bottom by frame origin, so
+-- global space indices are deterministic across reloads and reconnects.
+local function orderedScreens()
+  local screens = hs.screen.allScreens()
+  table.sort(screens, function(a, b)
+    local fa, fb = a:frame(), b:frame()
+    if fa.x ~= fb.x then return fa.x < fb.x end
+    return fa.y < fb.y
+  end)
+  return screens
 end
 
-function M.getSpaceIDInScreen(screen_id, space_index)
-  spaces = hs.spaces.spacesForScreen(screen_id)
-  for idx, space_id in pairs(spaces) do
-    if idx == space_index then
-      return space_id
+function M.getSpaceID(space_index)
+  local idx = 1
+  for _, screen in ipairs(orderedScreens()) do
+    for _, space_id in ipairs(hs.spaces.spacesForScreen(screen:id())) do
+      if idx == space_index then return space_id end
+      idx = idx + 1
     end
   end
   return -1
@@ -29,22 +28,23 @@ end
 
 function M.moveCurrentWindowToSpace(space_index)
   local win = hs.window.focusedWindow()
-
-  local screen = hs.screen.mainScreen()
-  local space_id = M.getSpaceIDInScreen(screen, space_index)
-
-  -- this gets screens in variable order
-  -- local space_id = M.getSpaceID(space_index)
-
+  local space_id = M.getSpaceID(space_index)
   if space_id < 0 then
-    hs.alert.show("Index " .. space_index .. " is too larse")
+    hs.alert.show("Index " .. space_index .. " is too large")
   else
     hs.spaces.moveWindowToSpace(win:id(), space_id)
   end
 end
 
---- Move all windows of the focused app's process to a space.
---- Shells out to hackmac.py which calls SLSProcessAssignToSpace.
+function M.moveProcessToSpaceID(pid, space_id)
+  local rc = hackmac.moveProcessToSpace(pid, space_id)
+  if rc ~= 0 then
+    hs.alert.show("Move failed: " .. rc)
+    return false
+  end
+  return true
+end
+
 function M.moveCurrentAppToSpace(space_index)
   local win = hs.window.focusedWindow()
   if not win then
@@ -52,19 +52,18 @@ function M.moveCurrentAppToSpace(space_index)
     return
   end
 
-  local screen = hs.screen.mainScreen()
-  local space_id = M.getSpaceIDInScreen(screen, space_index)
+  local space_id = M.getSpaceID(space_index)
   if space_id < 0 then
     hs.alert.show("Index " .. space_index .. " is too large")
     return
   end
 
-  local app_name = win:application():name()
-  hs.task.new(hackmac_python, function(exitCode, stdOut, stdErr)
-    if exitCode ~= 0 then
-      hs.alert.show("Move failed: " .. (stdErr or ""))
-    end
-  end, {hackmac_script, "move-app", app_name, tostring(space_id)}):start()
+  local rc = hackmac.moveProcessToSpace(win:pid(), space_id)
+  if rc ~= 0 then
+    hs.alert.show("Move failed: " .. rc)
+    return
+  end
+  border.update()
 end
 
 function getIndexFromValue(tbl, value)
