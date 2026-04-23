@@ -124,6 +124,7 @@
       "ctrl-k": "editor::LineUp",
       "cmd-n": "pane::ActivateNextItem",
       "cmd-p": "pane::ActivatePreviousItem",
+      "cmd-shift-r": "editor::ReloadFile",
       // "cmd-n": "tab_switcher::ToggleAll",
       // "enter": "task::Rerun",
       // Save file and run
@@ -204,6 +205,7 @@
     "context": "VimControl && extension==md",
     "bindings": {
       "enter": "markdown::OpenPreview",
+      "cmd-enter": "markdown::OpenFollowingPreview",
     },
   },
   {

@@ -7,8 +7,23 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  "project_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "right"
+  },
+  "git_panel": {
+    "dock": "left"
+  },
   "icon_theme": "Catppuccin Frappé",
   "agent_servers": {
+    "github-copilot-cli": {
+      "type": "registry"
+    },
+    "cursor": {
+      "type": "registry"
+    },
     "claude-acp": {
       "favorite_config_option_values": {
         "model": [
@@ -18,6 +33,7 @@
       "type": "registry",
       "default_model": "opus[1m]",
       "default_config_options": {
+        "mode": "bypassPermissions",
         "model": "opus[1m]"
       }
     }
@@ -93,6 +109,7 @@
     }
   ],
   "agent": {
+    "dock": "right",
     "commit_message_model": {
       "provider": "copilot_chat",
       "model": "claude-sonnet-4.6"
@@ -186,8 +203,9 @@
   //   }
   // },
   "edit_predictions": {
+    "disabled_globs": [],
     "provider": "copilot",
-    "mode": "eager"
+    "mode": "subtle"
   },
   "tab_bar": {
     "show": true
@@ -267,8 +285,8 @@
   },
   "title_bar": {
     // Whether to show the branch icon beside branch switcher in the titlebar.
-    "show_branch_icon": true,
     // Whether to show the branch name button in the titlebar.
+    "show_branch_status_icon": true,
     "show_branch_name": true,
     // Whether to show the project host and name in the titlebar.
     "show_project_items": true,
