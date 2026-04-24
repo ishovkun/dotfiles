@@ -922,24 +922,41 @@
 ;; -----------------------------------------------------------------
 
 (after! tramp
-  (setq tramp-inline-compress-start-size 1000)
-  (setq tramp-copy-size-limit 10000)
-  (setq vc-handled-backends '(Git))
-  (setq tramp-verbose 1)
-  (setq tramp-default-method "scp")
-  (setq tramp-use-ssh-controlmaster-options nil)
-  (setq projectile--mode-line "Projectile")
+  (setq tramp-default-method "ssh")
+  (setq tramp-use-ssh-controlmaster-options t)
+  (setq tramp-ssh-controlmaster-options
+        (concat "-o ControlMaster=auto "
+                "-o ControlPath='tramp.%%C' "
+                "-o ControlPersist=600"))
+  (setq tramp-copy-size-limit (* 1024 1024))
+  (setq tramp-inline-compress-start-size (* 1024 1024))
+  (setq remote-file-name-inhibit-cache 60)
   (setq tramp-verbose 1)
   (setq tramp-shell-prompt-pattern "^[^$>\n]*[#$%>] *\\(\[[0-9;]*[a-zA-Z] *\\)*")
-  ;; emable tramp dir-locals
   (setq enable-remote-dir-locals t)
+  (setq tramp-auto-save-directory (expand-file-name "tramp-autosave" doom-cache-dir))
+  (make-directory tramp-auto-save-directory t)
+  (setq projectile--mode-line "Projectile")
   (setq vc-ignore-dir-regexp
-      (format "\\(%s\\)\\|\\(%s\\)"
-              vc-ignore-dir-regexp
-              tramp-file-name-regexp))
-  ;; if line above is too radical
-  ;; (setq vc-handled-backends '(Git))
-  )
+        (format "\\(%s\\)\\|\\(%s\\)"
+                vc-ignore-dir-regexp
+                tramp-file-name-regexp))
+  (connection-local-set-profile-variables
+   'ishovkun/remote-fast
+   '((vc-handled-backends . nil)
+     (magit-auto-revert-mode . nil)))
+  (connection-local-set-profiles
+   '(:application tramp) 'ishovkun/remote-fast))
+
+;; Opt-in faster remote backend: use /rpc:host:/path instead of /ssh:host:/path.
+;; Auto-deploys a Rust sidecar to the remote on first connect. Falls back to
+;; regular TRAMP (/ssh:, /scp:) if anything goes sideways.
+;; Disabled 2026-04-23: v0.8.0 binary vs. git-HEAD elisp version skew causes
+;; "RPC error: Method not found: process.status" even on non-rpc paths.
+;; Re-enable once upstream cuts a release including today's process.status fix.
+;; (use-package! msgpack)
+;; (use-package! tramp-rpc
+;;   :after tramp)
 
 ;; google-c-style
 (use-package! google-c-style
@@ -1189,6 +1206,9 @@
                                     :compile "cmake --build Debug"
                                     :test "ctest")
   (add-to-list 'projectile-globally-ignored-directories ".ccls-cache")
+  ;; Treat any remote path as not-a-project — prevents projectile from
+  ;; recursively indexing remote trees over TRAMP (catastrophically slow).
+  (setq projectile-ignored-project-function #'file-remote-p)
   (defadvice projectile-on (around exlude-tramp activate)
   "This should disable projectile when visiting a remote file"
   (unless  (--any? (and it (file-remote-p it))
