@@ -1,6 +1,21 @@
 [
   // to debug context: Open Key Context View
   {
+    "context": "Pane",
+    "bindings": {
+      // Tab cycling in visual order (left-to-right) instead of MRU order
+      "ctrl-tab": "pane::ActivateNextItem",
+      "ctrl-shift-tab": "pane::ActivatePreviousItem"
+    }
+  },
+  {
+    "context": "AgentPanel",
+    "bindings": {
+      "ctrl-tab": "agents_sidebar::ToggleThreadSwitcher",
+      "ctrl-shift-tab": ["agents_sidebar::ToggleThreadSwitcher", { "select_last": true }]
+    }
+  },
+  {
     "bindings": {
       "escape": "menu::Cancel",
       "cmd-x": "command_palette::Toggle",
@@ -28,6 +43,7 @@
       "cmd-shift-j": [
         "workspace::SendKeystrokes",
         "ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w -",
+
       ],
       "cmd-+": ["zed::IncreaseUiFontSize", { "persist": false }],
       "cmd-_": ["zed::DecreaseUiFontSize", { "persist": false }],
@@ -65,6 +81,7 @@
       "cmd-d": "vim::ScrollDown",
       "cmd-e": "vim::ScrollUp",
       "cmd-u": "vim::ScrollUp",
+      "cmd-y": "agent::AllowOnce",
       "space f f": "file_finder::Toggle",
       "space space": "file_finder::Toggle",
       "space o e": "dev::OpenKeyContextView",
@@ -81,6 +98,7 @@
       "space t m": "editor::ToggleMinimap",
       "space t t": "editor::ToggleTabBar",
       "space g g": "git::Diff",
+      "space g l": "git_graph::Open",
       "space w v": "pane::SplitVertical",
       "space w s": "pane::SplitHorizontal",
       "space w o": "workspace::ActivateNextWindow",
@@ -199,6 +217,14 @@
         "task::Spawn",
         { "task_name": "gitu", "reveal_target": "center" },
       ],
+    },
+  },
+  {
+    "context": "AgentPanel",
+    "use_key_equivalents": true,
+    "bindings": {
+      "cmd-shift-r": "agent::OpenRulesLibrary",
+      "cmd-shift-p": "agent::ManageProfiles",
     },
   },
   {

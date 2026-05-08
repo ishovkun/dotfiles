@@ -7,6 +7,7 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  "cli_default_open_behavior": "existing_window",
   "project_panel": {
     "dock": "left"
   },
@@ -56,13 +57,13 @@
             }
           },
           {
-            "name": "gcp/google/gemini-3-pro",
+            "name": "gcp/google/gemini-3.1-pro-preview",
             "max_tokens": 32000,
             "max_output_tokens": 31000,
             "max_completion_tokens": 63000,
             "capabilities": {
               "tools": true,
-              "images": false,
+              "images": true,
               "parallel_tool_calls": false,
               "prompt_cache_key": false
             }
