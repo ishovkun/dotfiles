@@ -1243,3 +1243,104 @@
 ;;   :config
 ;;   (zone-when-idle 300)
 ;;   )
+
+;; -------------------------------- AI agents (ACP) -------------------------------
+;; agent-shell runs Claude Code / Codex in a native Emacs buffer over the Agent
+;; Client Protocol — the same agents as Zed's claude-acp/codex-acp.
+;;   M-x agent-shell                            ; pick an agent
+;;   M-x agent-shell-anthropic-start-claude-code
+;;   M-x agent-shell-openai-start-codex
+;; Sessions persist under .agent-shell/ at the project root (auto-gitignored).
+;; Requires the ACP CLIs on PATH; :login t reuses the existing CLI logins (as Zed
+;; does) instead of API keys. Swap to (:api-key ...) if you'd rather use keys.
+;; GUI/daemon Emacs doesn't reliably inherit the shell PATH, so make sure
+;; ~/.local/bin (where claude-agent-acp / codex-acp live) is on exec-path & PATH.
+(let ((local-bin (expand-file-name "~/.local/bin")))
+  (add-to-list 'exec-path local-bin)
+  (unless (member local-bin (split-string (or (getenv "PATH") "") path-separator))
+    (setenv "PATH" (concat local-bin path-separator (getenv "PATH")))))
+(use-package! agent-shell
+  :config
+  (setq agent-shell-anthropic-authentication
+        (agent-shell-anthropic-make-authentication :login t))
+  (setq agent-shell-openai-authentication
+        (agent-shell-openai-make-authentication :login t))
+
+  ;; Keep Evil yanks as normal text everywhere, including the system
+  ;; clipboard.  When that same yank is pasted into an agent prompt, paste a
+  ;; compact file/line reference instead (Zed-style).
+  (defvar my/agent-shell-evil-yank-context nil)
+
+  (defun my/agent-shell--remember-evil-yank
+      (beg end _type register &optional _yank-handler)
+    "Remember the file and line range most recently yanked by Evil."
+    (setq my/agent-shell-evil-yank-context
+          (when (and buffer-file-name (< beg end) (not (eq register ?_)))
+            (let* ((project (project-current nil
+                                             (file-name-directory
+                                              buffer-file-name)))
+                   (root (and project (project-root project)))
+                   (path (if root
+                             (file-relative-name buffer-file-name root)
+                           buffer-file-name))
+                   (last-pos
+                    (save-excursion
+                      (goto-char end)
+                      (if (and (bolp) (> end beg))
+                          (1- end)
+                        end)))
+                   (text
+                    (condition-case nil
+                        (evil-get-register (or register ?\") t)
+                      (error nil))))
+              (when (stringp text)
+                (list :text (substring-no-properties text)
+                      :path path
+                      :line-start (line-number-at-pos beg)
+                      :line-end (line-number-at-pos last-pos)))))))
+
+  (defun my/agent-shell--prompt-buffer-p ()
+    "Return non-nil when point is in an Agent Shell prompt buffer."
+    (derived-mode-p 'agent-shell-mode 'agent-shell-viewport-edit-mode))
+
+  (defun my/agent-shell--evil-paste-as-reference
+      (original count &optional register yank-handler)
+    "Paste a remembered Evil yank as a reference in Agent Shell."
+    (let* ((context my/agent-shell-evil-yank-context)
+           (text (condition-case nil
+                     (if register
+                         (evil-get-register register t)
+                       (current-kill 0 t))
+                   (error nil))))
+      (if (and context
+               (my/agent-shell--prompt-buffer-p)
+               (stringp text)
+               (equal (substring-no-properties text)
+                      (plist-get context :text)))
+          (let* ((reference
+                  (format "%s:%d-%d"
+                          (plist-get context :path)
+                          (plist-get context :line-start)
+                          (plist-get context :line-end)))
+                 ;; Give Evil a temporary unnamed register.  The real kill
+                 ;; ring and named registers remain unchanged.
+                 (kill-ring (cons reference kill-ring))
+                 (kill-ring-yank-pointer kill-ring)
+                 (interprogram-paste-function nil))
+            (funcall original count nil nil))
+        (funcall original count register yank-handler))))
+
+  (after! evil
+    ;; Avoid stacking the advice when reloading Doom's config.
+    (advice-remove #'evil-yank
+                   #'my/agent-shell--remember-evil-yank)
+    (advice-remove #'evil-paste-before
+                   #'my/agent-shell--evil-paste-as-reference)
+    (advice-remove #'evil-paste-after
+                   #'my/agent-shell--evil-paste-as-reference)
+    (advice-add #'evil-yank :after
+                #'my/agent-shell--remember-evil-yank)
+    (advice-add #'evil-paste-before :around
+                #'my/agent-shell--evil-paste-as-reference)
+    (advice-add #'evil-paste-after :around
+                #'my/agent-shell--evil-paste-as-reference)))

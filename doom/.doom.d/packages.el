@@ -56,4 +56,9 @@
 
 (package! org-modern)
 
+;; agent-shell: Claude Code / Codex (and other ACP agents) in a native Emacs
+;; buffer — same Agent Client Protocol as Zed's claude-acp/codex-acp.
+;; Deps (acp, shell-maker) are pulled from its Package-Requires automatically.
+(package! agent-shell)
+
 ;;; packages.el ends here
