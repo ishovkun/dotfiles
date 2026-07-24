@@ -61,4 +61,13 @@
 ;; Deps (acp, shell-maker) are pulled from its Package-Requires automatically.
 (package! agent-shell)
 
+;; Faster remote editing via a Rust sidecar over SSH — opt-in per path
+;; (use /rpc:host:/path instead of /ssh:host:/path). Keeps normal TRAMP as fallback.
+;; Disabled 2026-04-23: v0.8.0 has an elisp↔binary version skew bug that
+;; spews "RPC error: Method not found: process.status" and wedges Emacs on
+;; exit. Re-enable when upstream cuts the fix.
+(package! msgpack :disable t)
+(package! tramp-rpc :disable t
+  :recipe (:host github :repo "ArthurHeymans/emacs-tramp-rpc" :files ("lisp/*.el")))
+
 ;;; packages.el ends here
