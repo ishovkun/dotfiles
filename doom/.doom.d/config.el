@@ -2,6 +2,13 @@
 
 ;; place your private configuration here
 ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 14))
+
+;; macOS 26 hack: async native-comp workers hit an OS-level fork-safety bug
+;; (children crash in os_log/libsystem_trace inherited state; same class as
+;; ruby-lang bug #21969), then get re-queued, snowballing into a CPU-pegging
+;; worker storm. Cap the workers until Apple fixes it.
+(when (eq system-type 'darwin)
+  (setq native-comp-async-jobs-number 4))
 (when (string= (system-name) "space")
   ;; manjaro hack
   ;; (setq doom-font (font-spec :family "Iosevka" :size 27 :width 'normal)))
