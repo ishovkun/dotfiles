@@ -173,7 +173,8 @@ local launch = require("launch")
 
 -- second argument meand whether to bring the app to the current workspace
 hs.hotkey.bind('alt', 'e', function() launch.toggleApp("Ferdium", true) end)
-hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Marta", true) end)
+-- hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Marta", true) end)
+hs.hotkey.bind('alt', 'd', function() launch.toggleApp("Paradise FM", true) end)
 hs.hotkey.bind('alt', 'return', function() launch.toggleApp("Alacritty", true) end)
 hs.hotkey.bind('alt', 't', function() launch.toggleApp("Terminal", true) end)
 -- hs.hotkey.bind('alt', 'r', function() launch.toggleApp("KeeWeb", true) end)
@@ -184,26 +185,35 @@ hs.hotkey.bind('alt', 'r', function() launch.toggleApp("Bitwarden", true) end)
 -- hs.hotkey.bind('alt', '3', function() spaces.switoToSpace(3) end)
 -- hs.hotkey.bind('alt', '2', function() hs.spaces.gotoSpace(2) end)
 
--- Track alt key state independently (external keyboards don't always pass
--- modifier flags through on systemDefined media-key events).
-local altDown = false
-hs.eventtap.new({hs.eventtap.event.types.flagsChanged}, function(event)
-    altDown = event:getFlags().alt or false
-    return false
-end):start()
-
--- spotilike: Option + Play/Pause to toggle like on current Spotify track
-hs.eventtap.new({hs.eventtap.event.types.systemDefined}, function(event)
-    local data = event:systemKey()
-    if data.key == "PLAY" and data.down and altDown then
-        hs.task.new("/Users/ishovkun/code/spotihack/spotilike", function(_, stdOut)
-            if stdOut and #stdOut > 0 then
-                notify.show(stdOut:gsub("%s+$", ""), 1)
-            end
-        end):start()
-        return true
-    end
-end):start()
+-- spotilike (Option + Play/Pause to like the current Spotify track) is now
+-- handled by a Karabiner complex modification (spotilike.json). macOS routes
+-- the built-in media key through the now-playing system, so it never reaches a
+-- Hammerspoon eventtap. The old eventtap-based implementation is kept below,
+-- commented out, in case Karabiner is ever unavailable.
+--
+-- -- Track alt key state independently (external keyboards don't always pass
+-- -- modifier flags through on systemDefined media-key events).
+-- local altDown = false
+-- hs.eventtap.new({hs.eventtap.event.types.flagsChanged}, function(event)
+--     altDown = event:getFlags().alt or false
+--     return false
+-- end):start()
+--
+-- local function spotilike()
+--     hs.task.new("/Users/ishovkun/code/spotihack/spotilike", function(_, stdOut)
+--         if stdOut and #stdOut > 0 then
+--             notify.show(stdOut:gsub("%s+$", ""), 1)
+--         end
+--     end):start()
+-- end
+--
+-- hs.eventtap.new({hs.eventtap.event.types.systemDefined}, function(event)
+--     local data = event:systemKey()
+--     if data.key == "PLAY" and data.down and altDown then
+--         spotilike()
+--         return true
+--     end
+-- end):start()
 
 -- reload
 hs.hotkey.bind(hyper, 'r', function()
