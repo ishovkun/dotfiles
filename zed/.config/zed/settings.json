@@ -19,24 +19,27 @@
   },
   "icon_theme": "Catppuccin Frappé",
   "agent_servers": {
+    "codex-acp": {
+      "default_config_options": {
+        "mode": "agent",
+        "reasoning_effort": "xhigh"
+      },
+      "type": "registry"
+    },
+    "claude-acp": {
+      "default_config_options": {
+        "fast": "off",
+        "mode": "auto",
+        "model": "claude-fable-5",
+        "effort": "xhigh"
+      },
+      "type": "registry"
+    },
     "github-copilot-cli": {
       "type": "registry"
     },
     "cursor": {
       "type": "registry"
-    },
-    "claude-acp": {
-      "favorite_config_option_values": {
-        "model": [
-          "opus[1m]"
-        ]
-      },
-      "type": "registry",
-      "default_model": "opus[1m]",
-      "default_config_options": {
-        "mode": "bypassPermissions",
-        "model": "opus[1m]"
-      }
     }
   },
   "language_models": {
@@ -95,21 +98,12 @@
           "paths": [
             "/home/scratch.ishovkun_gpu/code/flashinfer-dev"
           ]
-        },
-        {
-          "paths": [
-            "/home/scratch.ishovkun_gpu/code/selective_state"
-          ]
-        },
-        {
-          "paths": [
-            "/home/scratch.ishovkun_gpu/code/sglang"
-          ]
         }
       ]
     }
   ],
   "agent": {
+    "sidebar_side": "right",
     "dock": "right",
     "commit_message_model": {
       "provider": "copilot_chat",
@@ -217,7 +211,25 @@
     // Delay in milliseconds before showing the which-key popup.
     "delay_ms": 200,
   },
-  "theme": "Catppuccin Frappé",
+  "theme": "Frappé",
+  "experimental.theme_overrides": {
+    "vim.normal.background": "#8caaee",
+    "vim.insert.background": "#a6d189",
+    "vim.replace.background": "#e78284",
+    "vim.visual.background": "#ca9ee6",
+    "vim.visual_line.background": "#ca9ee6",
+    "vim.visual_block.background": "#ca9ee6",
+    "vim.helix_normal.background": "#8caaee",
+    "vim.helix_select.background": "#ca9ee6",
+    "vim.normal.foreground": "#232634",
+    "vim.insert.foreground": "#232634",
+    "vim.replace.foreground": "#232634",
+    "vim.visual.foreground": "#232634",
+    "vim.visual_line.foreground": "#232634",
+    "vim.visual_block.foreground": "#232634",
+    "vim.helix_normal.foreground": "#232634",
+    "vim.helix_select.foreground": "#232634"
+  },
   "cursor_blink": false,
   "vim_mode": true,
   "ui_font_size": 14,
@@ -248,6 +260,21 @@
   //   "include_ignored": false,
   //   "regex": false
   // },
+  "search": {
+    // Include gitignored files in project search (Cmd-Shift-F).
+    // gitignore controls git tracking, not searchability.
+    "include_ignored": true
+  },
+  "file_finder": {
+    // Include gitignored files in the file finder (Cmd-P / space space).
+    // "all" = every gitignored file, "indexed" = only ones Zed has indexed,
+    // "smart" = only when opened from a gitignored worktree (default).
+    "include_ignored": "all"
+  },
+  // Scan these globs even when gitignored, marking them "always included" so they
+  // show everywhere — project panel, search, AND the agent @-mention picker (which
+  // has no include-ignored setting of its own). Replaces Zed's default [".env*"].
+  "file_scan_inclusions": [".env*", ".plans/**"],
   "use_smartcase_search": true,
   "vim": {
     "default_mode": "normal",
