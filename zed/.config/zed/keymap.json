@@ -18,6 +18,7 @@
   {
     "bindings": {
       "escape": "menu::Cancel",
+      "cmd-y": "agent::AllowOnce",
       "cmd-x": "command_palette::Toggle",
       "cmd-l": "workspace::ActivatePaneRight",
       "cmd-h": "workspace::ActivatePaneLeft",
@@ -53,6 +54,7 @@
       "cmd-\\": "workspace::ToggleLeftDock",
       // "cmd-[": "workspace::ToggleRightDock",
       "cmd-[": "agent::ToggleFocus",
+      "cmd-'": "multi_workspace::ToggleWorkspaceSidebar",
     },
   },
   {
@@ -83,7 +85,7 @@
       "cmd-u": "vim::ScrollUp",
       "cmd-y": "agent::AllowOnce",
       "space f f": "file_finder::Toggle",
-      "space space": "file_finder::Toggle",
+      "space space": ["file_finder::Toggle", { "separate_history": true }],
       "space o e": "dev::OpenKeyContextView",
       "space o o": "outline_panel::ToggleFocus",
       "space t p": "workspace::ToggleLeftDock",
@@ -178,7 +180,7 @@
       "space f s": "workspace::Save",
       "space f n": "workspace::NewFile",
       "space b d": "pane::CloseActiveItem",
-      "space space": "file_finder::Toggle",
+      "space space": ["file_finder::Toggle", { "separate_history": true }],
       // "space space": "tab_switcher::ToggleAll",
       "space s j": "outline::Toggle",
       "space ;": "vim::ToggleComments",
@@ -228,6 +230,13 @@
     },
   },
   {
+    "context": "Editor && !agent_diff && !AgentPanel",
+    "use_key_equivalents": true,
+    "bindings": {
+      "cmd-y": "agent::AllowOnce",
+    },
+  },
+  {
     "context": "VimControl && extension==md",
     "bindings": {
       "enter": "markdown::OpenPreview",
@@ -243,7 +252,7 @@
       "e": "markdown::ScrollPageUp",
       "j": "markdown::ScrollDown",
       "k": "markdown::ScrollUp",
-      "space space": "file_finder::Toggle",
+      "space space": ["file_finder::Toggle", { "separate_history": true }],
       "cmd-n": "pane::ActivateNextItem",
       "cmd-p": "pane::ActivatePreviousItem",
       "space f k": "zed::OpenKeymapFile",
@@ -466,7 +475,7 @@
       "1": "image_viewer::ZoomToActualSize",
       "shift-0": "image_viewer::FitToView",
       "q": "pane::CloseActiveItem",
-      "space space": "file_finder::Toggle",
+      "space space": ["file_finder::Toggle", { "separate_history": true }],
       "cmd-p": "menu::SelectPrevious",
       "cmd-n": "menu::SelectNext",
       "space t f": "project_panel::ToggleFocus",
