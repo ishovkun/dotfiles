@@ -11,7 +11,7 @@
     "files.autoSave": "afterDelay",
     "cmake.configureOnOpen": true,
     "editor.insertSpaces": true,
-    "editor.fontSize": 11,
+    "editor.fontSize": 13,
     "git.openRepositoryInParentFolders": "never",
     "workbench.colorTheme": "Catppuccin Frappé",
     "[cpp]": {
