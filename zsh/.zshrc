@@ -119,3 +119,4 @@ fi
 
 export PARDISO_LIC_PATH="$HOME/lic/pardiso.lic"
 export SSH_ASKPASS='/usr/bin/ksshaskpass'
+[ -f /opt/miniconda3/etc/profile.d/conda.sh ] && source /opt/miniconda3/etc/profile.d/conda.sh
