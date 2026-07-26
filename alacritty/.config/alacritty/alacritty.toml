@@ -1,0 +1,26 @@
+[[keyboard.bindings]]
+chars = "^[[20;5~"
+key = "Return"
+mods = "Control"
+
+[[keyboard.bindings]]
+action = "Paste"
+key = "V"
+mods = "Alt"
+
+[[keyboard.bindings]]
+action = "Copy"
+key = "C"
+mods = "Alt"
+
+[[keyboard.bindings]]
+action = "Copy"
+key = "E"
+mods = "Alt"
+
+[font]
+size = 14.0
+
+
+
+
