@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "KWin/Script",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "igshov@gmail.com",
+                "Name": "Igor Shovkun"
+            }
+        ],
+        "Description": "Hammerspoon-style window resizing and tiling shortcuts",
+        "Id": "hammerspoon-window-ops",
+        "License": "MIT",
+        "Name": "Hammerspoon Window Operations",
+        "Version": "1.0"
+    },
+    "X-KDE-PluginKeyword": "hammerspoon-window-ops",
+    "X-Plasma-API": "declarativescript",
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-MainScript": "v2/main.qml"
+}
