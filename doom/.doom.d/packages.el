@@ -70,4 +70,6 @@
 (package! tramp-rpc :disable t
   :recipe (:host github :repo "ArthurHeymans/emacs-tramp-rpc" :files ("lisp/*.el")))
 
+(package! aider)
+
 ;;; packages.el ends here

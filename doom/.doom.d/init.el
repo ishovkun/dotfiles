@@ -23,7 +23,7 @@
        :ui
        deft                    ; notational velocity for Emacs
        doom                    ; what makes DOOM look the way it does
-       doom-dashboard          ; a nifty splash screen for Emacs
+       dashboard               ; a nifty splash screen for Emacs
        ;; doom-quit            ; DOOM quit-message prompts when you quit Emacs
        ;; (emoji +unicode)     ; 🙂
        ;; fill-column          ; a `fill-column' indicator
@@ -67,7 +67,6 @@
 
        :emacs
        (dired                  ; making dired pretty [functional]
-       +ranger                 ; bringing the goodness of ranger to dired
        +icons                  ; colorful icons for dired-mode
         )
        electric                ; smarter, keyword-based electric-indent

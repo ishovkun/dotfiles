@@ -3,6 +3,10 @@
 ;; place your private configuration here
 ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 14))
 
+;; Doom 2.2 does not emit private autodefs into this profile's generated
+;; loaddefs, so load the existing helper library explicitly.
+(load! "autoload/funcs")
+
 ;; macOS 26 hack: async native-comp workers hit an OS-level fork-safety bug
 ;; (children crash in os_log/libsystem_trace inherited state; same class as
 ;; ruby-lang bug #21969), then get re-queued, snowballing into a CPU-pegging
@@ -414,8 +418,8 @@
     :desc "Open calendar" :n "c" #'=calendar
     :desc "Open calc" :n "'" #'calc
     :desc "Open godbolt" :n "g" #'compiler-explorer
-    (:after dap-mode :map c++-mode-map
-     :desc "Edit default dap config" :nv "j" #'dap-debug-create-or-edit-json-template)
+    (:after dape :map c++-mode-map
+     :desc "Edit launch.json" :nv "j" #'dap-debug-create-or-edit-json-template)
     (:after ein
      :desc "Open Ipython notebook" :n "i" #'ein:run)
     )
@@ -597,7 +601,6 @@
 )
 
 (use-package highlight-indent-guides
-  :ensure t
   :hook ((prog-mode . highlight-indent-guides-mode)
          (yaml-mode . highlight-indent-guides-mode))
   :custom
@@ -785,14 +788,14 @@
 
 ;; ----------------------------- dired ----------------------------------
 (after! dirvish
-  (setq! dirvish-quick-access-entries
-         `(("h" "~/"                          "Home")
-           ("e" ,user-emacs-directory         "Emacs user directory")
-           ("c" "~/dev/"                      "Code")
-           ("b" "~/build/"                    "Build")
-           ("l" "~/Downloads/"                "Downloads")
-           ("m" "/mnt/"                       "Mounted drives")
-           ("t" "~/.local/share/Trash/files/" "Trash"))))
+  (setopt dirvish-quick-access-entries
+          `(("h" "~/"                          "Home")
+            ("e" ,user-emacs-directory         "Emacs user directory")
+            ("c" "~/dev/"                      "Code")
+            ("b" "~/build/"                    "Build")
+            ("l" "~/Downloads/"                "Downloads")
+            ("m" "/mnt/"                       "Mounted drives")
+            ("t" "~/.local/share/Trash/files/" "Trash"))))
 ;; ranger
 ;; (setq ranger-deer-show-details nil)
 ;; (setq ranger-show-hidden nil)
@@ -974,24 +977,6 @@
   )
 ;; disable realgud confirmations
 (after! realgud (setq realgud-safe-mode 'nil))
-;; (after! dap-mode (setq 'dap--debug-template-configurations 'dap-debug-template-configurations))
-
-(use-package! dap-mode
-  :config
-   ;;; set the debugger executable (c++)
-
-  (setq dap-lldb-debug-program '("/usr/bin/lldb-vscode"))
-  (if (eq system-type 'darwin)
-      (setq dap-lldb-debug-program '("/opt/homebrew/opt/llvm/bin/lldb-vscode"))
-      )
-  ;; (dap-register-debug-template "LLDB::Run"
-  ;; (list :type "lldb"
-  ;;       :request "launch"
-  ;;       :name "LLDB::Run"
-  ;;       :target nil
-        ;; :cwd nil))
-  )
-(use-package! dap-cpptools)
 ;; --------------------------------- autocomplete ----------------------------
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
@@ -1012,7 +997,7 @@
     (setq org-directory "~/Dropbox/enotes")
      (setq org-agenda-files (list org-directory))
     (when (string= (system-name) "space")
-      (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
+      (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
       )
     (add-hook 'org-mode-hook #'org-modern-mode)
     (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
@@ -1025,6 +1010,11 @@
 
 
     ))
+
+(after! org-download
+  ;; Native Wayland region capture; Doom Doctor only checks legacy X11 tools.
+  (setq org-download-screenshot-method "grim -g \"$(slurp)\" \"%s\""))
+
 ;; ----------------------------------- Org-Roam -----------------------------
 ;; (setq org-roam-directory "~/")
 ;; ---------------------------------- Calendar ------------------------------
@@ -1135,6 +1125,9 @@
 ;; ----------------------------------- Copilot ---------------------------------
 ;; accept completion from copilot and fallback to company
 (use-package! copilot
+  :init
+  (setq copilot-install-dir
+        (expand-file-name ".cache/copilot/" doom-emacs-dir))
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
               ("<tab>" . 'copilot-accept-completion)
@@ -1216,16 +1209,9 @@
   ;; Treat any remote path as not-a-project — prevents projectile from
   ;; recursively indexing remote trees over TRAMP (catastrophically slow).
   (setq projectile-ignored-project-function #'file-remote-p)
-  (defadvice projectile-on (around exlude-tramp activate)
-  "This should disable projectile when visiting a remote file"
-  (unless  (--any? (and it (file-remote-p it))
-                   (list
-                    (buffer-file-name)
-                    list-buffers-directory
-                    default-directory
-                    dired-directory))
-    ad-do-it))
-
+  ;; Do not let ~/.git turn every nested directory into the same project.
+  (setq projectile-project-root-files-bottom-up
+        (remove ".git" projectile-project-root-files-bottom-up))
   )
 
 (after! ivy

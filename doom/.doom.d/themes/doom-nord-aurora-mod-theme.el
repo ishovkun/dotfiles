@@ -203,6 +203,9 @@ determine the exact padding."
 
    ;; org-mode
    (org-hide :foreground hidden)
+   ((org-block &override) :background bg)
+   ((org-block-begin-line &override) :background bg)
+   ((org-block-end-line &override) :background bg)
    (solaire-org-hide-face :foreground hidden))
 
 

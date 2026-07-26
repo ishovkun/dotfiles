@@ -199,11 +199,6 @@ the block the second that one for the end.")
   (key-with-indent ?\[)  (key-with-indent ?\])
   (setq indent-line-function 'indent-relative-function))
 
-(if (version-list-< (version-to-list emacs-version) '(24 0))
-    (defadvice regexp-opt (after symbols activate)
-      (if (eq paren 'symbols)
-	  (setq ad-return-value (concat "\\_<" ad-return-value "\\_>")))))
-
 (defun last-cons (list)
   "Return last cons in list. Note, that list must contain at least one element."
   (unless (and list (listp list))
