@@ -7,14 +7,20 @@
                 "Name": "Igor Shovkun"
             }
         ],
+        "Category": "Utilities",
         "Description": "Hammerspoon-style window resizing and tiling shortcuts",
+        "EnabledByDefault": false,
+        "Icon": "preferences-system-windows",
         "Id": "hammerspoon-window-ops",
         "License": "MIT",
         "Name": "Hammerspoon Window Operations",
+        "ServiceTypes": [
+            "KWin/Script"
+        ],
         "Version": "1.0"
     },
     "X-KDE-PluginKeyword": "hammerspoon-window-ops",
     "X-Plasma-API": "declarativescript",
     "X-Plasma-API-Minimum-Version": "6.0",
-    "X-Plasma-MainScript": "v2/main.qml"
+    "X-Plasma-MainScript": "ui/main.qml"
 }
