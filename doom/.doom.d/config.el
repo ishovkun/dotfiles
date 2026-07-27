@@ -1336,4 +1336,188 @@
     (advice-add #'evil-paste-before :around
                 #'my/agent-shell--evil-paste-as-reference)
     (advice-add #'evil-paste-after :around
-                #'my/agent-shell--evil-paste-as-reference)))
+                #'my/agent-shell--evil-paste-as-reference))
+
+  ;; Permission banners use text-property keymaps upstream, so their y/!/n
+  ;; shortcuts only work when point is exactly on a button and conflict with
+  ;; Evil operators.  Resolve the latest pending permission from session state
+  ;; instead, making these commands reliable from any Evil state and anywhere
+  ;; in the shell or viewport.
+  (defun my/agent-shell--pending-permission ()
+    "Return the latest pending Agent Shell permission and its session data."
+    (let* ((shell-buffer (agent-shell--shell-buffer :no-create t))
+           (state (with-current-buffer shell-buffer
+                    (agent-shell--state)))
+           pending)
+      (map-do
+       (lambda (tool-call-id tool-call)
+         (when (map-elt tool-call :permission-request-id)
+           (setq pending
+                 (list shell-buffer state tool-call-id tool-call))))
+       (map-elt state :tool-calls))
+      (or pending
+          (user-error "No pending Agent Shell permission"))))
+
+  (defun my/agent-shell--respond-to-permission (kind)
+    "Respond to the latest pending permission using action KIND."
+    (pcase-let* ((`(,shell-buffer ,state ,tool-call-id ,tool-call)
+                  (my/agent-shell--pending-permission))
+                 (action
+                  (seq-find
+                   (lambda (candidate)
+                     (equal (map-elt candidate :kind) kind))
+                   (map-elt tool-call :permission-actions))))
+      (unless action
+        (user-error "Permission does not offer %s"
+                    (replace-regexp-in-string "_" " " kind)))
+      (with-current-buffer shell-buffer
+        (agent-shell--send-permission-response
+         :client (map-elt state :client)
+         :request-id (map-elt tool-call :permission-request-id)
+         :option-id (map-elt action :option-id)
+         :state state
+         :tool-call-id tool-call-id
+         :message-text (format "Selected: %s"
+                               (map-elt action :option)))
+        (when (equal kind "reject_once")
+          ;; Match Agent Shell's built-in Reject button: reject, then stop so
+          ;; there is a prompt where the request can be corrected.
+          (agent-shell-interrupt t)))))
+
+  (defun my/agent-shell-permission-allow-once ()
+    "Allow the latest pending Agent Shell action once."
+    (interactive)
+    (my/agent-shell--respond-to-permission "allow_once"))
+
+  (defun my/agent-shell-permission-allow-always ()
+    "Always allow the latest pending Agent Shell action."
+    (interactive)
+    (my/agent-shell--respond-to-permission "allow_always"))
+
+  (defun my/agent-shell-permission-reject ()
+    "Reject the latest pending Agent Shell action and stop the turn."
+    (interactive)
+    (my/agent-shell--respond-to-permission "reject_once"))
+
+  (defun my/agent-shell-permission-view-diff ()
+    "View the diff attached to the latest pending Agent Shell action."
+    (interactive)
+    (pcase-let* ((`(,shell-buffer ,state ,tool-call-id ,tool-call)
+                  (my/agent-shell--pending-permission))
+                 (diffs (map-elt tool-call :diffs)))
+      (unless diffs
+        (user-error "Pending permission has no diff"))
+      (with-current-buffer shell-buffer
+        (funcall
+         (agent-shell--make-diff-viewing-function
+          :diffs diffs
+          :actions (map-elt tool-call :permission-actions)
+          :client (map-elt state :client)
+          :request-id (map-elt tool-call :permission-request-id)
+          :state state
+          :tool-call-id tool-call-id)))))
+
+  (defun my/agent-shell--permission-pending-p ()
+    "Return non-nil when the current Agent Shell has a pending permission."
+    (condition-case nil
+        (progn
+          (my/agent-shell--pending-permission)
+          t)
+      (error nil)))
+
+  (defun my/agent-shell--call-major-binding (key fallback)
+    "Invoke the major-mode binding for KEY, or FALLBACK when unbound."
+    (let ((command (keymap-lookup (current-local-map) key)))
+      (if (commandp command)
+          (call-interactively command)
+        (call-interactively fallback))))
+
+  (defun my/agent-shell-permission-return ()
+    "Allow once when permission is pending; otherwise preserve RET."
+    (interactive)
+    (if (my/agent-shell--permission-pending-p)
+        (my/agent-shell-permission-allow-once)
+      (my/agent-shell--call-major-binding "RET" #'newline)))
+
+  (defun my/agent-shell-permission-escape ()
+    "Reject and stop when permission is pending; otherwise exit to Normal."
+    (interactive)
+    (if (my/agent-shell--permission-pending-p)
+        (my/agent-shell-permission-reject)
+      (if (bound-and-true-p evil-local-mode)
+          (evil-normal-state)
+        (keyboard-quit))))
+
+  (defun my/agent-shell--navigate-permission (backward)
+    "Move between permission buttons, wrapping according to BACKWARD."
+    (let ((move (if backward
+                    #'agent-shell-previous-permission-button
+                  #'agent-shell-next-permission-button)))
+      (or (funcall move)
+          (progn
+            (goto-char (if backward (point-max) (point-min)))
+            (funcall move))
+          (user-error "No permission buttons in this view"))))
+
+  (defun my/agent-shell-permission-tab ()
+    "Navigate permissions when pending; otherwise preserve TAB."
+    (interactive)
+    (if (my/agent-shell--permission-pending-p)
+        (my/agent-shell--navigate-permission nil)
+      (my/agent-shell--call-major-binding "TAB" #'indent-for-tab-command)))
+
+  (defun my/agent-shell-permission-backtab ()
+    "Navigate permissions backwards when pending; otherwise preserve backtab."
+    (interactive)
+    (if (my/agent-shell--permission-pending-p)
+        (my/agent-shell--navigate-permission t)
+      (my/agent-shell--call-major-binding "<backtab>"
+                                           #'indent-for-tab-command)))
+
+  (defun my/agent-shell--permission-button-label
+      (original &rest arguments)
+    "Show the Evil-friendly shortcuts in Agent Shell permission buttons."
+    (let* ((char (plist-get arguments :char))
+           (option (plist-get arguments :option))
+           (label
+            (cond
+             ((equal option "view diff") "View (⌘G / gv)")
+             ((equal char "y") (format "%s (RET / ⌘Y)" option))
+             ((equal char "!") (format "%s (⇧⌘Y)" option))
+             ((and option char) (format "%s (ESC)" option)))))
+      (when label
+        (setq arguments (plist-put arguments :text label)
+              arguments (plist-put arguments :help label)))
+      (apply original arguments)))
+
+  (advice-remove #'agent-shell--make-permission-button
+                 #'my/agent-shell--permission-button-label)
+  (advice-add #'agent-shell--make-permission-button :around
+              #'my/agent-shell--permission-button-label)
+
+  (map! :map (agent-shell-mode-map
+              agent-shell-viewport-edit-mode-map
+              agent-shell-viewport-view-mode-map)
+        ;; Default permission controls in normal, motion, visual, and insert.
+        :nvim "s-y" #'my/agent-shell-permission-allow-once
+        :nvim "s-Y" #'my/agent-shell-permission-allow-always
+        :nvim "s-g" #'my/agent-shell-permission-view-diff
+        :nvim "RET" #'my/agent-shell-permission-return
+        :nvim "<return>" #'my/agent-shell-permission-return
+        :nvim "<escape>" #'my/agent-shell-permission-escape
+        :nvim "TAB" #'my/agent-shell-permission-tab
+        :nvim "<tab>" #'my/agent-shell-permission-tab
+        :nvim "<backtab>" #'my/agent-shell-permission-backtab
+        ;; Explicit fallbacks are useful in terminal Emacs.
+        :nvim "C-c a" #'my/agent-shell-permission-allow-once
+        :nvim "C-c A" #'my/agent-shell-permission-allow-always
+        :nvim "C-c x" #'my/agent-shell-permission-reject
+        :nvim "C-c v" #'my/agent-shell-permission-view-diff
+        ;; Evil navigation in normal/motion state.
+        :nm "h" #'evil-backward-char
+        :nm "j" #'evil-next-visual-line
+        :nm "k" #'evil-previous-visual-line
+        :nm "l" #'evil-forward-char
+        :nm "gv" #'my/agent-shell-permission-view-diff
+        :nm "]p" #'agent-shell-next-permission-button
+        :nm "[p" #'agent-shell-previous-permission-button))
