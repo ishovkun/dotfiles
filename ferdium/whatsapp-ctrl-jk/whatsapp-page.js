@@ -1,6 +1,17 @@
-// BEGIN dotfiles: whatsapp-ctrl-jk
-// Navigate WhatsApp chats with Ctrl+J/K from Ferdium's page context.
-document.addEventListener(
+const emitLog = (event, details = {}) => {
+  window.dispatchEvent(
+    new CustomEvent('dotfiles-ctrl-jk-log', {
+      detail: { event, details },
+    }),
+  );
+};
+
+emitLog('page-loaded', {
+  href: window.location.href,
+  readyState: document.readyState,
+});
+
+window.addEventListener(
   'keydown',
   event => {
     if (
@@ -21,17 +32,28 @@ document.addEventListener(
     const chatRows = [
       ...(chatList?.querySelectorAll('[role="row"]') || []),
     ].filter(row =>
-      row.querySelector('[data-testid="cell-frame-container"], [aria-selected]'),
+      row.querySelector(
+        '[data-testid="cell-frame-container"], [aria-selected]',
+      ),
     );
     const selectedIndex = chatRows.indexOf(selectedRow);
 
-    if (selectedIndex === -1 || chatRows.length < 2) {
+    emitLog('keydown', {
+      code: event.code,
+      isTrusted: event.isTrusted,
+      rowCount: chatRows.length,
+      selectedIndex,
+    });
+
+    if (!chatRows.length) {
+      emitLog('no-target');
       return;
     }
 
     const offset = event.code === 'KeyJ' ? 1 : -1;
-    const targetIndex =
-      (selectedIndex + offset + chatRows.length) % chatRows.length;
+    const targetIndex = selectedIndex === -1
+      ? (event.code === 'KeyJ' ? 0 : chatRows.length - 1)
+      : (selectedIndex + offset + chatRows.length) % chatRows.length;
     const targetRow = chatRows[targetIndex];
     const candidates = [
       targetRow.querySelector('[aria-selected]'),
@@ -69,6 +91,10 @@ document.addEventListener(
       .find(({ handlerName }) => handlerName);
 
     if (!actionable) {
+      emitLog('no-react-handler', {
+        targetIndex,
+        candidateCount: candidates.length,
+      });
       return;
     }
 
@@ -104,7 +130,11 @@ document.addEventListener(
       isDefaultPrevented: () => false,
       isPropagationStopped: () => false,
     });
+    emitLog('react-handler', {
+      targetIndex,
+      handlerName: actionable.handlerName,
+      startupAnchor: selectedIndex === -1,
+    });
   },
   true,
 );
-// END dotfiles: whatsapp-ctrl-jk
