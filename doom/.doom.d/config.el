@@ -1011,6 +1011,19 @@
 
     ))
 
+(after! org-appear
+  ;; External edits can briefly leave a visited Org file in fundamental-mode
+  ;; while org-appear's local command hooks or timer are still active.
+  (defun my/org-appear-current-elem-only-in-org-mode (original &rest arguments)
+    "Run org-appear's parser only in Org-derived buffers."
+    (when (derived-mode-p 'org-mode)
+      (apply original arguments)))
+
+  (advice-remove #'org-appear--current-elem
+                 #'my/org-appear-current-elem-only-in-org-mode)
+  (advice-add #'org-appear--current-elem :around
+              #'my/org-appear-current-elem-only-in-org-mode))
+
 (after! org-download
   ;; Native Wayland region capture; Doom Doctor only checks legacy X11 tools.
   (setq org-download-screenshot-method "grim -g \"$(slurp)\" \"%s\""))
