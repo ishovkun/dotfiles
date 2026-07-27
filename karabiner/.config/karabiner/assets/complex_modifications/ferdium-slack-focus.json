@@ -1,0 +1,54 @@
+{
+  "title": "Ferdium Slack focus navigation",
+  "rules": [
+    {
+      "description": "Ferdium: Cmd-H/L -> F16/F17 for Slack focus navigation",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "h",
+            "modifiers": {
+              "mandatory": ["command"]
+            }
+          },
+          "to": [
+            {
+              "key_code": "f16"
+            }
+          ],
+          "conditions": [
+            {
+              "type": "frontmost_application_if",
+              "bundle_identifiers": [
+                "^org\\.ferdium\\.ferdium-app$"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "l",
+            "modifiers": {
+              "mandatory": ["command"]
+            }
+          },
+          "to": [
+            {
+              "key_code": "f17"
+            }
+          ],
+          "conditions": [
+            {
+              "type": "frontmost_application_if",
+              "bundle_identifiers": [
+                "^org\\.ferdium\\.ferdium-app$"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
