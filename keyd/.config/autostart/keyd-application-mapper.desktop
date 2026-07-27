@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=keyd application mapper
+Comment=Activate application-specific keyd bindings
+Exec=/bin/keyd-application-mapper
+OnlyShowIn=KDE;
+Terminal=false
+NoDisplay=true
+X-KDE-autostart-after=panel
