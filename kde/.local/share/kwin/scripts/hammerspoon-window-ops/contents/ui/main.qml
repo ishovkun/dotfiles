@@ -153,6 +153,13 @@ Item {
     }
 
     ShortcutHandler {
+        name: "Hammerspoon Window Ops: Toggle Maximize"
+        text: "Toggle maximization of the active window"
+        sequence: "Meta+Shift+Return"
+        onActivated: Workspace.slotWindowMaximize()
+    }
+
+    ShortcutHandler {
         name: "Hammerspoon Window Ops: Left Half"
         text: "Tile the active window to the left half"
         sequence: "Meta+Shift+H"
