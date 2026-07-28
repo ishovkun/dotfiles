@@ -1452,14 +1452,85 @@
         (my/agent-shell-permission-allow-once)
       (my/agent-shell--call-major-binding "RET" #'newline)))
 
-  (defun my/agent-shell-permission-escape ()
-    "Reject and stop when permission is pending; otherwise exit to Normal."
+  (defun my/agent-shell--current-draft-p ()
+    "Return non-nil when cancellation would overwrite an unsent draft."
+    (or (condition-case nil
+            (when-let* ((shell-buffer
+                         (agent-shell--shell-buffer
+                          :no-error t :no-create t)))
+              (with-current-buffer shell-buffer
+                (agent-shell--input)))
+          (error nil))
+        (and (derived-mode-p 'agent-shell-viewport-edit-mode)
+             (not (string-empty-p
+                   (string-trim
+                    (buffer-substring-no-properties
+                     (point-min) (point-max))))))))
+
+  (defun my/agent-shell--last-submitted-input (shell-buffer)
+    "Return the newest submitted input from SHELL-BUFFER history."
+    (with-current-buffer shell-buffer
+      (when (and (ring-p comint-input-ring)
+                 (not (ring-empty-p comint-input-ring)))
+        (substring-no-properties (ring-ref comint-input-ring 0)))))
+
+  (defun my/agent-shell-interrupt-and-edit ()
+    "Interrupt the active turn and restore its prompt for editing."
     (interactive)
-    (if (my/agent-shell--permission-pending-p)
-        (my/agent-shell-permission-reject)
-      (if (bound-and-true-p evil-local-mode)
-          (evil-normal-state)
+    (let* ((shell-buffer (agent-shell--shell-buffer :no-create t))
+           (input (my/agent-shell--last-submitted-input shell-buffer))
+           token
+           restored)
+      (unless (and input (not (string-empty-p (string-trim input))))
+        (user-error "No submitted prompt to restore"))
+      (cl-labels
+          ((restore-input
+            ()
+            (unless restored
+              (setq restored t)
+              (with-current-buffer shell-buffer
+                (when token
+                  (agent-shell-unsubscribe :subscription token))
+                ;; Never overwrite text that appeared while cancellation was
+                ;; in flight.
+                (unless (agent-shell--input)
+                  (let ((inhibit-read-only t))
+                    (goto-char (point-max))
+                    (insert input))
+                  (when-let* ((window (get-buffer-window shell-buffer t)))
+                    (set-window-point window (point-max))
+                    (with-selected-window window
+                      (evil-insert-state))))))))
+        (setq token
+              (agent-shell-subscribe-to
+               :shell-buffer shell-buffer
+               :event 'turn-complete
+               :on-event (lambda (_event)
+                           (restore-input))))
+        (with-current-buffer shell-buffer
+          (agent-shell-interrupt t)
+          ;; Sessions without an established ACP turn stop synchronously and
+          ;; do not emit turn-complete.
+          (unless (shell-maker-busy)
+            (restore-input))))))
+
+  (defun my/agent-shell-cancel-submitted-prompt ()
+    "Cancel and restore a submitted prompt before the agent starts replying."
+    (interactive)
+    (let ((shell-buffer
+           (agent-shell--shell-buffer :no-error t :no-create t)))
+      (if (and shell-buffer
+               (not (my/agent-shell--current-draft-p))
+               (with-current-buffer shell-buffer
+                 (and (eq (agent-shell-status) 'busy)
+                      ;; Input submission resets this to nil.  The first
+                      ;; message/thought/tool update sets it, closing the
+                      ;; brief terminal-style edit window.
+                      (null (map-elt (agent-shell--state)
+                                     :last-entry-type)))))
+          (my/agent-shell-interrupt-and-edit)
         (keyboard-quit))))
+
 
   (defun my/agent-shell--navigate-permission (backward)
     "Move between permission buttons, wrapping according to BACKWARD."
@@ -1508,16 +1579,52 @@
   (advice-add #'agent-shell--make-permission-button :around
               #'my/agent-shell--permission-button-label)
 
+  ;; macOS binds ⌘Y globally to `ns-paste-secondary'.  Bind Command keys
+  ;; directly in the major maps (for Emacs state) and in Evil's per-state
+  ;; auxiliary maps so the Agent Shell commands reliably win there only.
+  (dolist (map (list agent-shell-mode-map
+                     agent-shell-viewport-edit-mode-map
+                     agent-shell-viewport-view-mode-map))
+    (define-key map (kbd "s-y")
+                #'my/agent-shell-permission-allow-once)
+    (define-key map (kbd "s-Y")
+                #'my/agent-shell-permission-allow-always)
+    (define-key map (kbd "s-g")
+                #'my/agent-shell-permission-view-diff)
+    (define-key map (kbd "C-g")
+                #'my/agent-shell-cancel-submitted-prompt)
+    (evil-define-key* '(normal motion visual insert) map
+      (kbd "s-y") #'my/agent-shell-permission-allow-once
+      (kbd "s-Y") #'my/agent-shell-permission-allow-always
+      (kbd "s-g") #'my/agent-shell-permission-view-diff
+      (kbd "C-g") #'my/agent-shell-cancel-submitted-prompt))
+
+  (defun my/agent-shell--ns-paste-secondary
+      (original &rest arguments)
+    "Turn macOS secondary paste into approval only for pending agent prompts."
+    (if (and (derived-mode-p 'agent-shell-mode
+                             'agent-shell-viewport-edit-mode
+                             'agent-shell-viewport-view-mode)
+             (my/agent-shell--permission-pending-p))
+        (my/agent-shell-permission-allow-once)
+      (apply original arguments)))
+
+  ;; Cocoa Emacs dispatches ⌘Y to this command from `ns-win.el'.  Advising
+  ;; the dispatched command is more reliable than competing with that global
+  ;; platform binding, while the mode/pending checks preserve normal ⌘Y
+  ;; everywhere else.
+  (when (fboundp 'ns-paste-secondary)
+    (advice-remove #'ns-paste-secondary
+                   #'my/agent-shell--ns-paste-secondary)
+    (advice-add #'ns-paste-secondary :around
+                #'my/agent-shell--ns-paste-secondary))
+
   (map! :map (agent-shell-mode-map
               agent-shell-viewport-edit-mode-map
               agent-shell-viewport-view-mode-map)
         ;; Default permission controls in normal, motion, visual, and insert.
-        :nvim "s-y" #'my/agent-shell-permission-allow-once
-        :nvim "s-Y" #'my/agent-shell-permission-allow-always
-        :nvim "s-g" #'my/agent-shell-permission-view-diff
         :nvim "RET" #'my/agent-shell-permission-return
         :nvim "<return>" #'my/agent-shell-permission-return
-        :nvim "<escape>" #'my/agent-shell-permission-escape
         :nvim "TAB" #'my/agent-shell-permission-tab
         :nvim "<tab>" #'my/agent-shell-permission-tab
         :nvim "<backtab>" #'my/agent-shell-permission-backtab
@@ -1534,3 +1641,11 @@
         :nm "gv" #'my/agent-shell-permission-view-diff
         :nm "]p" #'agent-shell-next-permission-button
         :nm "[p" #'agent-shell-previous-permission-button))
+
+;; Give every GUI Emacs instance its own emacsclient socket (server<PID>)
+;; so external tools — claude_approver's EmacsWatcher in particular — can
+;; reach any instance, not just the daemon. The daemon keeps the default
+;; "server" name.
+(unless (daemonp)
+  (setq server-name (format "server%d" (emacs-pid)))
+  (server-start))
