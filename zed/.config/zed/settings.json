@@ -20,17 +20,17 @@
   "icon_theme": "Catppuccin Frappé",
   "agent_servers": {
     "codex-acp": {
-      "default_config_options": {
-        "mode": "agent",
-        "reasoning_effort": "xhigh"
-      },
-      "type": "registry"
-    },
+       "default_config_options": {
+         "mode": "agent",
+         "reasoning_effort": "xhigh"
+       },
+       "type": "registry"
+     },
     "claude-acp": {
       "default_config_options": {
         "fast": "off",
         "mode": "auto",
-        "model": "claude-fable-5",
+        "model": "opus[1m]",
         "effort": "xhigh"
       },
       "type": "registry"
@@ -199,7 +199,7 @@
   // },
   "edit_predictions": {
     "disabled_globs": [],
-    "provider": "copilot",
+    "provider": "none",
     "mode": "subtle"
   },
   "tab_bar": {
