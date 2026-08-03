@@ -612,11 +612,17 @@
         indent-bars-color '("#414559" :blend 0.6)
         indent-bars-color-by-depth nil
         indent-bars-highlight-current-depth '(:color "#626880")
+        indent-bars-depth-update-delay 0
         indent-bars-display-on-blank-lines 'least))
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
 (setq display-line-numbers-type 'relative)
 ;; (add-hook 'c-mode-common-hook 'display-line-numbers-mode)
+(defun ishovkun/add-line-number-padding-h ()
+  "Add one display-only character between line numbers and buffer text."
+  (setq-local line-prefix " "
+              wrap-prefix " "))
+(add-hook 'prog-mode-hook #'ishovkun/add-line-number-padding-h)
 (add-hook 'cuda-mode-hook 'my-display-numbers-hook)
 (add-hook 'prog-mode-hook 'my-display-numbers-hook)
 
