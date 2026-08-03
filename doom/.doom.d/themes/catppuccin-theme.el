@@ -34,13 +34,14 @@
        (bg-dark             mantle)          ;; darker than main background
        (bg-dark-special     crust) ;; solaire color
        (fg                  subtext0)           ;; main foreground
-       (fg-dim              surface2)      ;; comments
+       (fg-dim              surface2)
        (fg-bright           text)
        ;; elements
        (builtin peach)
        (keyword sapphire)
        (const   lavender)         ;; digits
-       (comment fg-dim)
+       (comment overlay2)
+       (docstring teal)
        (func    lavender)
        (str     green)
        (type    sky)
@@ -59,7 +60,7 @@
    `(font-lock-negation-char-face ((,class (:foreground ,const))))
    `(font-lock-reference-face     ((,class (:foreground ,const))))
    `(font-lock-constant-face      ((,class (:foreground ,const :bold ,class))))
-   `(font-lock-doc-face           ((,class (:foreground ,comment))))
+   `(font-lock-doc-face           ((,class (:foreground ,docstring))))
    `(font-lock-function-name-face ((,class (:foreground ,func :background ,bg))))
    `(font-lock-keyword-face       ((,class (:foreground ,keyword :bold ,class ))))
    `(font-lock-string-face        ((,class (:foreground ,str))))

@@ -17,7 +17,10 @@
   ;; manjaro hack
   ;; (setq doom-font (font-spec :family "Iosevka" :size 27 :width 'normal)))
   ;; (setq doom-font (font-spec :family "Iosevka SS04" :size 25))
-  (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 25))
+  ;; Match Zed's 13 logical px Iosevka at this display's ~2x scale.
+  (setq doom-font (font-spec :family "Iosevka Nerd Font"
+                             :size 25
+                             :weight 'regular))
   (setq-default line-spacing 5)
   )
 
@@ -48,7 +51,7 @@
   "M-l"         #'evil-window-right
   "M-h"         #'evil-window-left
   )
- :desc "Invoke deer" :n  "-" #'dirvish-dwim
+ :desc "Open Dirvish" :n "-" #'dired-jump
  (:map dirvish-mode-map
   :desc "up directory" :nv "h" #'dired-up-directory
   :desc "open"         :n "l" #'dired-find-file
@@ -89,7 +92,7 @@
  (:map image-mode-map :after image-mode
   :desc "Zoom in" :nv "M-="         #'increase-font-size-global
   :desc "Zoom out" :nv "M--"          #'image-decrease-size
-  :desc "Invoke deer" :n "-" #'dirvish-dwim
+  :desc "Open Dirvish" :n "-" #'dired-jump
   )
  (:map TeX-mode-map
   :nv "j"           #'evil-next-visual-line
@@ -600,20 +603,16 @@
   (centaur-tabs-mode t)
 )
 
-(use-package highlight-indent-guides
-  :hook ((prog-mode . highlight-indent-guides-mode)
-         (yaml-mode . highlight-indent-guides-mode))
-  :custom
-  ;; (highlight-indent-guides-auto-enabled nil)
-  (highlight-indent-guides-method 'bitmap)
-  (highlight-indent-guides-responsive 'top)
-  (highlight-indent-guides-bitmap-function 'highlight-indent-guides--bitmap-dots)
-  ;; (setq org-ellipsis "…")
-  ;; (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
-  ;; :config
-  ;; (set-face-foreground 'highlight-indent-guides-character-face "#f8fce8")
-  ;; (set-face-foreground 'highlight-indent-guides-odd-face "#fcba03")
-  )
+(after! indent-bars
+  ;; Match Zed's Catppuccin Frappé indent guides: thin, continuous bars with
+  ;; the current nesting level rendered a little brighter.
+  (setq indent-bars-pattern "."
+        indent-bars-width-frac 0.1
+        indent-bars-pad-frac 0.1
+        indent-bars-color '("#414559" :blend 0.6)
+        indent-bars-color-by-depth nil
+        indent-bars-highlight-current-depth '(:color "#626880")
+        indent-bars-display-on-blank-lines 'least))
 ;; ------------------------------ GUI -----------------------------------------
 ;; tweaks
 (setq display-line-numbers-type 'relative)
