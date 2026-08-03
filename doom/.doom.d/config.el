@@ -737,6 +737,10 @@
     (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline)
   )  ;; end use-package doom-modeline
 
+(when (display-graphic-p)
+  (load! "frame-status")
+  (ishovkun-frame-status-enable))
+
 ;; Cursor shape in emacs terminal
 (unless (display-graphic-p)
           (require 'evil-terminal-cursor-changer)
