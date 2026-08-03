@@ -41,7 +41,6 @@
 ;;           :recipe (:host github :repo "magit/with-editor"))
 (package! transient :recipe (:host github :repo "magit/transient"))
 
-(package! centaur-tabs)
 ;; (package! ranger)
 
 ;; (package! transient :pin "c2bdf7e12c530eb85476d3aef317eb2941ab9440")

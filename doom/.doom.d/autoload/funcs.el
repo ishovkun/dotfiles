@@ -215,21 +215,6 @@ the right."
       (message "Your buffer is not backed by a file"))))
 
 ;;;###autodef
-(defun centaur-tabs-select-visible-1st-tab ()
-  "Selects first centaur tab"
-  (interactive)
-  (centaur-tabs-select-visible-nth-tab 1))
-;;;###autodef
-(defun centaur-tabs-select-visible-2nd-tab ()
-  "Selects second centaur tab"
-  (interactive)
-  (centaur-tabs-select-visible-nth-tab 2))
-;;;###autodef
-(defun centaur-tabs-select-visible-3rd-tab ()
-  "Selects third centaur tab"
-  (interactive)
-  (centaur-tabs-select-visible-nth-tab 3))
-;;;###autodef
 (defun dap-debug-create-or-edit-json-template ()
     "Edit the C++ debugging configuration or create + edit if none exists yet."
     (interactive)
