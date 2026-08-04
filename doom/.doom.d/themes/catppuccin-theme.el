@@ -368,7 +368,26 @@
    `(web-mode-html-tag-face ((,class (:foreground ,builtin))))
    ;; tab bar
    `(tab-bar ((,class (:background ,bg-dark-special))))
-   `(tab-line ((,class (:background ,bg-dark-special))))
+   ;; Match Zed's tab hierarchy: the strip and inactive tab interiors share
+   ;; the status-bar color, editor-colored boxes separate inactive tabs, and
+   ;; the active tab opens visually into the editor surface.
+   `(tab-line ((,class (:background ,bg-dark))))
+   `(tab-line-tab
+     ((,class (:inherit tab-line
+               :foreground ,fg :background ,bg-dark
+               :box (:line-width (1 . 5) :color ,bg)))))
+   `(tab-line-tab-inactive
+     ((,class (:inherit tab-line-tab
+               :foreground ,fg :background ,bg-dark
+               :box (:line-width (1 . 5) :color ,bg)))))
+   `(tab-line-tab-current
+     ((,class (:inherit tab-line-tab
+               :foreground ,fg-bright :background ,bg
+               :box (:line-width (1 . 5) :color ,bg)))))
+   `(tab-line-highlight
+     ((,class (:inherit tab-line-tab
+               :foreground ,fg-bright :background ,bg-light
+               :box (:line-width (1 . 5) :color ,bg)))))
    `(centaur-tabs-selected            ((,class (:background ,bg-light))))
    `(centaur-tabs-selected-modified   ((,class (:foreground ,warning :background ,bg-light))))
    `(centaur-tabs-unselected          ((,class (:background ,bg-dark-special))))

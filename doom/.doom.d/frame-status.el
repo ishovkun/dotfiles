@@ -12,6 +12,11 @@
 (defvar-local ishovkun-frame-status-saved-cursor-local-p nil)
 (defvar ishovkun-frame-status-allow-selection nil)
 (defvar ishovkun-frame-status-original-command-error-function nil)
+(defvar ishovkun-frame-status--ensuring-window nil)
+(defvar ishovkun-frame-status--pinning-window nil)
+(defvar ishovkun-frame-status--render-timer nil)
+(defconst ishovkun-frame-status-text-raise -0.12
+  "Display raise that optically centers status text in its row.")
 
 (defface ishovkun-frame-status-workspace-hover
   '((t (:inherit doom-modeline-highlight)))
@@ -29,6 +34,86 @@
 (defconst ishovkun-frame-status-navigation-commands
   '(evil-window-left evil-window-right evil-window-up evil-window-down
     windmove-left windmove-right windmove-up windmove-down))
+
+(defun ishovkun-frame-status--top-level-frame (&optional frame)
+  "Return the top-level editor frame containing FRAME."
+  (let ((frame (or frame (selected-frame))))
+    (while (frame-parent frame)
+      (setq frame (frame-parent frame)))
+    frame))
+
+(defun ishovkun-frame-status--remove-popup-windows ()
+  "Remove status windows accidentally created inside child frames."
+  (dolist (frame (frame-list))
+    (when (frame-parent frame)
+      (when-let ((window (get-buffer-window ishovkun-frame-status-buffer frame)))
+        (delete-window window)))))
+
+(defun ishovkun-frame-status--tab-font-size-face ()
+  "Return status text metrics matching the native tab bar."
+  ;; Resolve the tab bar's relative height against `default'.  An absolute
+  ;; height takes precedence over Doom's nested relative face heights instead
+  ;; of multiplying with them at non-default UI scales.
+  (let ((height (face-attribute 'tab-line :height nil 'default)))
+    (unless (eq height 'unspecified)
+      `(:height ,height))))
+
+(defun ishovkun-frame-status--apply-tab-font-size (text face)
+  "Return a copy of TEXT using the tab-bar height in FACE."
+  (let ((text (copy-sequence (or text ""))))
+    (when (> (length text) 0)
+      (add-face-text-property 0 (length text) face nil text))
+    text))
+
+(defun ishovkun-frame-status--center-text-baseline (start end)
+  "Optically center ordinary status text between START and END."
+  ;; `raise' is a display spec, not a face attribute.  Add it only to ordinary
+  ;; text runs so image glyphs, Nerd Font icons, and alignment spaces retain
+  ;; their own `display' properties.
+  (let ((position start))
+    (while (< position end)
+      (let ((next (next-single-property-change
+                   position 'display nil end)))
+        (unless (get-text-property position 'display)
+          (add-text-properties
+           position next
+           `(display (raise ,ishovkun-frame-status-text-raise))))
+        (setq position next)))))
+
+(defun ishovkun-frame-status--single-line (text)
+  "Return TEXT with whitespace collapsed onto one display line."
+  (when text
+    (string-trim
+     (replace-regexp-in-string "[[:space:]]+" " " (format "%s" text)))))
+
+(defun ishovkun-frame-status--remove-line-breaks (text)
+  "Return a copy of TEXT with line breaks replaced by spaces.
+Unlike `ishovkun-frame-status--single-line', preserve text properties such as
+the fake minibuffer cursor."
+  (let ((text (copy-sequence (or text ""))))
+    (subst-char-in-string ?\n ?\s text t)
+    (subst-char-in-string ?\r ?\s text t)
+    text))
+
+(defun ishovkun-frame-status--truncate-pixels (text width face)
+  "Truncate TEXT with an ellipsis so it occupies at most WIDTH pixels."
+  (cond
+   ((<= width 0) "")
+   ((<= (string-pixel-width text) width) text)
+   (t
+    (let* ((ellipsis
+            (ishovkun-frame-status--apply-tab-font-size "…" face))
+           (budget (- width (string-pixel-width ellipsis))))
+      (if (<= budget 0)
+          ""
+        (let ((low 0)
+              (high (length text)))
+          (while (< low high)
+            (let ((middle (/ (+ low high 1) 2)))
+              (if (<= (string-pixel-width (substring text 0 middle)) budget)
+                  (setq low middle)
+                (setq high (1- middle)))))
+          (concat (substring text 0 low) ellipsis)))))))
 
 (defun ishovkun-frame-status--select-window (original window &rest args)
   "Make the dedicated status WINDOW non-selectable."
@@ -206,7 +291,7 @@
     (call-interactively #'describe-mode)))
 
 (defconst ishovkun-frame-status-left
-  '(bar workspace-name window-number-evil matches buffer-info remote-host
+  '(bar workspace-name fancy-modals matches remote-host
     buffer-position word-count parrot selection-info))
 (defconst ishovkun-frame-status-right
   '(misc-info persp-name buffer-encoding major-mode indent-info process vcs lsp check))
@@ -259,8 +344,9 @@
       (when (facep face)
         (set-face-attribute face nil
                             :foreground background :background background))))
-  (when (get-buffer-window ishovkun-frame-status-buffer)
-    (ishovkun-frame-status-render)))
+  (when-let ((window (get-buffer-window ishovkun-frame-status-buffer)))
+    (ishovkun-frame-status-render)
+    (ishovkun-frame-status--pin-window-height window)))
 
 (defun ishovkun-frame-status--segments (segments)
   (mapconcat
@@ -292,7 +378,7 @@
            'ishovkun-frame-status-vcs-hover)))
        ;; Keep Doom's intentional badge backgrounds for the Evil state and
        ;; match counter; flatten only ordinary segments onto the bar face.
-       (unless (memq segment '(window-number-evil matches))
+       (unless (memq segment '(fancy-modals matches))
          (add-face-text-property
           0 (length text)
           `(:background ,(face-background 'mode-line-active nil t)) nil text))
@@ -327,23 +413,84 @@
          (source (if (eq (window-buffer candidate)
                          (get-buffer ishovkun-frame-status-buffer))
                      ishovkun-frame-status-source-window candidate))
-           (window (get-buffer-window ishovkun-frame-status-buffer))
-           (left (with-selected-window source
-                   (ishovkun-frame-status--segments ishovkun-frame-status-left)))
-           (right (with-selected-window source
-                    (ishovkun-frame-status--segments ishovkun-frame-status-right)))
-           (middle (if (active-minibuffer-window)
-                       (ishovkun-frame-status--input-with-cursor)
-                     ishovkun-frame-status-message))
-           (padding (max 1 (- (window-body-width window)
-                              (string-width left) (string-width middle)
-                              (string-width right) 2))))
-      (when window
+         (frame (ishovkun-frame-status--top-level-frame
+                 (window-frame source)))
+         (window (or (get-buffer-window ishovkun-frame-status-buffer
+                                        frame)
+                     (ishovkun-frame-status--ensure-window frame))))
+    (when (and (window-live-p window) (window-live-p source))
+      (let* ((size-face (ishovkun-frame-status--tab-font-size-face))
+             (left
+              (ishovkun-frame-status--apply-tab-font-size
+               (with-selected-window source
+                 (ishovkun-frame-status--segments
+                  ishovkun-frame-status-left))
+               size-face))
+             (right
+              (ishovkun-frame-status--apply-tab-font-size
+               (with-selected-window source
+                 (ishovkun-frame-status--segments
+                  ishovkun-frame-status-right))
+               size-face))
+             (middle-full
+              (ishovkun-frame-status--apply-tab-font-size
+               ;; Help display can transiently make Emacs report an active
+               ;; minibuffer.  Enforce one physical line after choosing the
+               ;; input/message branch so neither path can bypass it.
+               (ishovkun-frame-status--remove-line-breaks
+                (if (active-minibuffer-window)
+                    (ishovkun-frame-status--input-with-cursor)
+                  (ishovkun-frame-status--single-line
+                   ishovkun-frame-status-message)))
+               size-face))
+             (separator (propertize " " 'face size-face))
+             (right-width (string-pixel-width right))
+             (middle-width
+              (max 0 (- (window-body-width window t)
+                        (string-pixel-width left)
+                        (string-pixel-width separator)
+                        ;; Preserve a visible gap before the right section.
+                        (string-pixel-width separator)
+                        right-width)))
+             (middle
+              (ishovkun-frame-status--truncate-pixels
+               middle-full middle-width size-face))
+             (right-spacer
+              (propertize
+               " "
+               'face size-face
+               'display `(space :align-to (- right (,right-width))))))
         (setq ishovkun-frame-status-source-window source)
         (with-current-buffer ishovkun-frame-status-buffer
           (let ((inhibit-read-only t))
             (erase-buffer)
-            (insert left " " middle (make-string padding ?\s) right))))))
+            ;; A pixel-valued display spacer remains exact when the shared
+            ;; tab/status font scale changes.  Character-column padding does
+            ;; not, because it is measured before those faces are rendered.
+            (insert left separator middle right-spacer right)
+            ;; Measure the natural line before lowering the glyphs.  A
+            ;; negative display raise otherwise expands the line by the same
+            ;; number of pixels it moves the text, defeating the centering.
+            (set-window-parameter
+             window 'ishovkun-frame-status-row-height
+             (cdr (window-text-pixel-size
+                   window (point-min) (point-max))))
+            (ishovkun-frame-status--center-text-baseline
+             (point-min) (point-max))))))))
+
+(defun ishovkun-frame-status--run-deferred-render ()
+  "Render after a help/redisplay callback has returned to the event loop."
+  (setq ishovkun-frame-status--render-timer nil)
+  (ishovkun-frame-status-render)
+  (when-let ((window (get-buffer-window ishovkun-frame-status-buffer)))
+    (force-window-update window)))
+
+(defun ishovkun-frame-status--schedule-render ()
+  "Schedule one coalesced status render for the next event-loop pass."
+  (when (timerp ishovkun-frame-status--render-timer)
+    (cancel-timer ishovkun-frame-status--render-timer))
+  (setq ishovkun-frame-status--render-timer
+        (run-at-time 0 nil #'ishovkun-frame-status--run-deferred-render)))
 
 (defun ishovkun-frame-status--display-message (text)
   "Display echo-area TEXT in the status bar and suppress the echo area."
@@ -353,7 +500,7 @@
                  "\\`-- \\(?:INSERT\\|NORMAL\\|VISUAL\\|REPLACE\\) --\\'"
                  text))
             ""
-          text))
+          (ishovkun-frame-status--single-line text)))
   (ishovkun-frame-status-render)
   t)
 
@@ -365,8 +512,12 @@
 
 (defun ishovkun-frame-status--show-help (help)
   "Show HELP while the mouse is over an annotated status item."
-  (setq ishovkun-frame-status-message (or help ""))
-  (ishovkun-frame-status-render))
+  (setq ishovkun-frame-status-message
+        (or (ishovkun-frame-status--single-line help) ""))
+  ;; `show-help-function' runs as part of Emacs's own help redisplay.  Writing
+  ;; the status buffer synchronously there can leave the window showing a
+  ;; stale partial frame even though the buffer contents are already correct.
+  (ishovkun-frame-status--schedule-render))
 
 (defun ishovkun-frame-status--command-error (data context signal)
   "Route quit DATA to the status bar; delegate all other command errors."
@@ -393,19 +544,63 @@
 
 (defun ishovkun-frame-status--pin-window-height (window)
   "Keep the status WINDOW at one physical row."
-  (window-preserve-size window nil nil)
-  (with-current-buffer (window-buffer window)
-    (setq-local truncate-lines t
-                window-size-fixed nil))
-  (let* ((window-resize-pixelwise t)
-         (row-height (with-selected-window window (line-pixel-height)))
-         (target-height (+ row-height (window-bottom-divider-width window)))
-         (delta (- target-height (window-pixel-height window))))
-    (unless (zerop delta)
-      (window-resize window delta nil t t)))
-  (with-current-buffer (window-buffer window)
-    (setq-local window-size-fixed 'height))
-  (window-preserve-size window nil t))
+  (when (and (window-live-p window)
+             (not ishovkun-frame-status--pinning-window))
+    (let ((ishovkun-frame-status--pinning-window t))
+      ;; Resizing fires `window-configuration-change-hook', which can call us
+      ;; again.  The guard prevents nested preserve/resize operations while a
+      ;; UI font-scale command is changing the row's pixel height.
+      (condition-case nil
+          (progn
+            (window-preserve-size window nil nil)
+            (with-current-buffer (window-buffer window)
+              (setq-local truncate-lines t
+                          window-size-fixed nil))
+            (let* ((window-resize-pixelwise t)
+                   (row-height
+                    (or (window-parameter
+                         window 'ishovkun-frame-status-row-height)
+                        (with-selected-window window (line-pixel-height))))
+                   (target-height
+                    (+ row-height (window-bottom-divider-width window)))
+                   (delta (- target-height (window-pixel-height window))))
+              (unless (zerop delta)
+                (window-resize window delta nil t t))))
+        (error nil))
+      (when (window-live-p window)
+        (with-current-buffer (window-buffer window)
+          (setq-local window-size-fixed 'height))
+        (window-preserve-size window nil t)))))
+
+(defun ishovkun-frame-status--ensure-window (&optional frame)
+  "Restore the frame status window if a saved window layout removed it."
+  (setq frame (ishovkun-frame-status--top-level-frame frame))
+  (when (and (frame-live-p frame)
+             (display-graphic-p frame)
+             (not ishovkun-frame-status--ensuring-window))
+    (let ((ishovkun-frame-status--ensuring-window t)
+          (window (get-buffer-window ishovkun-frame-status-buffer frame)))
+      (ishovkun-frame-status--remove-popup-windows)
+      (unless (window-live-p window)
+        (let ((buffer (get-buffer-create ishovkun-frame-status-buffer)))
+          (with-current-buffer buffer
+            (setq-local mode-line-format nil
+                        cursor-type nil
+                        buffer-read-only t))
+          (with-selected-frame frame
+            (setq window
+                  (display-buffer-in-side-window
+                   buffer
+                   '((side . bottom) (slot . -100) (window-height . 1)))))))
+      (when (window-live-p window)
+        (set-window-dedicated-p window t)
+        (set-window-parameter window 'no-other-window t)
+        (ishovkun-frame-status--pin-window-height window))
+      ;; Doom's session restoration can restore its default mode line at the
+      ;; same time that it replaces the window configuration.
+      (unless (null (default-value 'mode-line-format))
+        (ishovkun-frame-status--hide-all-mode-lines))
+      window)))
 
 (defun ishovkun-frame-status--input-update (&rest _)
   (let ((contents (buffer-substring-no-properties (point-min) (point-max))))
@@ -455,18 +650,18 @@
 
 (defun ishovkun-frame-status-enable ()
   (remove-hook 'enable-theme-functions #'ishovkun-frame-status-apply-state-faces)
-  (add-hook 'enable-theme-functions #'ishovkun-frame-status-refresh-theme)
-  (let ((buffer (get-buffer-create ishovkun-frame-status-buffer)))
-    (with-current-buffer buffer
-      (setq-local mode-line-format nil cursor-type nil buffer-read-only t))
-    (let ((window (display-buffer-in-side-window
-                   buffer '((side . bottom) (slot . -100) (window-height . 1)))))
-      (set-window-dedicated-p window t)
-      (set-window-parameter window 'no-other-window t)
-      (ishovkun-frame-status--pin-window-height window)))
+  (remove-hook 'enable-theme-functions #'ishovkun-frame-status-refresh-theme)
+  (add-hook 'enable-theme-functions #'ishovkun-frame-status-refresh-theme 110)
+  (ishovkun-frame-status--ensure-window)
   (ishovkun-frame-status--hide-all-mode-lines)
   (add-hook 'after-change-major-mode-hook
             #'ishovkun-frame-status--hide-mode-line 100)
+  (add-hook 'window-configuration-change-hook
+            #'ishovkun-frame-status--ensure-window 100)
+  (add-hook 'window-setup-hook #'ishovkun-frame-status--ensure-window 100)
+  (add-hook 'emacs-startup-hook #'ishovkun-frame-status--ensure-window 100)
+  (when (boundp 'doom-after-init-hook)
+    (add-hook 'doom-after-init-hook #'ishovkun-frame-status--ensure-window 100))
   (advice-add #'select-window :around #'ishovkun-frame-status--select-window)
   (add-hook 'post-command-hook #'ishovkun-frame-status-render)
   (add-hook 'post-command-hook #'ishovkun-frame-status--restore-focus 100)

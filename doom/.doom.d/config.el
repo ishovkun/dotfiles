@@ -138,7 +138,9 @@
       (my/minibuffer-apply-ui-font-scale)))
   (force-mode-line-update t)
   (when (fboundp 'tab-line-force-update)
-    (tab-line-force-update t)))
+    (tab-line-force-update t))
+  (when (fboundp 'ishovkun-frame-status-refresh-theme)
+    (ishovkun-frame-status-refresh-theme)))
 
 (defun my/ui-font-size-adjust (steps)
   "Adjust UI font size by STEPS without resizing buffer text."
@@ -602,53 +604,89 @@
   (defvar-local my/tab-line-agent-edited nil
     "Non-nil when Agent Shell was the last writer of this buffer.")
 
-  (defun my/tab-line--apply-zed-faces ()
-    "Style native tab-line tabs like the configured Zed Frappé theme."
-    (let ((family (face-attribute 'default :family nil t)))
-      ;; Pin every metric that can change glyph width.  In particular,
-      ;; `tab-line-tab-current' does not inherit `tab-line-tab' by default,
-      ;; which lets themes render the active title with a different font.
-      (set-face-attribute 'tab-line nil
-                          :family family
-                          :background "#232634"
-                          :foreground "#9099AB"
-                          :height (* 0.92 my/ui-font-scale)
-                          :weight 'normal
-                          :width 'normal
-                          :slant 'normal
-                          :box nil)
-      (set-face-attribute 'tab-line-tab nil
-                          :inherit 'tab-line
-                          :background "#191C25"
-                          :foreground "#C2C8D1"
-                          :weight 'normal
-                          :width 'normal
-                          :slant 'normal
-                          :box '(:line-width (1 . 5) :color "#191C25"))
-      (set-face-attribute 'tab-line-tab-inactive nil
-                          :inherit 'tab-line-tab
-                          :background "#191C25"
-                          :foreground "#C2C8D1"
-                          :weight 'normal
-                          :width 'normal
-                          :slant 'normal
-                          :box '(:line-width (1 . 5) :color "#191C25"))
-      (set-face-attribute 'tab-line-tab-current nil
-                          :inherit 'tab-line-tab
-                          :background "#2C333F"
-                          :foreground "#C2C8D1"
-                          :weight 'normal
-                          :width 'normal
-                          :slant 'normal
-                          :box '(:line-width (1 . 5) :color "#2C333F"))
-      (set-face-attribute 'tab-line-highlight nil
-                          :inherit 'tab-line-tab
-                          :background "#434C5E"
-                          :foreground "#ECEFF4"
-                          :weight 'normal
-                          :width 'normal
-                          :slant 'normal
-                          :box '(:line-width (1 . 5) :color "#434C5E"))))
+  (defun my/tab-line--apply-zed-faces (&rest _)
+    "Style native tab-line tabs using colors from the active theme."
+    (let ((family (face-attribute 'default :family nil t))
+          (height (* 0.92 my/ui-font-scale))
+          (faces '(tab-line tab-line-tab tab-line-tab-inactive
+                   tab-line-tab-current tab-line-highlight)))
+      (if (memq 'catppuccin custom-enabled-themes)
+          (progn
+            ;; Clear color and box overrides left by another theme.  The
+            ;; Catppuccin theme owns those attributes; this hook owns metrics.
+            (dolist (face faces)
+              (face-spec-recalc face nil))
+            (set-face-attribute 'tab-line nil
+                                :family family
+                                :height height
+                                :weight 'normal
+                                :width 'normal
+                                :slant 'normal
+                                :box nil)
+            (dolist (face '(tab-line-tab tab-line-tab-inactive
+                            tab-line-tab-current tab-line-highlight))
+              (set-face-attribute face nil
+                                  :weight 'normal
+                                  :width 'normal
+                                  :slant 'normal)))
+        (cl-labels
+            ((theme-color (face attribute fallback)
+               (let ((value (face-attribute face attribute nil t)))
+                 (if (or (null value) (eq value 'unspecified)) fallback value))))
+          (let* ((default-bg (theme-color 'default :background "#000000"))
+                 (default-fg (theme-color 'default :foreground "#ffffff"))
+                 (bar-bg (theme-color 'mode-line-inactive :background default-bg))
+                 (bar-fg (theme-color 'mode-line-inactive :foreground default-fg))
+                 (inactive-bg default-bg)
+                 (inactive-fg bar-fg)
+                 (current-bg (theme-color 'region :background bar-bg))
+                 (current-fg default-fg)
+                 (hover-bg (theme-color 'highlight :background current-bg))
+                 (hover-fg (theme-color 'highlight :foreground current-fg)))
+        ;; Pin every metric that can change glyph width.  In particular,
+        ;; `tab-line-tab-current' does not inherit `tab-line-tab' by default,
+        ;; which lets themes render the active title with a different font.
+            (set-face-attribute 'tab-line nil
+                                :family family
+                                :background bar-bg
+                                :foreground bar-fg
+                                :height height
+                                :weight 'normal
+                                :width 'normal
+                                :slant 'normal
+                                :box nil)
+            (set-face-attribute 'tab-line-tab nil
+                                :inherit 'tab-line
+                                :background inactive-bg
+                                :foreground inactive-fg
+                                :weight 'normal
+                                :width 'normal
+                                :slant 'normal
+                                :box `(:line-width (1 . 5) :color ,inactive-bg))
+            (set-face-attribute 'tab-line-tab-inactive nil
+                                :inherit 'tab-line-tab
+                                :background inactive-bg
+                                :foreground inactive-fg
+                                :weight 'normal
+                                :width 'normal
+                                :slant 'normal
+                                :box `(:line-width (1 . 5) :color ,inactive-bg))
+            (set-face-attribute 'tab-line-tab-current nil
+                                :inherit 'tab-line-tab
+                                :background current-bg
+                                :foreground current-fg
+                                :weight 'normal
+                                :width 'normal
+                                :slant 'normal
+                                :box `(:line-width (1 . 5) :color ,current-bg))
+            (set-face-attribute 'tab-line-highlight nil
+                                :inherit 'tab-line-tab
+                                :background hover-bg
+                                :foreground hover-fg
+                                :weight 'normal
+                                :width 'normal
+                                :slant 'normal
+                                :box `(:line-width (1 . 5) :color ,hover-bg)))))))
 
   (defun my/tab-line--clear-agent-edited (&rest _)
     "Clear the Agent Shell edit marker after a subsequent human edit."
@@ -869,6 +907,7 @@ Chat takes precedence over Popup, and Popup over Terminal."
 
   (my/tab-line--apply-zed-faces)
   (add-hook 'doom-load-theme-hook #'my/tab-line--apply-zed-faces 100)
+  (add-hook 'enable-theme-functions #'my/tab-line--apply-zed-faces 100)
   (my/global-tab-line-mode 1))
 
 (after! indent-bars
@@ -947,56 +986,25 @@ Chat takes precedence over Popup, and Popup over Terminal."
   (doom-modeline-def-segment fancy-modals
     "The current evil state. Requires `evil-mode' to be enabled."
     (when (bound-and-true-p evil-local-mode)
-      (let ((num
-             (cond ((evil-normal-state-p)   "NORMAL")
-                   ((evil-emacs-state-p)    "EMACS")
-                   ((evil-insert-state-p)   "INSERT")
-                   ((evil-motion-state-p)   "MOTION")
-                   ((evil-visual-state-p)   "VISUAL")
-                   ((evil-operator-state-p) "OPERATOR")
-                   ((evil-replace-state-p)  "REPLACE")
-                   )
-             ))
-      (propertize (format " %s " num)
-                  'face (if (doom-modeline--active)
-                            (cond ((evil-normal-state-p)   'doom-modeline-evil-normal-state)
-                                  ((evil-emacs-state-p)    'doom-modeline-evil-emacs-state)
-                                  ((evil-insert-state-p)   'doom-modeline-evil-insert-state)
-                                  ((evil-motion-state-p)   'doom-modeline-evil-motion-state)
-                                  ((evil-visual-state-p)   'doom-modeline-evil-visual-state)
-                                  ((evil-operator-state-p) 'doom-modeline-evil-operator-state)
-                                  ((evil-replace-state-p)  'doom-modeline-evil-replace-state))
-                      'mode-line-inactive))
-      )
-    )
-    )
-  (doom-modeline-def-segment window-number-evil
-      (let ((num (cond
-                  ((bound-and-true-p ace-window-display-mode)
-                  (aw-update)
-                  (window-parameter (selected-window) 'ace-window-path))
-                  ((bound-and-true-p winum-mode)
-                  (setq winum-auto-setup-mode-line nil)
-                  (winum-get-number-string))
-                  ((bound-and-true-p window-numbering-mode)
-                  (window-numbering-get-number-string))
-                  (t ""))))
-            (propertize (format " %s " num)
-                        'face (if (doom-modeline--active)
-                      (cond ((evil-normal-state-p)   'doom-modeline-evil-normal-state)
-                            ((evil-emacs-state-p)    'doom-modeline-evil-emacs-state)
-                            ((evil-insert-state-p)   'doom-modeline-evil-insert-state)
-                            ((evil-motion-state-p)   'doom-modeline-evil-motion-state)
-                            ((evil-visual-state-p)   'doom-modeline-evil-visual-state)
-                            ((evil-operator-state-p) 'doom-modeline-evil-operator-state)
-                            ((evil-replace-state-p)  'doom-modeline-evil-replace-state))
-                      'mode-line-inactive))
-          ))
+      (let* ((state (or evil-state 'normal))
+             (face
+              (if (doom-modeline--active)
+                  (pcase state
+                    ((or 'insert 'hybrid) 'doom-modeline-evil-insert-state)
+                    ('emacs 'doom-modeline-evil-emacs-state)
+                    ('motion 'doom-modeline-evil-motion-state)
+                    ('visual 'doom-modeline-evil-visual-state)
+                    ('operator 'doom-modeline-evil-operator-state)
+                    ('replace 'doom-modeline-evil-replace-state)
+                    (_ 'doom-modeline-evil-normal-state))
+                'mode-line-inactive)))
+        (propertize (format " %s " (upcase (symbol-name state)))
+                    'face face))))
   ;; filesize in modeline
   (remove-hook 'doom-modeline-mode-hook #'size-indication-mode)
   ;; my own modeline
   (doom-modeline-def-modeline 'ishovkun-line
-    '(bar workspace-name window-number-evil matches buffer-info remote-host buffer-position word-count parrot selection-info)
+    '(bar workspace-name fancy-modals matches remote-host buffer-position word-count parrot selection-info)
     '(misc-info persp-name buffer-encoding major-mode indent-info process vcs lsp check))
 
     (defun setup-custom-doom-modeline ()
