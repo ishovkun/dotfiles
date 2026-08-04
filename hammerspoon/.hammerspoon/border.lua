@@ -4,6 +4,7 @@ local canvas = nil
 local color = {red = 0x5E/255, green = 0x81/255, blue = 0xAC/255, alpha = 1.0}
 local width = 1
 local mouseHeld = false
+local updateTimer = nil
 
 function M.update()
     if canvas then
@@ -49,6 +50,16 @@ function M.update()
     canvas:show()
 end
 
+-- Focus changes generate both unfocused and focused events. Coalesce them and
+-- redraw after the hotkey callback returns so border work cannot delay focus.
+function M.scheduleUpdate()
+    if updateTimer then updateTimer:stop() end
+    updateTimer = hs.timer.doAfter(0.01, function()
+        updateTimer = nil
+        M.update()
+    end)
+end
+
 -- Window lifecycle
 M._filter = hs.window.filter.new()
 M._filter:subscribe({
@@ -60,13 +71,13 @@ M._filter:subscribe({
     hs.window.filter.windowHidden,
     hs.window.filter.windowFullscreened,
     hs.window.filter.windowUnfullscreened,
-}, M.update)
+}, M.scheduleUpdate)
 
 -- window.filter misses some destructions when a whole app quits (cmd-Q),
 -- so also refresh on app termination.
 M._appWatcher = hs.application.watcher.new(function(_, eventType)
     if eventType == hs.application.watcher.terminated then
-        hs.timer.doAfter(0, M.update)
+        M.scheduleUpdate()
     end
 end)
 M._appWatcher:start()
@@ -90,7 +101,7 @@ M._mouseTap = hs.eventtap.new({
         end)
     elseif t == hs.eventtap.event.types.leftMouseUp then
         mouseHeld = false
-        hs.timer.doAfter(0, M.update)
+        M.scheduleUpdate()
     elseif t == hs.eventtap.event.types.tapDisabledByTimeout
         or t == hs.eventtap.event.types.tapDisabledByUserInput then
         M._mouseTap:start()

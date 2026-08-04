@@ -46,6 +46,124 @@
        )
   )
 
+(defun my/agent-shell-toggle-chat-window ()
+  "Load Agent Shell, then toggle its most recently used conversation window."
+  (interactive)
+  (require 'agent-shell)
+  (my/agent-shell--toggle-chat-window))
+
+(defvar my/ui-font-scale 1.0
+  "Scale factor for mode lines, tab lines, and minibuffer text.")
+
+(defconst my/buffer-font-scale-step 0.08
+  "One Zed-like buffer-font step as a relative scale.")
+
+(defconst my/ui-font-scale-step 0.04
+  "One fine-grained UI-font step as a relative scale.")
+
+(defvar my/buffer-font-scale-amount 0
+  "Shared number of font-size steps applied to all textual buffers.")
+
+(defvar-local my/buffer-font-scale-cookie nil
+  "Face-remap cookie for the shared textual-buffer font scale.")
+
+(defvar-local my/minibuffer-ui-font-scale-cookie nil
+  "Face-remap cookie for the current minibuffer's UI font scale.")
+
+(defun my/textual-buffer-p ()
+  "Return non-nil when the current buffer displays scalable text."
+  (and (not (minibufferp))
+       (not (derived-mode-p 'image-mode 'pdf-view-mode 'doc-view-mode))))
+
+(defun my/buffer-font-size--apply ()
+  "Apply the shared text scale to the current textual buffer."
+  ;; Remove local zoom left by the former per-buffer implementation so it
+  ;; cannot stack with the new shared scale.
+  (when (bound-and-true-p text-scale-mode)
+    (text-scale-set 0))
+  (when my/buffer-font-scale-cookie
+    (face-remap-remove-relative my/buffer-font-scale-cookie)
+    (setq my/buffer-font-scale-cookie nil))
+  (when (and (my/textual-buffer-p)
+             (not (zerop my/buffer-font-scale-amount)))
+    (setq my/buffer-font-scale-cookie
+          (face-remap-add-relative
+           'default
+           `(:height
+             ,(expt (+ 1.0 my/buffer-font-scale-step)
+                    my/buffer-font-scale-amount))))))
+
+(defun my/buffer-font-size-adjust (steps)
+  "Adjust every textual buffer's font size by STEPS."
+  (setq my/buffer-font-scale-amount
+        (max -6 (min 10 (+ my/buffer-font-scale-amount steps))))
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (my/buffer-font-size--apply)))
+  (force-window-update t)
+  (message "Buffer font size: %d%%"
+           (round
+            (* 100
+               (expt (+ 1.0 my/buffer-font-scale-step)
+                     my/buffer-font-scale-amount)))))
+
+(defun my/buffer-font-size-increase ()
+  "Increase text size in every textual buffer."
+  (interactive)
+  (my/buffer-font-size-adjust 1))
+
+(defun my/buffer-font-size-decrease ()
+  "Decrease text size in every textual buffer."
+  (interactive)
+  (my/buffer-font-size-adjust -1))
+
+(defun my/minibuffer-apply-ui-font-scale ()
+  "Apply `my/ui-font-scale' to all text in the current minibuffer."
+  (when my/minibuffer-ui-font-scale-cookie
+    (face-remap-remove-relative my/minibuffer-ui-font-scale-cookie))
+  (setq my/minibuffer-ui-font-scale-cookie
+        (face-remap-add-relative
+         'default `(:height ,my/ui-font-scale))))
+
+(defun my/ui-font-size--apply ()
+  "Apply `my/ui-font-scale' without resizing ordinary buffer text."
+  (dolist (face '(mode-line mode-line-inactive))
+    (when (facep face)
+      (set-face-attribute face nil :height my/ui-font-scale)))
+  (when (facep 'tab-line)
+    (set-face-attribute 'tab-line nil
+                        :height (* 0.92 my/ui-font-scale)))
+  (when-let ((window (active-minibuffer-window)))
+    (with-current-buffer (window-buffer window)
+      (my/minibuffer-apply-ui-font-scale)))
+  (force-mode-line-update t)
+  (when (fboundp 'tab-line-force-update)
+    (tab-line-force-update t)))
+
+(defun my/ui-font-size-adjust (steps)
+  "Adjust UI font size by STEPS without resizing buffer text."
+  (setq my/ui-font-scale
+        (max 0.6
+             (min 2.0
+                  (+ my/ui-font-scale
+                     (* my/ui-font-scale-step steps)))))
+  (my/ui-font-size--apply)
+  (message "UI font size: %d%%" (round (* 100 my/ui-font-scale))))
+
+(defun my/ui-font-size-increase ()
+  "Increase mode-line, tab-line, and minibuffer font size."
+  (interactive)
+  (my/ui-font-size-adjust 1))
+
+(defun my/ui-font-size-decrease ()
+  "Decrease mode-line, tab-line, and minibuffer font size."
+  (interactive)
+  (my/ui-font-size-adjust -1))
+
+(add-hook 'minibuffer-setup-hook #'my/minibuffer-apply-ui-font-scale)
+(add-hook 'after-change-major-mode-hook #'my/buffer-font-size--apply)
+(add-hook 'doom-load-theme-hook #'my/ui-font-size--apply 110)
+
 (map!
  (:map treemacs-mode-map
   "M-l"         #'evil-window-right
@@ -73,25 +191,22 @@
   :nvi "<mouse-5>"  #'scroll-up-line
   :nvi "<mouse-4>"  #'scroll-down-line
 
-  (:after centaur-tabs
-   :nv "M-n"         #'centaur-tabs-forward
-   :nv "M-p"         #'centaur-tabs-backward
-   :nv "C-<tab>"     #'centaur-tabs-forward
-   :nv "C-S-<tab>"   #'centaur-tabs-backward
-   )
-  (:after awesome-tab
-   :nv "C-<tab>"     #'awesome-tab-forward
-   :nv "C-S-<tab>"   #'awesome-tab-backward
-   :nv "M-n"         #'awesome-tab-forward
-   :nv "M-p"         #'awesome-tab-backward
-   )
+  :nv "M-n"         #'my/tab-line-next
+  :nv "M-p"         #'my/tab-line-previous
+  :nv "C-<tab>"     #'my/tab-line-next
+  :nv "C-S-<tab>"   #'my/tab-line-previous
+  :nvi "M-r"        #'my/agent-shell-toggle-chat-window
   :nv "M-<backspace>" #'kill-current-buffer
   )
- :nv "M-="         #'increase-font-size-global
- :nv "M--"         #'decrease-font-size-global
+ :nvi "M-="        #'my/buffer-font-size-increase
+ :nvi "M--"        #'my/buffer-font-size-decrease
+ :nvi "M-+"        #'my/ui-font-size-increase
+ :nvi "M-S-="      #'my/ui-font-size-increase
+ :nvi "M-_"        #'my/ui-font-size-decrease
+ :nvi "M-S--"      #'my/ui-font-size-decrease
  (:map image-mode-map :after image-mode
-  :desc "Zoom in" :nv "M-="         #'increase-font-size-global
-  :desc "Zoom out" :nv "M--"          #'image-decrease-size
+  :desc "Zoom in" :nv "M-="         #'image-increase-size
+  :desc "Zoom out" :nv "M--"        #'image-decrease-size
   :desc "Open Dirvish" :n "-" #'dired-jump
   )
  (:map TeX-mode-map
@@ -198,29 +313,15 @@
    :desc "Quit calc-edit" :nv "q" #'kill-current-buffer
    )
   ;; tabs
-  (:after awesome-tab
-   :desc "jump to tab 1" :nv "[1" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 2" :nv "[2" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 3" :nv "[3" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 4" :nv "[4" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 5" :nv "[5" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 6" :nv "[6" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 7" :nv "[7" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 8" :nv "[8" #'awesome-tab-select-visible-tab
-   :desc "jump to tab 9" :nv "[9" #'awesome-tab-select-visible-tab
-   )
-  (:after centaur-tabs
-   :desc "jump to tab 1" :nv "[1" #'centaur-tabs-select-visible-1st-tab
-   :desc "jump to tab 2" :nv "[2" #'centaur-tabs-select-visible-2nd-tab
-   :desc "jump to tab 3" :nv "[3" #'centaur-tabs-select-visible-3rd-tab
-   :desc "jump to tab 4" :nv "[4" #'centaur-tabs-select-visible-tab
-   :desc "jump to tab 5" :nv "[5" #'centaur-tabs-select-visible-tab
-   :desc "jump to tab 6" :nv "[6" #'centaur-tabs-select-visible-tab
-   :desc "jump to tab 7" :nv "[7" #'centaur-tabs-select-visible-tab
-   :desc "jump to tab 8" :nv "[8" #'centaur-tabs-select-visible-tab
-   :desc "jump to tab 9" :nv "[9" #'centaur-tabs-select-visible-tab
-   :desc "jump to tab number"  :nv "gt" #'centaur-tabs-ace-jump
-   )
+  :desc "jump to tab 1" :nv "[1" #'my/tab-line-select-number
+  :desc "jump to tab 2" :nv "[2" #'my/tab-line-select-number
+  :desc "jump to tab 3" :nv "[3" #'my/tab-line-select-number
+  :desc "jump to tab 4" :nv "[4" #'my/tab-line-select-number
+  :desc "jump to tab 5" :nv "[5" #'my/tab-line-select-number
+  :desc "jump to tab 6" :nv "[6" #'my/tab-line-select-number
+  :desc "jump to tab 7" :nv "[7" #'my/tab-line-select-number
+  :desc "jump to tab 8" :nv "[8" #'my/tab-line-select-number
+  :desc "jump to tab 9" :nv "[9" #'my/tab-line-select-number
   (:map vterm-mode-map
    :desc "send C-k"                :nvi "C-k"  #'vterm-send-C-k
    :desc "send C-j"                :nvi "C-j"  #'vterm-send-C-j
@@ -485,123 +586,290 @@
   (setq company-frontends '(company-pseudo-tooltip-frontend company-preview-frontend))
 )
 
-;; tab switching
-;; (use-package! awesome-tab
-;;   :config
-;;   (awesome-tab-mode t)
-;;   (setq awesome-tab-show-tab-index nil)
-;;   (setq awesome-tab-height 120)
-;;   ;; hide tab
-;;   (defun awesome-tab-hide-tab (x)
-;;   (let ((name (format "%s" x)))
-;;     (or
-;;      (string-prefix-p "*epc" name)
-;;      (string-prefix-p "*Compile-Log*" name)
-;;      (string-prefix-p "*lsp" name)
-;;      (string-prefix-p "*doom*" name)
-;;      (and (string-prefix-p "magit" name)
-;;                (not (file-name-extension name)))
-;;      )))
-;;   )  ;; end awesome tab
-
-(use-package! centaur-tabs
-  :if window-system
-  :init
-  ;;(set-face-attribute 'centaur-tabs-active-bar-face nil :background "#c586d8")
+(use-package! tab-line
+  :ensure nil
   :config
-  (setq
-   centaur-tabs-set-close-button nil
-   centaur-tabs-show-count nil
-   centaur-tabs-set-bar 'left
-   x-underline-at-descent-line t
-   )
-  ;; override the bar
-  (setq centaur-tabs-active-bar
-        (centaur-tabs--make-xpm 'centaur-tabs-active-bar-face
-                                2
-                                centaur-tabs-bar-height))
-  ;; (setq x-underline-at-descent-line t)
-  ;; (setq centaur-tabs-set-bar 'below)
-  (centaur-tabs-init-tabsets-store)
-  (centaur-tabs-display-update)
+  (setq tab-line-close-button-show nil
+        tab-line-new-button-show nil
+        ;; A one-pixel separator prevents Emacs from coalescing adjacent
+        ;; inactive face boxes.  Without it, changing which tab is current
+        ;; changes the number of box edges and moves every later tab.
+        tab-line-separator
+        (propertize " " 'display '(space :width (1)) 'face 'tab-line)
+        tab-line-switch-cycling t
+        tab-line-tabs-function #'my/tab-line-tabs)
 
-  (defun wd/get-buffer-persp-group (buffer)
-    (let* ((name))
-      (dolist (persp (persp-persps))
-        (if persp
-            (if (persp-contain-buffer-p buffer persp)
-                (setq name (safe-persp-name persp)))))
-      name
-      ))
+  (defvar-local my/tab-line-agent-edited nil
+    "Non-nil when Agent Shell was the last writer of this buffer.")
 
-  (defun centaur-tabs-buffer-groups ()
-    (list
-     (cond
-      ((or (string-equal "*" (substring (buffer-name) 0 1))
-         (memq major-mode '(magit-process-mode
-                            magit-status-mode
-                            magit-diff-mode
-                            magit-log-mode
-                            magit-file-mode
-                            magit-blob-mode
-                            magit-blame-mode
-                            )))
-     "Emacs")
-    ((derived-mode-p 'eshell-mode)
-     "EShell")
-    ;; ((derived-mode-p 'emacs-lisp-mode) ;; do not separate elisp filed from everything else
-    ;;  "Elisp")
-    ((derived-mode-p 'dired-mode)
-     "Dired")
-    ((memq major-mode '(org-mode org-agenda-mode diary-mode))
-     "OrgMode")
-    (t
-     (let ((name (wd/get-buffer-persp-group (current-buffer))))
-       (if name
-           name
-         ;;(centaur-tabs-get-group-name (current-buffer))
-         "Other"
-         )
-       ))))
-  )
+  (defun my/tab-line--apply-zed-faces ()
+    "Style native tab-line tabs like the configured Zed Frappé theme."
+    (let ((family (face-attribute 'default :family nil t)))
+      ;; Pin every metric that can change glyph width.  In particular,
+      ;; `tab-line-tab-current' does not inherit `tab-line-tab' by default,
+      ;; which lets themes render the active title with a different font.
+      (set-face-attribute 'tab-line nil
+                          :family family
+                          :background "#232634"
+                          :foreground "#9099AB"
+                          :height (* 0.92 my/ui-font-scale)
+                          :weight 'normal
+                          :width 'normal
+                          :slant 'normal
+                          :box nil)
+      (set-face-attribute 'tab-line-tab nil
+                          :inherit 'tab-line
+                          :background "#191C25"
+                          :foreground "#C2C8D1"
+                          :weight 'normal
+                          :width 'normal
+                          :slant 'normal
+                          :box '(:line-width (1 . 5) :color "#191C25"))
+      (set-face-attribute 'tab-line-tab-inactive nil
+                          :inherit 'tab-line-tab
+                          :background "#191C25"
+                          :foreground "#C2C8D1"
+                          :weight 'normal
+                          :width 'normal
+                          :slant 'normal
+                          :box '(:line-width (1 . 5) :color "#191C25"))
+      (set-face-attribute 'tab-line-tab-current nil
+                          :inherit 'tab-line-tab
+                          :background "#2C333F"
+                          :foreground "#C2C8D1"
+                          :weight 'normal
+                          :width 'normal
+                          :slant 'normal
+                          :box '(:line-width (1 . 5) :color "#2C333F"))
+      (set-face-attribute 'tab-line-highlight nil
+                          :inherit 'tab-line-tab
+                          :background "#434C5E"
+                          :foreground "#ECEFF4"
+                          :weight 'normal
+                          :width 'normal
+                          :slant 'normal
+                          :box '(:line-width (1 . 5) :color "#434C5E"))))
 
-  (defun centaur-tabs-hide-tab (x)
-    "Do no to show buffer X in tabs."
-    (let ((name (format "%s" x)))
-      (or
-       ;; Current window is not dedicated window.
-       (window-dedicated-p (selected-window))
+  (defun my/tab-line--clear-agent-edited (&rest _)
+    "Clear the Agent Shell edit marker after a subsequent human edit."
+    (when my/tab-line-agent-edited
+      (setq my/tab-line-agent-edited nil)
+      (remove-hook 'after-change-functions
+                   #'my/tab-line--clear-agent-edited t)
+      (remove-hook 'after-revert-hook
+                   #'my/tab-line--clear-agent-edited t)
+      (tab-line-force-update t)))
 
-       ;; Buffer name not match below blacklist.
-       (string-prefix-p "*epc" name)
-       (string-prefix-p "*helm" name)
-       (string-prefix-p "*Helm" name)
-       (string-prefix-p "*Compile-Log*" name)
-       (string-prefix-p "*lsp" name)
-       (string-prefix-p "*company" name)
-       ;; (string-prefix-p "*vterm" name)
-       (string-prefix-p "*ccls" name)
-       (string-prefix-p "*Flycheck" name)
-       (string-prefix-p "*quickrun" name)
-       (string-prefix-p "*Calculator*" name)
-       (string-prefix-p "*which-key*" name)
-       (string-prefix-p "*Calc Trail*" name)
-       (string-prefix-p "*anaconda-mode" name)
-       (string-prefix-p "*compilation" name)
-       (string-prefix-p "*Deft*" name)
-       (string-prefix-p "*tramp" name)
-       (string-prefix-p " *Mini" name)
-       (string-prefix-p "*help" name)
-       (string-prefix-p "*straight" name)
-       (string-prefix-p " *temp" name)
-       (string-prefix-p "*Help" name)
-       ;; (string-prefix-p "*mybuf" name)
-       ;; Is not magit buffer.
-       (and (string-prefix-p "magit" name)
-            (not (file-name-extension name)))
-       )))
-  (centaur-tabs-mode t)
-)
+  (defun my/tab-line--mark-agent-edited (event)
+    "Mark the file buffer written by Agent Shell EVENT."
+    (when-let* ((data (map-elt event :data))
+                (path (map-elt data :path))
+                (buffer (find-buffer-visiting path)))
+      (with-current-buffer buffer
+        (setq my/tab-line-agent-edited t)
+        (add-hook 'after-change-functions
+                  #'my/tab-line--clear-agent-edited nil t)
+        (add-hook 'after-revert-hook
+                  #'my/tab-line--clear-agent-edited nil t))
+      (tab-line-force-update t)))
+
+  (defun my/tab-line--tab-name (buffer)
+    "Return BUFFER's tab label with Zed-like state markers."
+    (with-current-buffer buffer
+      (if (equal (my/tab-line-buffer-group buffer) "Regular")
+          ;; Literal padding avoids an Emacs face-box quirk that moves text
+          ;; when a tab changes between active and inactive faces.  Reserve
+          ;; equal-width status space on both sides of regular file titles.
+          (concat
+           "    "
+           (buffer-name)
+           " "
+           (cond ((buffer-modified-p)
+                  (propertize "●"
+                              'face 'warning
+                              'help-echo "Unsaved changes"))
+                 (my/tab-line-agent-edited
+                 (propertize "✦"
+                              'face 'font-lock-keyword-face
+                              'help-echo "Last edited by Agent Shell"))
+                 (t " "))
+           "  ")
+        ;; Popup, Terminal, and Chat buffers intentionally have no file-state
+        ;; markers; process output commonly leaves them modified forever.
+        (concat "  " (buffer-name) "  "))))
+
+  (defun my/tab-line--chat-buffer-p (&optional buffer)
+    "Return non-nil when BUFFER is a user-facing Agent Shell buffer."
+    (with-current-buffer (or buffer (current-buffer))
+      (derived-mode-p 'agent-shell-mode
+                      'agent-shell-viewport-edit-mode
+                      'agent-shell-viewport-view-mode)))
+
+  (defun my/tab-line--terminal-buffer-p (&optional buffer)
+    "Return non-nil when BUFFER is an interactive terminal or REPL."
+    (with-current-buffer (or buffer (current-buffer))
+      (derived-mode-p 'vterm-mode
+                      'eshell-mode
+                      'term-mode
+                      'shell-mode
+                      'comint-mode)))
+
+  (defun my/tab-line--doom-popup-rule (buffer)
+    "Return the first Doom popup rule matching BUFFER."
+    (when (boundp '+popup--display-buffer-alist)
+      (seq-find
+       (lambda (rule)
+         (condition-case nil
+             (buffer-match-p (car rule) buffer (cdr rule))
+           (error nil)))
+       +popup--display-buffer-alist)))
+
+  (defun my/tab-line--popup-buffer-p (&optional buffer)
+    "Return non-nil when BUFFER belongs to Doom's Popup group."
+    (let* ((buffer (or buffer (current-buffer)))
+           (rule (my/tab-line--doom-popup-rule buffer)))
+      (or (and (fboundp '+popup-buffer-p)
+               (+popup-buffer-p buffer))
+          (and rule
+               (memq #'+popup-buffer (cadr rule))))))
+
+  (defun my/tab-line-buffer-group (&optional buffer)
+    "Return BUFFER's tab group.
+Chat takes precedence over Popup, and Popup over Terminal."
+    (let ((buffer (or buffer (current-buffer))))
+      (cond ((my/tab-line--chat-buffer-p buffer) "Chat")
+            ((my/tab-line--popup-buffer-p buffer) "Popup")
+            ((my/tab-line--terminal-buffer-p buffer) "Terminal")
+            ((doom-real-buffer-p buffer) "Regular"))))
+
+  (defun my/tab-line--workspace-buffers ()
+    "Return current workspace buffers, falling back to all buffers."
+    (condition-case nil
+        (if (fboundp '+workspace-buffer-list)
+            (+workspace-buffer-list)
+          (buffer-list))
+      (error (buffer-list))))
+
+  (defun my/tab-line--shell-for-chat-buffer (buffer)
+    "Return the Agent Shell backend associated with chat BUFFER."
+    (with-current-buffer buffer
+      (cond ((derived-mode-p 'agent-shell-mode) buffer)
+            ((derived-mode-p 'agent-shell-viewport-edit-mode
+                             'agent-shell-viewport-view-mode)
+             (agent-shell-viewport--shell-buffer buffer)))))
+
+  (defun my/tab-line--chat-buffers ()
+    "Return one user-facing buffer for every Agent Shell conversation."
+    (when (fboundp 'agent-shell-buffers)
+      (let ((current-shell
+             (when (my/tab-line--chat-buffer-p)
+               (my/tab-line--shell-for-chat-buffer (current-buffer)))))
+        (mapcar
+         (lambda (shell-buffer)
+           (cond ((eq shell-buffer current-shell) (current-buffer))
+                 ((and (bound-and-true-p agent-shell-prefer-viewport-interaction)
+                       (agent-shell-viewport--buffer
+                        :shell-buffer shell-buffer :existing-only t)))
+                 (shell-buffer)))
+         (agent-shell-buffers)))))
+
+  (defun my/tab-line--group-buffers (group)
+    "Return live buffers belonging to GROUP."
+    (let* ((candidates
+            (if (equal group "Chat")
+                (my/tab-line--chat-buffers)
+              (if (equal group "Popup")
+                  (buffer-list)
+                (my/tab-line--workspace-buffers))))
+           (buffers
+            (seq-filter
+             (lambda (buffer)
+               (and (buffer-live-p buffer)
+                    (equal (my/tab-line-buffer-group buffer) group)))
+             (delete-dups (cons (current-buffer) candidates)))))
+      (seq-sort-by #'buffer-name #'string< buffers)))
+
+  (defun my/tab-line--select-buffer (buffer &optional window)
+    "Display BUFFER in WINDOW without leaving a Doom popup window dedicated."
+    (let ((window (or window (selected-window))))
+      (cl-labels
+          ((select-buffer
+            ()
+            (if (and (fboundp '+popup-window-p)
+                     (+popup-window-p window))
+                (let ((dedicated (window-dedicated-p window)))
+                  (set-window-dedicated-p window nil)
+                  (unwind-protect
+                      (progn
+                        (set-window-buffer window buffer)
+                        (set-buffer buffer)
+                        (when (and (fboundp '+popup-buffer-mode)
+                                   (equal (my/tab-line-buffer-group buffer)
+                                          "Popup"))
+                          (+popup-buffer-mode 1)))
+                    (set-window-dedicated-p window dedicated)))
+              (switch-to-buffer buffer))))
+        (if (eq window (selected-window))
+            (select-buffer)
+          (with-selected-window window
+            (select-buffer))))))
+
+  (defun my/tab-line-tabs ()
+    "Return native tab-line tabs for the current buffer's group."
+    (when-let ((group (my/tab-line-buffer-group)))
+      (mapcar
+       (lambda (buffer)
+         `(tab
+           (name . ,(my/tab-line--tab-name buffer))
+           (selected . ,(eq buffer (current-buffer)))
+           (my-buffer . ,buffer)
+           (select . ,(lambda ()
+                        (my/tab-line--select-buffer buffer)))))
+       (my/tab-line--group-buffers group))))
+
+  (defun my/tab-line--buffers ()
+    "Return the buffers represented by the current tab line."
+    (mapcar (lambda (tab) (alist-get 'my-buffer tab))
+            (my/tab-line-tabs)))
+
+  (defun my/tab-line--switch (offset)
+    "Switch OFFSET tabs within the current tab group."
+    (let* ((buffers (my/tab-line--buffers))
+           (position (seq-position buffers (current-buffer))))
+      (when (and position (> (length buffers) 1))
+        (my/tab-line--select-buffer
+         (nth (mod (+ position offset) (length buffers)) buffers)))))
+
+  (defun my/tab-line-next ()
+    "Switch to the next buffer in the current tab group."
+    (interactive)
+    (my/tab-line--switch 1))
+
+  (defun my/tab-line-previous ()
+    "Switch to the previous buffer in the current tab group."
+    (interactive)
+    (my/tab-line--switch -1))
+
+  (defun my/tab-line-select-number ()
+    "Select the numbered tab indicated by the final key event."
+    (interactive)
+    (let* ((number (- last-command-event ?0))
+           (buffer (nth (1- number) (my/tab-line--buffers))))
+      (when buffer
+        (my/tab-line--select-buffer buffer))))
+
+  (defun my/tab-line--turn-on ()
+    "Enable native tab-line only for buffers assigned to a tab group."
+    (when (and (not (minibufferp))
+               (my/tab-line-buffer-group))
+      (tab-line-mode 1)))
+
+  (define-globalized-minor-mode my/global-tab-line-mode
+    tab-line-mode my/tab-line--turn-on)
+
+  (my/tab-line--apply-zed-faces)
+  (add-hook 'doom-load-theme-hook #'my/tab-line--apply-zed-faces 100)
+  (my/global-tab-line-mode 1))
 
 (after! indent-bars
   ;; Match Zed's Catppuccin Frappé indent guides: thin, continuous bars with
@@ -1268,6 +1536,140 @@
   (setq agent-shell-openai-authentication
         (agent-shell-openai-make-authentication :login t))
 
+  (defvar-local my/agent-shell-tab-edit-subscription nil
+    "Agent Shell file-write subscription used for tab markers.")
+
+  (defun my/agent-shell--subscribe-tab-edit-markers ()
+    "Track files written by this Agent Shell in native tab-line."
+    (when my/agent-shell-tab-edit-subscription
+      (agent-shell-unsubscribe
+       :subscription my/agent-shell-tab-edit-subscription))
+    (setq my/agent-shell-tab-edit-subscription
+          (agent-shell-subscribe-to
+           :shell-buffer (current-buffer)
+           :event 'file-write
+           :on-event #'my/tab-line--mark-agent-edited)))
+
+  (add-hook 'agent-shell-mode-hook
+            #'my/agent-shell--subscribe-tab-edit-markers)
+  ;; Reloading the config should also attach markers to existing conversations.
+  (dolist (shell-buffer (agent-shell-buffers))
+    (with-current-buffer shell-buffer
+      (my/agent-shell--subscribe-tab-edit-markers)))
+
+  ;; Cmd-R toggles the most recently used conversation without forcing Agent
+  ;; Shell into a fixed side-window layout.  If its former window still exists,
+  ;; reuse it; if that window was deleted, recreate an equivalent split.
+  (defvar my/agent-shell-last-chat-buffer nil)
+  (defvar my/agent-shell-last-chat-window nil)
+  (defvar my/agent-shell-chat-return-buffer nil)
+  (defvar my/agent-shell-chat-layout nil)
+
+  (defun my/agent-shell--chat-window ()
+    "Return a visible Agent Shell conversation window in the current frame."
+    (seq-find
+     (lambda (window)
+       (my/tab-line--chat-buffer-p (window-buffer window)))
+     (window-list nil 'nomini)))
+
+  (defun my/agent-shell--window-layout (window)
+    "Describe WINDOW's split side and size for later recreation."
+    (when-let ((parent (window-parent window)))
+      (let* ((horizontal (window-combination-p parent t))
+             (before (window-prev-sibling window))
+             (after (window-next-sibling window))
+             (edges (window-edges window))
+             (frame-midpoint
+              (if horizontal
+                  (/ (frame-width (window-frame window)) 2)
+                (/ (frame-height (window-frame window)) 2)))
+             (window-midpoint
+              (if horizontal
+                  (/ (+ (nth 0 edges) (nth 2 edges)) 2)
+                (/ (+ (nth 1 edges) (nth 3 edges)) 2)))
+             (side
+              (if horizontal
+                  (cond ((null before) 'left)
+                        ((null after) 'right)
+                        ((< window-midpoint frame-midpoint) 'left)
+                        (t 'right))
+                (cond ((null before) 'above)
+                      ((null after) 'below)
+                      ((< window-midpoint frame-midpoint) 'above)
+                      (t 'below)))))
+        (list :side side
+              :size (if horizontal
+                        (window-total-width window)
+                      (window-total-height window))))))
+
+  (defun my/agent-shell--remember-chat ()
+    "Remember the selected Agent Shell conversation and its window."
+    (when (my/tab-line--chat-buffer-p)
+      (setq my/agent-shell-last-chat-buffer (current-buffer)
+            my/agent-shell-last-chat-window (selected-window))
+      (unless (one-window-p t)
+        (when-let ((layout
+                    (my/agent-shell--window-layout (selected-window))))
+          (setq my/agent-shell-chat-layout layout)))))
+
+  (defun my/agent-shell--fallback-chat-buffer ()
+    "Return the most recently used live Agent Shell conversation."
+    (or (and (buffer-live-p my/agent-shell-last-chat-buffer)
+             (my/tab-line--chat-buffer-p
+              my/agent-shell-last-chat-buffer)
+             my/agent-shell-last-chat-buffer)
+        (when-let ((shell-buffer (car (agent-shell-buffers))))
+          (or (and (bound-and-true-p
+                    agent-shell-prefer-viewport-interaction)
+                   (agent-shell-viewport--buffer
+                    :shell-buffer shell-buffer :existing-only t))
+              shell-buffer))))
+
+  (defun my/agent-shell--show-chat-buffer (buffer)
+    "Show BUFFER in its former chat window or recreate its former split."
+    (let ((origin (selected-window)))
+      (setq my/agent-shell-chat-return-buffer (window-buffer origin))
+      (cond
+       ;; The former chat pane still exists but currently shows another buffer.
+       ((window-live-p my/agent-shell-last-chat-window)
+        (my/tab-line--select-buffer
+         buffer my/agent-shell-last-chat-window)
+        (select-window my/agent-shell-last-chat-window))
+       ;; Recreate a deleted chat pane with its last known orientation and size.
+       (my/agent-shell-chat-layout
+        (let* ((side (plist-get my/agent-shell-chat-layout :side))
+               (size (plist-get my/agent-shell-chat-layout :size))
+               (window
+                (condition-case nil
+                    (split-window origin (- size) side)
+                  (error nil))))
+          (if window
+              (progn
+                (set-window-buffer window buffer)
+                (setq my/agent-shell-last-chat-window window)
+                (select-window window))
+            (switch-to-buffer buffer))))
+       ;; With no remembered layout, use the current window.
+       (t
+        (switch-to-buffer buffer)))))
+
+  (defun my/agent-shell--toggle-chat-window ()
+    "Toggle the most recently used Agent Shell conversation window."
+    (if-let ((chat-window (my/agent-shell--chat-window)))
+        (progn
+          (with-selected-window chat-window
+            (my/agent-shell--remember-chat))
+          (if (one-window-p t)
+              (if (buffer-live-p my/agent-shell-chat-return-buffer)
+                  (switch-to-buffer my/agent-shell-chat-return-buffer)
+                (previous-buffer))
+            (delete-window chat-window)))
+      (if-let ((chat-buffer (my/agent-shell--fallback-chat-buffer)))
+          (my/agent-shell--show-chat-buffer chat-buffer)
+        (call-interactively #'agent-shell))))
+
+  (add-hook 'post-command-hook #'my/agent-shell--remember-chat)
+
   ;; Keep Evil yanks as normal text everywhere, including the system
   ;; clipboard.  When that same yank is pasted into an agent prompt, paste a
   ;; compact file/line reference instead (Zed-style).
@@ -1448,14 +1850,85 @@
         (my/agent-shell-permission-allow-once)
       (my/agent-shell--call-major-binding "RET" #'newline)))
 
-  (defun my/agent-shell-permission-escape ()
-    "Reject and stop when permission is pending; otherwise exit to Normal."
+  (defun my/agent-shell--current-draft-p ()
+    "Return non-nil when cancellation would overwrite an unsent draft."
+    (or (condition-case nil
+            (when-let* ((shell-buffer
+                         (agent-shell--shell-buffer
+                          :no-error t :no-create t)))
+              (with-current-buffer shell-buffer
+                (agent-shell--input)))
+          (error nil))
+        (and (derived-mode-p 'agent-shell-viewport-edit-mode)
+             (not (string-empty-p
+                   (string-trim
+                    (buffer-substring-no-properties
+                     (point-min) (point-max))))))))
+
+  (defun my/agent-shell--last-submitted-input (shell-buffer)
+    "Return the newest submitted input from SHELL-BUFFER history."
+    (with-current-buffer shell-buffer
+      (when (and (ring-p comint-input-ring)
+                 (not (ring-empty-p comint-input-ring)))
+        (substring-no-properties (ring-ref comint-input-ring 0)))))
+
+  (defun my/agent-shell-interrupt-and-edit ()
+    "Interrupt the active turn and restore its prompt for editing."
     (interactive)
-    (if (my/agent-shell--permission-pending-p)
-        (my/agent-shell-permission-reject)
-      (if (bound-and-true-p evil-local-mode)
-          (evil-normal-state)
+    (let* ((shell-buffer (agent-shell--shell-buffer :no-create t))
+           (input (my/agent-shell--last-submitted-input shell-buffer))
+           token
+           restored)
+      (unless (and input (not (string-empty-p (string-trim input))))
+        (user-error "No submitted prompt to restore"))
+      (cl-labels
+          ((restore-input
+            ()
+            (unless restored
+              (setq restored t)
+              (with-current-buffer shell-buffer
+                (when token
+                  (agent-shell-unsubscribe :subscription token))
+                ;; Never overwrite text that appeared while cancellation was
+                ;; in flight.
+                (unless (agent-shell--input)
+                  (let ((inhibit-read-only t))
+                    (goto-char (point-max))
+                    (insert input))
+                  (when-let* ((window (get-buffer-window shell-buffer t)))
+                    (set-window-point window (point-max))
+                    (with-selected-window window
+                      (evil-insert-state))))))))
+        (setq token
+              (agent-shell-subscribe-to
+               :shell-buffer shell-buffer
+               :event 'turn-complete
+               :on-event (lambda (_event)
+                           (restore-input))))
+        (with-current-buffer shell-buffer
+          (agent-shell-interrupt t)
+          ;; Sessions without an established ACP turn stop synchronously and
+          ;; do not emit turn-complete.
+          (unless (shell-maker-busy)
+            (restore-input))))))
+
+  (defun my/agent-shell-cancel-submitted-prompt ()
+    "Cancel and restore a submitted prompt before the agent starts replying."
+    (interactive)
+    (let ((shell-buffer
+           (agent-shell--shell-buffer :no-error t :no-create t)))
+      (if (and shell-buffer
+               (not (my/agent-shell--current-draft-p))
+               (with-current-buffer shell-buffer
+                 (and (eq (agent-shell-status) 'busy)
+                      ;; Input submission resets this to nil.  The first
+                      ;; message/thought/tool update sets it, closing the
+                      ;; brief terminal-style edit window.
+                      (null (map-elt (agent-shell--state)
+                                     :last-entry-type)))))
+          (my/agent-shell-interrupt-and-edit)
         (keyboard-quit))))
+
 
   (defun my/agent-shell--navigate-permission (backward)
     "Move between permission buttons, wrapping according to BACKWARD."
@@ -1504,16 +1977,52 @@
   (advice-add #'agent-shell--make-permission-button :around
               #'my/agent-shell--permission-button-label)
 
+  ;; macOS binds ⌘Y globally to `ns-paste-secondary'.  Bind Command keys
+  ;; directly in the major maps (for Emacs state) and in Evil's per-state
+  ;; auxiliary maps so the Agent Shell commands reliably win there only.
+  (dolist (map (list agent-shell-mode-map
+                     agent-shell-viewport-edit-mode-map
+                     agent-shell-viewport-view-mode-map))
+    (define-key map (kbd "s-y")
+                #'my/agent-shell-permission-allow-once)
+    (define-key map (kbd "s-Y")
+                #'my/agent-shell-permission-allow-always)
+    (define-key map (kbd "s-g")
+                #'my/agent-shell-permission-view-diff)
+    (define-key map (kbd "C-g")
+                #'my/agent-shell-cancel-submitted-prompt)
+    (evil-define-key* '(normal motion visual insert) map
+      (kbd "s-y") #'my/agent-shell-permission-allow-once
+      (kbd "s-Y") #'my/agent-shell-permission-allow-always
+      (kbd "s-g") #'my/agent-shell-permission-view-diff
+      (kbd "C-g") #'my/agent-shell-cancel-submitted-prompt))
+
+  (defun my/agent-shell--ns-paste-secondary
+      (original &rest arguments)
+    "Turn macOS secondary paste into approval only for pending agent prompts."
+    (if (and (derived-mode-p 'agent-shell-mode
+                             'agent-shell-viewport-edit-mode
+                             'agent-shell-viewport-view-mode)
+             (my/agent-shell--permission-pending-p))
+        (my/agent-shell-permission-allow-once)
+      (apply original arguments)))
+
+  ;; Cocoa Emacs dispatches ⌘Y to this command from `ns-win.el'.  Advising
+  ;; the dispatched command is more reliable than competing with that global
+  ;; platform binding, while the mode/pending checks preserve normal ⌘Y
+  ;; everywhere else.
+  (when (fboundp 'ns-paste-secondary)
+    (advice-remove #'ns-paste-secondary
+                   #'my/agent-shell--ns-paste-secondary)
+    (advice-add #'ns-paste-secondary :around
+                #'my/agent-shell--ns-paste-secondary))
+
   (map! :map (agent-shell-mode-map
               agent-shell-viewport-edit-mode-map
               agent-shell-viewport-view-mode-map)
         ;; Default permission controls in normal, motion, visual, and insert.
-        :nvim "s-y" #'my/agent-shell-permission-allow-once
-        :nvim "s-Y" #'my/agent-shell-permission-allow-always
-        :nvim "s-g" #'my/agent-shell-permission-view-diff
         :nvim "RET" #'my/agent-shell-permission-return
         :nvim "<return>" #'my/agent-shell-permission-return
-        :nvim "<escape>" #'my/agent-shell-permission-escape
         :nvim "TAB" #'my/agent-shell-permission-tab
         :nvim "<tab>" #'my/agent-shell-permission-tab
         :nvim "<backtab>" #'my/agent-shell-permission-backtab
@@ -1530,3 +2039,11 @@
         :nm "gv" #'my/agent-shell-permission-view-diff
         :nm "]p" #'agent-shell-next-permission-button
         :nm "[p" #'agent-shell-previous-permission-button))
+
+;; Give every GUI Emacs instance its own emacsclient socket (server<PID>)
+;; so external tools — claude_approver's EmacsWatcher in particular — can
+;; reach any instance, not just the daemon. The daemon keeps the default
+;; "server" name.
+(unless (daemonp)
+  (setq server-name (format "server%d" (emacs-pid)))
+  (server-start))

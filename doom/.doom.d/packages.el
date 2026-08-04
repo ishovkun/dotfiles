@@ -40,7 +40,6 @@
 ;;           :recipe (:host github :repo "magit/with-editor"))
 (package! transient :recipe (:host github :repo "magit/transient"))
 
-(package! centaur-tabs)
 ;; (package! ranger)
 
 ;; (package! transient :pin "c2bdf7e12c530eb85476d3aef317eb2941ab9440")
@@ -68,7 +67,5 @@
 (package! msgpack :disable t)
 (package! tramp-rpc :disable t
   :recipe (:host github :repo "ArthurHeymans/emacs-tramp-rpc" :files ("lisp/*.el")))
-
-(package! aider)
 
 ;;; packages.el ends here

@@ -1,122 +1,88 @@
 local M = {}
 
-function M.focusEast()
-  local cur_window = hs.window.focusedWindow()
-  local f_cur = cur_window:frame()
+-- Unlike hs.window.visibleWindows(), this filter maintains its window list from
+-- accessibility events instead of querying every application on every keypress.
+local windowFilter = hs.window.filter.defaultCurrentSpace
 
-  local minDiff = 1e4
-  local next_window = cur_window
+local directions = {
+  east = {
+    overlaps = function(candidate, current)
+      return candidate.y < current.y + current.h
+        and candidate.y + candidate.h > current.y
+    end,
+    distance = function(candidate, current)
+      return candidate.x - current.x
+    end,
+  },
+  west = {
+    overlaps = function(candidate, current)
+      return candidate.y < current.y + current.h
+        and candidate.y + candidate.h > current.y
+    end,
+    distance = function(candidate, current)
+      return current.x - candidate.x
+    end,
+  },
+  south = {
+    overlaps = function(candidate, current)
+      return candidate.x < current.x + current.w
+        and candidate.x + candidate.w > current.x
+    end,
+    distance = function(candidate, current)
+      return candidate.y - current.y
+    end,
+  },
+  north = {
+    overlaps = function(candidate, current)
+      return candidate.x < current.x + current.w
+        and candidate.x + candidate.w > current.x
+    end,
+    distance = function(candidate, current)
+      return current.y - candidate.y
+    end,
+  },
+}
 
-  local windows = hs.window.visibleWindows()
-  -- for _, window in pairs(windows) do
-  --   if window ~= hs.window.desktop() then
-  --     local f = window:frame()
-  --     local diff = f.x - f_cur.x
-  --     if diff > 0 and diff < minDiff then
-  --       minDiff = diff
-  --       next_window = window
-  --     end
-  --   end
-  -- end
-  for _, window in pairs(windows) do
-    if window ~= hs.window.desktop() and window:isStandard() then
-      local f = window:frame()
-      if f.y < f_cur.y + f_cur.h and f.y + f.h > f_cur.y then
-        local diff = f.x - f_cur.x
-        if diff > 0 and diff < minDiff then
-          minDiff = diff
-          next_window = window
+local function focusDirection(direction)
+  local currentWindow = hs.window.focusedWindow()
+  if not currentWindow then return end
+
+  local currentFrame = currentWindow:frame()
+  local currentID = currentWindow:id()
+  local rule = directions[direction]
+  local nearestWindow = nil
+  local nearestDistance = math.huge
+
+  for _, candidateWindow in ipairs(windowFilter:getWindows()) do
+    if candidateWindow:id() ~= currentID then
+      local candidateFrame = candidateWindow:frame()
+      if rule.overlaps(candidateFrame, currentFrame) then
+        local distance = rule.distance(candidateFrame, currentFrame)
+        if distance > 0 and distance < nearestDistance then
+          nearestDistance = distance
+          nearestWindow = candidateWindow
         end
       end
     end
   end
 
-  -- next_window:application():activate()
-  -- next_window:becomeMain()
-  next_window:focus()
+  if nearestWindow then nearestWindow:focus() end
+end
+
+function M.focusEast()
+  focusDirection("east")
 end
 
 function M.focusWest()
-  local cur_window = hs.window.focusedWindow()
-  local f_cur = cur_window:frame()
-
-  local minDiff = 1e4
-  local next_window = cur_window
-
-  local windows = hs.window.visibleWindows()
-  for _, window in pairs(windows) do
-    if window ~= hs.window.desktop() and window:isStandard() then
-      local f = window:frame()
-      if f.y < f_cur.y + f_cur.h and f.y + f.h > f_cur.y then
-        local diff = f_cur.x - f.x
-        if diff > 0 and diff < minDiff then
-          minDiff = diff
-          next_window = window
-        end
-      end
-    end
-  end
-
-  next_window:focus()
+  focusDirection("west")
 end
 
 function M.focusSouth()
-  local cur_window = hs.window.focusedWindow()
-  local f_cur = cur_window:frame()
-
-  local minDiff = 1e4
-  local next_window = cur_window
-
-  local windows = hs.window.visibleWindows()
-  for _, window in pairs(windows) do
-    if window ~= hs.window.desktop() and window:isStandard() then
-      local f = window:frame()
-      if f.x < f_cur.x + f_cur.w and f.x + f.w > f_cur.x then
-        local diff = f.y - f_cur.y
-        if diff > 0 and diff < minDiff then
-          minDiff = diff
-          next_window = window
-        end
-      end
-    end
-  end
-
-  next_window:focus()
+  focusDirection("south")
 end
 
 function M.focusNorth()
-  local cur_window = hs.window.focusedWindow()
-  local f_cur = cur_window:frame()
-
-  local minDiff = 1e4
-  local next_window = cur_window
-
-  local windows = hs.window.visibleWindows()
-  -- for _, window in pairs(windows) do
-  --   if window ~= hs.window.desktop() then
-  --     local f = window:frame()
-  --     local diff = f_cur.y - f.y
-  --     if diff > 0 and diff < minDiff then
-  --       minDiff = diff
-  --       next_window = window
-  --     end
-  --   end
-  -- end
-
-  for _, window in pairs(windows) do
-    if window ~= hs.window.desktop() and window:isStandard() then
-      local f = window:frame()
-      if f.x < f_cur.x + f_cur.w and f.x + f.w > f_cur.x then
-        local diff = f_cur.y - f.y
-        if diff > 0 and diff < minDiff then
-          minDiff = diff
-          next_window = window
-        end
-      end
-    end
-  end
-
-  next_window:focus()
+  focusDirection("north")
 end
 
 return M

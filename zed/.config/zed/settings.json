@@ -32,7 +32,7 @@
       "default_config_options": {
         "fast": "off",
         "mode": "auto",
-        "model": "claude-fable-5",
+        "model": "opus[1m]",
         "effort": "xhigh"
       },
       "type": "custom",
@@ -203,7 +203,7 @@
   // },
   "edit_predictions": {
     "disabled_globs": [],
-    "provider": "copilot",
+    "provider": "none",
     "mode": "subtle"
   },
   "tab_bar": {

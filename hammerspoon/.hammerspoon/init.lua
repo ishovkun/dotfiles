@@ -1,4 +1,5 @@
 local notify = require("notify")
+local hackmac = require("hackmac_hs")
 
 hs.hotkey.bind({"cmd", "alt", "ctrl"}, "W", function()
   hs.notify.new({title="Hammerspoon", informativeText="Hello World"}):send()
@@ -96,17 +97,40 @@ end
 
 function windowNextScreen()
     local win = hs.window.focusedWindow()
-    local currentScreen = win:screen()
-    local allScreens = hs.screen.allScreens()
-    currentScreenIndex = hs.fnutils.indexOf(allScreens, currentScreen)
-    nextScreenIndex = currentScreenIndex + 1
+    if not win then return false end
 
-    if allScreens[nextScreenIndex] then
-        win:moveToScreen(allScreens[nextScreenIndex])
-    else
-        win:moveToScreen(allScreens[1])
+    local currentScreen = win:screen()
+    if not currentScreen then return false end
+
+    local allScreens = hs.screen.allScreens()
+    local currentScreenIndex = hs.fnutils.indexOf(allScreens, currentScreen)
+    if not currentScreenIndex or #allScreens < 2 then return false end
+
+    local nextScreenIndex = currentScreenIndex % #allScreens + 1
+    local nextScreen = allScreens[nextScreenIndex]
+    local nextSpace, spaceError = hs.spaces.activeSpaceOnScreen(nextScreen)
+    if not nextSpace then
+        hs.alert.show("Screen move failed: " .. (spaceError or "no active Space"))
+        return false
     end
-    border.update()
+
+    -- Preserve relative geometry, but force the result fully inside the
+    -- destination's usable frame. Without ensureInScreenBounds, windows can
+    -- land beyond the visible area when the displays differ in size/layout.
+    win:moveToScreen(nextScreen, false, true, 0)
+
+    -- AX window movement can leave the window assigned to its old display's
+    -- Space. On displays with separate Spaces that makes it disappear. Ensure
+    -- it belongs to the Space currently visible on the destination display.
+    local moved, moveError = hackmac.moveWindowToSpace(win:id(), nextSpace)
+    if not moved then
+        hs.alert.show("Screen move failed: " .. (moveError or "Space assignment"))
+        return false
+    end
+
+    win:setFrameInScreenBounds()
+    border.scheduleUpdate()
+    return true
 end
 
 
@@ -134,28 +158,16 @@ hs.hotkey.bind({"alt","control","shift"}, 'j', function() moveVertically(-40) en
 
 local spaces = require("spaces")
 
--- hs.hotkey.bind({"alt", "shift"}, "1", function() spaces.moveCurrentWindowToSpace(1) end)
--- hs.hotkey.bind({"alt", "shift"}, "2", function() spaces.moveCurrentWindowToSpace(2) end)
--- hs.hotkey.bind({"alt", "shift"}, "3", function() spaces.moveCurrentWindowToSpace(3) end)
--- hs.hotkey.bind({"alt", "shift"}, "4", function() spaces.moveCurrentWindowToSpace(4) end)
--- hs.hotkey.bind({"alt", "shift"}, "5", function() spaces.moveCurrentWindowToSpace(5) end)
--- hs.hotkey.bind({"alt", "shift"}, "6", function() spaces.moveCurrentWindowToSpace(6) end)
--- hs.hotkey.bind({"alt", "shift"}, "7", function() spaces.moveCurrentWindowToSpace(7) end)
--- hs.hotkey.bind({"alt", "shift"}, "8", function() spaces.moveCurrentWindowToSpace(8) end)
--- hs.hotkey.bind({"alt", "shift"}, "9", function() spaces.moveCurrentWindowToSpace(9) end)
--- hs.hotkey.bind({"alt", "shift"}, "0", function() spaces.moveCurrentWindowToSpace(10) end)
-
--- Move focused app (all its windows) to space N via SLSProcessAssignToSpace
-hs.hotkey.bind({"alt", "shift"}, "1", function() spaces.moveCurrentAppToSpace(1) end)
-hs.hotkey.bind({"alt", "shift"}, "2", function() spaces.moveCurrentAppToSpace(2) end)
-hs.hotkey.bind({"alt", "shift"}, "3", function() spaces.moveCurrentAppToSpace(3) end)
-hs.hotkey.bind({"alt", "shift"}, "4", function() spaces.moveCurrentAppToSpace(4) end)
-hs.hotkey.bind({"alt", "shift"}, "5", function() spaces.moveCurrentAppToSpace(5) end)
-hs.hotkey.bind({"alt", "shift"}, "6", function() spaces.moveCurrentAppToSpace(6) end)
-hs.hotkey.bind({"alt", "shift"}, "7", function() spaces.moveCurrentAppToSpace(7) end)
-hs.hotkey.bind({"alt", "shift"}, "8", function() spaces.moveCurrentAppToSpace(8) end)
-hs.hotkey.bind({"alt", "shift"}, "9", function() spaces.moveCurrentAppToSpace(9) end)
-hs.hotkey.bind({"alt", "shift"}, "0", function() spaces.moveCurrentAppToSpace(10) end)
+hs.hotkey.bind({"alt", "shift"}, "1", function() spaces.moveCurrentWindowToSpace(1) end)
+hs.hotkey.bind({"alt", "shift"}, "2", function() spaces.moveCurrentWindowToSpace(2) end)
+hs.hotkey.bind({"alt", "shift"}, "3", function() spaces.moveCurrentWindowToSpace(3) end)
+hs.hotkey.bind({"alt", "shift"}, "4", function() spaces.moveCurrentWindowToSpace(4) end)
+hs.hotkey.bind({"alt", "shift"}, "5", function() spaces.moveCurrentWindowToSpace(5) end)
+hs.hotkey.bind({"alt", "shift"}, "6", function() spaces.moveCurrentWindowToSpace(6) end)
+hs.hotkey.bind({"alt", "shift"}, "7", function() spaces.moveCurrentWindowToSpace(7) end)
+hs.hotkey.bind({"alt", "shift"}, "8", function() spaces.moveCurrentWindowToSpace(8) end)
+hs.hotkey.bind({"alt", "shift"}, "9", function() spaces.moveCurrentWindowToSpace(9) end)
+hs.hotkey.bind({"alt", "shift"}, "0", function() spaces.moveCurrentWindowToSpace(10) end)
 
 local focus = require("focus")
 hs.hotkey.bind('alt', 'l', function() focus.focusEast() end)

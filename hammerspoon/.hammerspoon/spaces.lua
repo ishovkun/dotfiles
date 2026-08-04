@@ -28,12 +28,25 @@ end
 
 function M.moveCurrentWindowToSpace(space_index)
   local win = hs.window.focusedWindow()
+  if not win then
+    hs.alert.show("No focused window")
+    return false
+  end
+
   local space_id = M.getSpaceID(space_index)
   if space_id < 0 then
     hs.alert.show("Index " .. space_index .. " is too large")
-  else
-    hs.spaces.moveWindowToSpace(win:id(), space_id)
+    return false
   end
+
+  local ok, err = hackmac.moveWindowToSpace(win:id(), space_id)
+  if not ok then
+    hs.alert.show("Move failed: " .. (err or "unknown error"))
+    return false
+  end
+
+  border.update()
+  return true
 end
 
 function M.moveProcessToSpaceID(pid, space_id)
