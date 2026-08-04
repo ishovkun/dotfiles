@@ -805,19 +805,6 @@
             ("l" "~/Downloads/"                "Downloads")
             ("m" "/mnt/"                       "Mounted drives")
             ("t" "~/.local/share/Trash/files/" "Trash"))))
-;; ranger
-;; (setq ranger-deer-show-details nil)
-;; (setq ranger-show-hidden nil)
-;; (use-package! dirvish
-;;   :custom
-;;   '(("h" "~/"                          "Home")
-;;      ("d" "~/dev/"                     "development")
-;;      ("l" "~/Downloads/"                "Downloads")
-;;      ("m" "/mnt/"                       "Drives")
-;;      ("t" "~/.local/share/Trash/files/" "TrashCan")
-;;      )
-;;   )
-
 ;; scroll one line at a time (less "jumpy" than defaults)
 (setq mouse-wheel-scroll-amount '(2 ((shift) . 1))) ;; two lines at a time
 (setq mouse-wheel-progressive-speed nil)            ;; don't accelerate scrolling

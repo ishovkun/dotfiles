@@ -24,7 +24,9 @@
       "alt-h": "workspace::ActivatePaneLeft",
       "alt-k": "workspace::ActivatePaneUp",
       "alt-j": "workspace::ActivatePaneDown",
+      "alt-b": "workspace::ToggleLeftDock",
       "alt-r": "workspace::ToggleRightDock",
+      "alt-w": ["pane::CloseActiveItem", { "close_pinned": false }],
       "alt-m": null,
       // "alt-shift-l": "vim::ResizePaneRight",
       // "alt-shift-l": ["workspace::SendKeystrokes", "20 ctrl-w >"],
@@ -232,6 +234,34 @@
     },
   },
   {
+    "context": "AcpThread > Editor",
+    "bindings": {
+      // Emacs maps these to page-down/page-up; in chat, use both for paste.
+      "ctrl-v": "editor::Paste",
+      "alt-v": "editor::Paste",
+    },
+  },
+  {
+    "context": "MessageEditor > Editor && VimControl && vim_mode == normal",
+    "bindings": {
+      "ctrl-k": "agent::ScrollOutputToPreviousMessage",
+      "ctrl-j": "agent::ScrollOutputToNextMessage",
+    },
+  },
+  {
+    "context": "AcpThread > Markdown",
+    "bindings": {
+      "j": "agent::ScrollOutputLineDown",
+      "k": "agent::ScrollOutputLineUp",
+      "ctrl-d": "agent::ScrollOutputPageDown",
+      "ctrl-e": "agent::ScrollOutputPageUp",
+      "g g": "agent::ScrollOutputToTop",
+      "shift-g": "agent::ScrollOutputToBottom",
+      "ctrl-c": "markdown::Copy",
+      "alt-c": "markdown::Copy",
+    },
+  },
+  {
     "context": "Editor && !agent_diff && !AgentPanel",
     "use_key_equivalents": true,
     "bindings": {
@@ -336,6 +366,7 @@
     "context": "Terminal",
     "bindings": {
       // "alt-n": "tab_switcher::Toggle",
+      "ctrl-k": ["terminal::SendKeystroke", "ctrl-k"],
       "alt-n": ["terminal::SendKeystroke", "alt-n"],
       "alt-b": ["terminal::SendKeystroke", "alt-b"],
       "alt-f": ["terminal::SendKeystroke", "alt-f"],

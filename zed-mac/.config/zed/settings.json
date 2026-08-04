@@ -1,0 +1,372 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run the `open default settings` command
+// from the command palette or from `Zed` application menu.
+{
+  "cli_default_open_behavior": "existing_window",
+  "project_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "right"
+  },
+  "git_panel": {
+    "dock": "left"
+  },
+  "icon_theme": "Catppuccin Frappé",
+  "agent_servers": {
+    "codex-acp": {
+      "default_config_options": {
+        "mode": "agent",
+        "reasoning_effort": "xhigh"
+      },
+      "type": "registry"
+    },
+    "claude-acp": {
+      "default_config_options": {
+        "fast": "off",
+        "mode": "auto",
+        "model": "claude-fable-5",
+        "effort": "xhigh"
+      },
+      "type": "registry"
+    },
+    "github-copilot-cli": {
+      "type": "registry"
+    },
+    "cursor": {
+      "type": "registry"
+    }
+  },
+  "language_models": {
+    "openai_compatible": {
+      "Inference Hub": {
+        "api_url": "https://inference-api.nvidia.com",
+        "available_models": [
+          {
+            "name": "aws/anthropic/claude-opus-4-5",
+            "max_tokens": 32000,
+            "max_output_tokens": 31000,
+            "max_completion_tokens": 63000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          },
+          {
+            "name": "gcp/google/gemini-3.1-pro-preview",
+            "max_tokens": 32000,
+            "max_output_tokens": 31000,
+            "max_completion_tokens": 63000,
+            "capabilities": {
+              "tools": true,
+              "images": true,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          }
+        ]
+      }
+    }
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "ssh_connections": [
+    {
+      "host": "computelab-session",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu"
+          ]
+        },
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu/code/TensorRT-LLM"
+          ]
+        },
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu/code/flashinfer-dev"
+          ]
+        }
+      ]
+    }
+  ],
+  "agent": {
+    "sidebar_side": "right",
+    "dock": "right",
+    "commit_message_model": {
+      "provider": "copilot_chat",
+      "model": "claude-sonnet-4.6"
+    },
+    "tool_permissions": {
+      "default": "allow"
+    },
+    "default_profile": "write",
+    "default_model": {
+      "effort": "high",
+      "enable_thinking": true,
+      "provider": "copilot_chat",
+      "model": "claude-opus-4.6"
+    },
+    "model_parameters": []
+  },
+  "use_system_path_prompts": false,
+  "use_system_prompts": false,
+  "agent_buffer_font_size": 13.0,
+  "agent_ui_font_size": 18.0,
+  "inlay_hints": {
+    "enabled": false,
+    "show_value_hints": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true,
+    "show_background": false,
+    "edit_debounce_ms": 700,
+    "scroll_debounce_ms": 50,
+    "toggle_on_modifiers_press": {
+      "control": false,
+      "alt": false,
+      "shift": false,
+      "platform": false,
+      "function": false
+    }
+  },
+  "base_keymap": "Emacs",
+  "collaboration_panel": {
+    "dock": "right"
+  },
+  // "agent": {
+  //   "always_allow_tool_actions": true,
+  //   "play_sound_when_agent_done": true,
+  //   "profiles": {
+  //     "ask": {
+  //       "name": "Ask",
+  //       "tools": {
+  //         "delete_path": true,
+  //         "copy_path": true,
+  //         "create_directory": false,
+  //         "contents": true,
+  //         "diagnostics": true,
+  //         "fetch": true,
+  //         "list_directory": true,
+  //         "project_notifications": false,
+  //         "now": true,
+  //         "find_path": true,
+  //         "read_file": true,
+  //         "open": true,
+  //         "grep": true,
+  //         "thinking": true,
+  //         "web_search": true,
+  //         "edit_file": false
+  //       },
+  //       "enable_all_context_servers": false,
+  //       "context_servers": {}
+  //     },
+  //     "minimal": {
+  //       "name": "Minimal",
+  //       "tools": {
+  //         "delete_path": true,
+  //         "diagnostics": true,
+  //         "edit_file": true,
+  //         "grep": true,
+  //         "find_path": true
+  //       },
+  //       "enable_all_context_servers": false,
+  //       "context_servers": {}
+  //     }
+  //   },
+  //   "default_profile": "ask",
+  //   "inline_assistant_model": {
+  //     "provider": "zed.dev",
+  //     "model": "claude-sonnet-4-thinking-latest"
+  //   },
+  //   "model_parameters": [],
+  //   "default_model": {
+  //     "provider": "copilot_chat",
+  //     "model": "claude-sonnet-4"
+  //   }
+  // },
+  "edit_predictions": {
+    "disabled_globs": [],
+    "provider": "copilot",
+    "mode": "subtle"
+  },
+  "tab_bar": {
+    "show": true
+  },
+  "which_key": {
+    // Whether to show the which-key popup when holding down key combinations.
+    "enabled": true,
+    // Delay in milliseconds before showing the which-key popup.
+    "delay_ms": 200,
+  },
+  "theme": "Frappé",
+  "experimental.theme_overrides": {
+    "vim.normal.background": "#8caaee",
+    "vim.insert.background": "#a6d189",
+    "vim.replace.background": "#e78284",
+    "vim.visual.background": "#ca9ee6",
+    "vim.visual_line.background": "#ca9ee6",
+    "vim.visual_block.background": "#ca9ee6",
+    "vim.helix_normal.background": "#8caaee",
+    "vim.helix_select.background": "#ca9ee6",
+    "vim.normal.foreground": "#232634",
+    "vim.insert.foreground": "#232634",
+    "vim.replace.foreground": "#232634",
+    "vim.visual.foreground": "#232634",
+    "vim.visual_line.foreground": "#232634",
+    "vim.visual_block.foreground": "#232634",
+    "vim.helix_normal.foreground": "#232634",
+    "vim.helix_select.foreground": "#232634"
+  },
+  "cursor_blink": false,
+  "vim_mode": true,
+  "ui_font_size": 14,
+  "buffer_font_size": 13,
+  "buffer_font_family": "Iosevka Nerd Font",
+  "buffer_line_height": "comfortable",
+  "scrollbar": {
+    "axes": {
+      "horizontal": false
+    }
+  },
+  "toolbar": {
+    //   // set these two to false to hide the toolbar
+    "breadcrumbs": true,
+    "selections_menu": false,
+    "code_actions": true
+    //   // "quick_actions": true
+  },
+  "active_pane_modifiers": {
+    "border_size": 1.0,
+    "inactive_opacity": 1.0
+  },
+  // "search": {
+  //   // Whether to show the project search button in the status bar.
+  //   "button": true,
+  //   "whole_word": false,
+  //   "case_sensitive": false,
+  //   "include_ignored": false,
+  //   "regex": false
+  // },
+  "search": {
+    // Include gitignored files in project search (Cmd-Shift-F).
+    // gitignore controls git tracking, not searchability.
+    "include_ignored": true
+  },
+  "file_finder": {
+    // Include gitignored files in the file finder (Cmd-P / space space).
+    // "all" = every gitignored file, "indexed" = only ones Zed has indexed,
+    // "smart" = only when opened from a gitignored worktree (default).
+    "include_ignored": "all"
+  },
+  // Scan these globs even when gitignored, marking them "always included" so they
+  // show everywhere — project panel, search, AND the agent @-mention picker (which
+  // has no include-ignored setting of its own). Replaces Zed's default [".env*"].
+  "file_scan_inclusions": [".env*", ".plans/**"],
+  "use_smartcase_search": true,
+  "vim": {
+    "default_mode": "normal",
+    "toggle_relative_line_numbers": true,
+    "use_system_clipboard": "on_yank",
+    "use_smartcase_find": true,
+    "highlight_on_yank_duration": 200,
+    "custom_digraphs": {}
+  },
+  "hover_popover_enabled": false,
+  "resize_all_panels_in_dock": ["left", "right", "bottom"],
+  "autosave": "on_focus_change",
+  "snippet_sort_order": "top",
+  "pane_split_direction_vertical": "right",
+  "close_on_file_delete": true,
+  "current_line_highlight": "all",
+  // Determines when the mouse cursor should be hidden in an editor or input box.
+  "hide_mouse": "never",
+  // The default number of lines to expand excerpts in the multibuffer by.
+  "expand_excerpt_lines": 4,
+  "terminal": {
+    "font_family": "IosevkaTerm Nerd Font Mono",
+    "line_height" : "standard",
+    "option_as_meta": true,
+    // "vim_mode": true,
+    "detect_venv": {
+      "on": {
+        "directories": [".env", "env", ".venv", "venv"],
+        "activate_script": "default"
+      }
+    },
+    // "font_fallbacks": ["FiraCode Nerd Fonts"],
+    "toolbar": {
+      "breadcrumbs": false
+    }
+  },
+  "title_bar": {
+    // Whether to show the branch icon beside branch switcher in the titlebar.
+    // Whether to show the branch name button in the titlebar.
+    "show_branch_status_icon": true,
+    "show_branch_name": true,
+    // Whether to show the project host and name in the titlebar.
+    "show_project_items": true,
+    // Whether to show onboarding banners in the titlebar.
+    "show_onboarding_banner": true,
+    // Whether to show user picture in the titlebar.
+    "show_user_picture": true,
+    // Whether to show the sign in button in the titlebar.
+    "show_sign_in": false,
+    // Whether to show the menus in the titlebar.
+    "show_menus": true
+  },
+  "confirm_quit": true,
+  "lsp": {
+    "clangd": {
+      "binary": {
+        "path": "clangd",
+        "arguments": ["--header-insertion=never"]
+      }
+    }
+    // "pyright": {
+    //   "settings": {
+    //     "python.analysis": {
+    //       "diagnosticMode": "workspace",
+    //       "typeCheckingMode": "strict"
+    //     }
+    //   }
+    // }
+  },
+  "languages": {
+    "CMake": {
+      "tasks": {
+        "enabled": false
+      }
+    },
+    "C++": {
+      "tab_size": 2,
+      // clang-format -style=google -dump-config > ~/.clang-format
+      "formatter": {
+        "external": {
+          "command": "clang-format",
+          "arguments": ["--style=file", "--assume-filename={buffer_path}"]
+        }
+      }
+    }
+  },
+  "file_types": {
+    "C++": ["hpp", "h", "hxx", "cpp", "cxx", "cu", "cuh", "conf", "keymap", "jinja"]
+  },
+  "git": {
+    "inline_blame": { "enabled": false },
+    "hunk_style": "unstaged_hollow"
+  },
+  "format_on_save": "off"
+}

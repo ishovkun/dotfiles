@@ -24,7 +24,9 @@
         "mode": "agent",
         "reasoning_effort": "xhigh"
       },
-      "type": "registry"
+      "type": "custom",
+      "command": "/home/ishovkun/.local/bin/zed-acp-approver",
+      "args": ["--agent","codex","--sock","/home/ishovkun/.claude/approver.sock","--","/home/ishovkun/.local/bin/codex-acp"]
     },
     "claude-acp": {
       "default_config_options": {
@@ -33,7 +35,9 @@
         "model": "claude-fable-5",
         "effort": "xhigh"
       },
-      "type": "registry"
+      "type": "custom",
+      "command": "/home/ishovkun/.local/bin/zed-acp-approver",
+      "args": ["--agent","claude","--sock","/home/ishovkun/.claude/approver.sock","--","/home/ishovkun/.local/bin/claude-agent-acp"]
     },
     "github-copilot-cli": {
       "type": "registry"
@@ -325,7 +329,7 @@
     // Whether to show the sign in button in the titlebar.
     "show_sign_in": false,
     // Whether to show the menus in the titlebar.
-    "show_menus": true
+    "show_menus": false
   },
   "confirm_quit": true,
   "lsp": {
