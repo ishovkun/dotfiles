@@ -68,6 +68,44 @@ local function tileHorizontally(fraction, idx)
     border.update()
 end
 
+-- Fractions of the screen frame: x/w horizontal, y/h vertical.
+local function screenSlice(max, xFrac, wFrac, yFrac, hFrac)
+    return hs.geometry.rect(
+        max.x + max.w * xFrac,
+        max.y + max.h * yFrac,
+        max.w * wFrac,
+        max.h * hFrac
+    )
+end
+
+local function framesApproxEqual(a, b)
+    local tol = 2
+    return math.abs(a.x - b.x) <= tol
+        and math.abs(a.y - b.y) <= tol
+        and math.abs(a.w - b.w) <= tol
+        and math.abs(a.h - b.h) <= tol
+end
+
+-- Set the focused window to the first slice; if it is already there, use the
+-- second one instead. Slices are {xFrac, wFrac, yFrac, hFrac}.
+local function toggleBetweenSlices(first, second)
+    local win = hs.window.focusedWindow()
+    if win == nil then
+        return
+    end
+    local screen = win:screen()
+    if screen == nil then
+        return
+    end
+    local max = screen:frame()
+    local target = screenSlice(max, table.unpack(first))
+    if framesApproxEqual(win:frame(), target) then
+        target = screenSlice(max, table.unpack(second))
+    end
+    win:setFrame(target)
+    border.update()
+end
+
 local function centerWindow()
     local win = hs.window.focusedWindow()
     if win == nil then
@@ -145,10 +183,20 @@ hs.hotkey.bind(hyper, 'j', function() windowNextScreen() end)
 hs.hotkey.bind(hyper, 'h', function() tileHorizontally(0.5, 1) end)
 hs.hotkey.bind(hyper, 'l', function() tileHorizontally(0.5, 2) end)
 hs.hotkey.bind(hyper, 'return', function() tileHorizontally(1.0, 1) end)
-hs.hotkey.bind(hyper, 'y', function() tileHorizontally(0.3333333, 1) end)
-hs.hotkey.bind(hyper, 'u', function() tileHorizontally(0.6666666, 1) end)
-hs.hotkey.bind(hyper, 'i', function() tileHorizontally(0.6666666, 1.5) end)
-hs.hotkey.bind(hyper, 'o', function() tileHorizontally(0.3333333, 3) end)
+-- y/o: upper quarter <-> lower quarter (left/right column of the 2x2 grid).
+-- u/i: one third <-> two thirds, anchored left/right, full height.
+hs.hotkey.bind(hyper, 'y', function()
+    toggleBetweenSlices({0, 0.5, 0, 0.5}, {0, 0.5, 0.5, 0.5})
+end)
+hs.hotkey.bind(hyper, 'u', function()
+    toggleBetweenSlices({0, 1/3, 0, 1}, {0, 2/3, 0, 1})
+end)
+hs.hotkey.bind(hyper, 'i', function()
+    toggleBetweenSlices({2/3, 1/3, 0, 1}, {1/3, 2/3, 0, 1})
+end)
+hs.hotkey.bind(hyper, 'o', function()
+    toggleBetweenSlices({0.5, 0.5, 0, 0.5}, {0.5, 0.5, 0.5, 0.5})
+end)
 hs.hotkey.bind('alt', 'c', function() centerWindow() end)
 
 hs.hotkey.bind({"alt","control","shift"}, 'l', function() moveHorizontally(40) end)
