@@ -613,6 +613,11 @@
           (height (* 0.92 my/ui-font-scale))
           (faces '(tab-line tab-line-tab tab-line-tab-inactive
                    tab-line-tab-current tab-line-highlight)))
+      ;; Vertical padding scales with the tab-line character height so that the
+      ;; tabs remain proportional across different font sizes and DPI settings.
+      ;; The underline position equals -(box-pad) to land at the box bottom edge.
+      (let* ((box-pad (max 4 (round (* (frame-char-height) height 0.27))))
+             (box-pad- (- box-pad)))
       (if (memq 'catppuccin custom-enabled-themes)
           (progn
             ;; Clear color and box overrides left by another theme.  The
@@ -632,10 +637,24 @@
                                   :weight 'normal
                                   :width 'normal
                                   :slant 'normal))
-            ;; Separator adopts the border color defined by the catppuccin face.
-            (set-face-attribute 'my/tab-line-separator nil
-                                :background (face-attribute 'tab-line-tab :overline nil t)
-                                :foreground (face-attribute 'tab-line-tab :overline nil t)))
+            ;; Override hardcoded pixel values from the theme with scaled ones.
+            (let ((border-c (face-attribute 'tab-line-tab :overline nil t))
+                  (inactive-c (face-attribute 'tab-line-tab :background nil t))
+                  (current-c (face-attribute 'tab-line-tab-current :background nil t))
+                  (hover-c (face-attribute 'tab-line-highlight :background nil t)))
+              (dolist (face '(tab-line-tab tab-line-tab-inactive))
+                (set-face-attribute face nil
+                                    :box `(:line-width (1 . ,box-pad) :color ,inactive-c)
+                                    :underline `(:color ,border-c :style line :position ,box-pad-)))
+              (set-face-attribute 'tab-line-tab-current nil
+                                  :box `(:line-width (1 . ,box-pad) :color ,current-c)
+                                  :underline nil)
+              (set-face-attribute 'tab-line-highlight nil
+                                  :box `(:line-width (1 . ,box-pad) :color ,hover-c)
+                                  :underline `(:color ,border-c :style line :position ,box-pad-))
+              (set-face-attribute 'my/tab-line-separator nil
+                                  :background border-c
+                                  :foreground border-c)))
         (cl-labels
             ((theme-color (face attribute fallback)
                (let ((value (face-attribute face attribute nil t)))
@@ -674,8 +693,8 @@
                                 :width 'normal
                                 :slant 'normal
                                 :overline border-color
-                                :underline `(:color ,border-color :style line :position -8)
-                                :box `(:line-width (1 . 8) :color ,inactive-bg))
+                                :underline `(:color ,border-color :style line :position ,box-pad-)
+                                :box `(:line-width (1 . ,box-pad) :color ,inactive-bg))
             (set-face-attribute 'tab-line-tab-inactive nil
                                 :inherit 'tab-line-tab
                                 :background inactive-bg
@@ -684,8 +703,8 @@
                                 :width 'normal
                                 :slant 'normal
                                 :overline border-color
-                                :underline `(:color ,border-color :style line :position -8)
-                                :box `(:line-width (1 . 8) :color ,inactive-bg))
+                                :underline `(:color ,border-color :style line :position ,box-pad-)
+                                :box `(:line-width (1 . ,box-pad) :color ,inactive-bg))
             (set-face-attribute 'tab-line-tab-current nil
                                 :inherit 'tab-line-tab
                                 :background current-bg
@@ -695,7 +714,7 @@
                                 :slant 'normal
                                 :overline border-color
                                 :underline nil
-                                :box `(:line-width (1 . 8) :color ,current-bg))
+                                :box `(:line-width (1 . ,box-pad) :color ,current-bg))
             (set-face-attribute 'tab-line-highlight nil
                                 :inherit 'tab-line-tab
                                 :background hover-bg
@@ -704,8 +723,8 @@
                                 :width 'normal
                                 :slant 'normal
                                 :overline border-color
-                                :underline `(:color ,border-color :style line :position -8)
-                                :box `(:line-width (1 . 8) :color ,hover-bg)))))))
+                                :underline `(:color ,border-color :style line :position ,box-pad-)
+                                :box `(:line-width (1 . ,box-pad) :color ,hover-bg)))))))))
 
   (defun my/tab-line--clear-agent-edited (&rest _)
     "Clear the Agent Shell edit marker after a subsequent human edit."
