@@ -133,6 +133,9 @@
   (when (facep 'tab-line)
     (set-face-attribute 'tab-line nil
                         :height (* 0.92 my/ui-font-scale)))
+  (when (facep 'header-line)
+    (set-face-attribute 'header-line nil
+                        :height (* 0.92 my/ui-font-scale)))
   (when-let ((window (active-minibuffer-window)))
     (with-current-buffer (window-buffer window)
       (my/minibuffer-apply-ui-font-scale)))
@@ -153,12 +156,12 @@
   (message "UI font size: %d%%" (round (* 100 my/ui-font-scale))))
 
 (defun my/ui-font-size-increase ()
-  "Increase mode-line, tab-line, and minibuffer font size."
+  "Increase status, tab, breadcrumb, and minibuffer font size."
   (interactive)
   (my/ui-font-size-adjust 1))
 
 (defun my/ui-font-size-decrease ()
-  "Decrease mode-line, tab-line, and minibuffer font size."
+  "Decrease status, tab, breadcrumb, and minibuffer font size."
   (interactive)
   (my/ui-font-size-adjust -1))
 
@@ -591,13 +594,13 @@
 (use-package! tab-line
   :ensure nil
   :config
+  (defface my/tab-line-separator '((t :background "gray50" :foreground "gray50"))
+    "Face for the 1px separator between tab-line tabs.")
+
   (setq tab-line-close-button-show nil
         tab-line-new-button-show nil
-        ;; A one-pixel separator prevents Emacs from coalescing adjacent
-        ;; inactive face boxes.  Without it, changing which tab is current
-        ;; changes the number of box edges and moves every later tab.
         tab-line-separator
-        (propertize " " 'display '(space :width (1)) 'face 'tab-line)
+        (propertize " " 'display '(space :width (1)) 'face 'my/tab-line-separator)
         tab-line-switch-cycling t
         tab-line-tabs-function #'my/tab-line-tabs)
 
@@ -628,7 +631,11 @@
               (set-face-attribute face nil
                                   :weight 'normal
                                   :width 'normal
-                                  :slant 'normal)))
+                                  :slant 'normal))
+            ;; Separator adopts the border color defined by the catppuccin face.
+            (set-face-attribute 'my/tab-line-separator nil
+                                :background (face-attribute 'tab-line-tab :overline nil t)
+                                :foreground (face-attribute 'tab-line-tab :overline nil t)))
         (cl-labels
             ((theme-color (face attribute fallback)
                (let ((value (face-attribute face attribute nil t)))
@@ -642,7 +649,8 @@
                  (current-bg (theme-color 'region :background bar-bg))
                  (current-fg default-fg)
                  (hover-bg (theme-color 'highlight :background current-bg))
-                 (hover-fg (theme-color 'highlight :foreground current-fg)))
+                 (hover-fg (theme-color 'highlight :foreground current-fg))
+                 (border-color (theme-color 'vertical-border :foreground bar-fg)))
         ;; Pin every metric that can change glyph width.  In particular,
         ;; `tab-line-tab-current' does not inherit `tab-line-tab' by default,
         ;; which lets themes render the active title with a different font.
@@ -655,6 +663,9 @@
                                 :width 'normal
                                 :slant 'normal
                                 :box nil)
+            (set-face-attribute 'my/tab-line-separator nil
+                                :background border-color
+                                :foreground border-color)
             (set-face-attribute 'tab-line-tab nil
                                 :inherit 'tab-line
                                 :background inactive-bg
@@ -662,7 +673,9 @@
                                 :weight 'normal
                                 :width 'normal
                                 :slant 'normal
-                                :box `(:line-width (1 . 5) :color ,inactive-bg))
+                                :overline border-color
+                                :underline `(:color ,border-color :style line :position -8)
+                                :box `(:line-width (1 . 8) :color ,inactive-bg))
             (set-face-attribute 'tab-line-tab-inactive nil
                                 :inherit 'tab-line-tab
                                 :background inactive-bg
@@ -670,7 +683,9 @@
                                 :weight 'normal
                                 :width 'normal
                                 :slant 'normal
-                                :box `(:line-width (1 . 5) :color ,inactive-bg))
+                                :overline border-color
+                                :underline `(:color ,border-color :style line :position -8)
+                                :box `(:line-width (1 . 8) :color ,inactive-bg))
             (set-face-attribute 'tab-line-tab-current nil
                                 :inherit 'tab-line-tab
                                 :background current-bg
@@ -678,7 +693,9 @@
                                 :weight 'normal
                                 :width 'normal
                                 :slant 'normal
-                                :box `(:line-width (1 . 5) :color ,current-bg))
+                                :overline border-color
+                                :underline nil
+                                :box `(:line-width (1 . 8) :color ,current-bg))
             (set-face-attribute 'tab-line-highlight nil
                                 :inherit 'tab-line-tab
                                 :background hover-bg
@@ -686,7 +703,9 @@
                                 :weight 'normal
                                 :width 'normal
                                 :slant 'normal
-                                :box `(:line-width (1 . 5) :color ,hover-bg)))))))
+                                :overline border-color
+                                :underline `(:color ,border-color :style line :position -8)
+                                :box `(:line-width (1 . 8) :color ,hover-bg)))))))
 
   (defun my/tab-line--clear-agent-edited (&rest _)
     "Clear the Agent Shell edit marker after a subsequent human edit."
@@ -727,7 +746,7 @@
                               'face 'warning
                               'help-echo "Unsaved changes"))
                  (my/tab-line-agent-edited
-                 (propertize "✦"
+                  (propertize "✦"
                               'face 'font-lock-keyword-face
                               'help-echo "Last edited by Agent Shell"))
                  (t " "))
@@ -910,6 +929,43 @@ Chat takes precedence over Popup, and Popup over Terminal."
   (add-hook 'enable-theme-functions #'my/tab-line--apply-zed-faces 100)
   (my/global-tab-line-mode 1))
 
+(use-package! breadcrumb
+  :init
+  (setq breadcrumb-project-max-length 0.5
+        breadcrumb-imenu-max-length 0.4
+        breadcrumb-project-crumb-separator " › "
+        breadcrumb-imenu-crumb-separator " › ")
+  :config
+  (defun my/breadcrumb--header-line ()
+    "Render one path and semantic breadcrumb chain for the current window."
+    (let ((parts
+           (delq nil
+                 (mapcar
+                  (lambda (crumbs)
+                    (unless (string-empty-p (or crumbs "")) crumbs))
+                  (list (breadcrumb-project-crumbs)
+                        (breadcrumb-imenu-crumbs))))))
+      (when parts
+        (let ((text
+               (concat
+                " "
+                (string-join
+                 parts (propertize " › " 'face 'breadcrumb-face)))))
+          ;; Header lines share the font baseline with their underline.  Raise
+          ;; only the glyphs so the rule remains at the bottom of the padded
+          ;; row instead of sitting directly beneath the letters.
+          (add-text-properties
+           0 (length text) '(display (raise 0.18)) text)
+          text))))
+
+  ;; Keep Breadcrumb's project/Imenu caching and mode lifecycle; replace only
+  ;; its hard-coded separator between the path and semantic groups.
+  (advice-remove #'breadcrumb--header-line #'my/breadcrumb--header-line)
+  (advice-add #'breadcrumb--header-line :override
+              #'my/breadcrumb--header-line)
+  (breadcrumb-mode 1)
+  (my/ui-font-size--apply))
+
 (after! indent-bars
   ;; Match Zed's Catppuccin Frappé indent guides: thin, continuous bars with
   ;; the current nesting level rendered a little brighter.
@@ -971,7 +1027,7 @@ Chat takes precedence over Popup, and Popup over Terminal."
           doom-modeline-buffer-encoding nil
           doom-modeline-enable-word-count nil ; added to the selection-info segment.
           doom-modeline-number-limit 99
-          doom-modeline-indent-info t
+          doom-modeline-indent-info nil
           doom-modeline-persp-name t
           doom-modeline-display-default-persp-name t
           doom-modeline-percent-position nil
@@ -1005,7 +1061,7 @@ Chat takes precedence over Popup, and Popup over Terminal."
   ;; my own modeline
   (doom-modeline-def-modeline 'ishovkun-line
     '(bar workspace-name fancy-modals matches remote-host buffer-position word-count parrot selection-info)
-    '(misc-info persp-name buffer-encoding major-mode indent-info process vcs lsp check))
+    '(misc-info persp-name buffer-encoding major-mode process vcs lsp check))
 
     (defun setup-custom-doom-modeline ()
       (doom-modeline-set-modeline 'ishovkun-line 'default))
@@ -1014,7 +1070,7 @@ Chat takes precedence over Popup, and Popup over Terminal."
   )  ;; end use-package doom-modeline
 
 (when (display-graphic-p)
-  (load! "frame-status")
+  (load! "statusbar/frame-status")
   (ishovkun-frame-status-enable))
 
 ;; Cursor shape in emacs terminal
@@ -1095,7 +1151,8 @@ Chat takes precedence over Popup, and Popup over Terminal."
     (setq lsp-lens-enable nil     ;; disable stupid lenses (number of references inline)
           lsp-enable-file-watchers nil
           lsp-headerline-breadcrumb-icons-enable t
-          lsp-headerline-breadcrumb-enable t
+          ;; GNU ELPA Breadcrumb provides the universal project/Imenu header.
+          lsp-headerline-breadcrumb-enable nil
           lsp-headerline-breadcrumb-enable-symbol-numbers nil
           )
   )
@@ -1273,7 +1330,6 @@ Chat takes precedence over Popup, and Popup over Terminal."
       )
     (add-hook 'org-mode-hook #'org-modern-mode)
     (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-    (+org-pretty-mode nil)
     (setq org-ellipsis "…")
     (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
     (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")

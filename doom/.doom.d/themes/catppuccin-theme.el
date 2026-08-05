@@ -139,7 +139,33 @@
    ;; linum
    `(line-number ((,class (:box (:line-width 1 :color ,bg) :bold t :foreground ,comment :background ,bg))))
    `(line-number-current-line ((,class (:box (:line-width 1 :color ,bg) :bold t :foreground ,keyword :background ,bg ))))
-   `(header-line ((,class (:bold t :background ,bg))))
+   ;; Zed's breadcrumb row is about 1.4x its tab row.  Keep the glyphs centered
+   ;; in that space and place the focused rule below the font descent, so
+   ;; descenders never collide with it.
+   `(header-line ((,class (:foreground ,fg :background ,bg
+                           :weight normal :extend t
+                           :box (:line-width (1 . 10) :color ,bg)
+                           :overline nil
+                           :underline (:color ,lavender :style line
+                                       :position -8)))))
+   `(header-line-highlight
+     ((,class (:inherit header-line
+               :foreground ,fg-bright :background ,bg-light))))
+   `(breadcrumb-face
+     ((,class (:inherit header-line :foreground ,overlay1))))
+   `(breadcrumb-project-crumbs-face
+     ((,class (:inherit breadcrumb-face :foreground ,overlay1))))
+   `(breadcrumb-project-base-face
+     ((,class (:inherit breadcrumb-project-crumbs-face
+               :foreground ,overlay2))))
+   `(breadcrumb-project-leaf-face
+     ((,class (:inherit breadcrumb-project-crumbs-face
+               :foreground ,text :weight normal))))
+   `(breadcrumb-imenu-crumbs-face
+     ((,class (:inherit breadcrumb-face :foreground ,overlay2))))
+   `(breadcrumb-imenu-leaf-face
+     ((,class (:inherit breadcrumb-imenu-crumbs-face
+               :foreground ,lavender :weight normal))))
    ;; `(company-tooltip-selection ((,class (:box (:line-width 1 :color ,bg) :bold t :foreground ,fg-bright :background ,bg-light))))
    ;; lsp
    '(cquery-sem-global-variable-face ((t (:underline t :weight extra-bold))))
@@ -368,26 +394,35 @@
    `(web-mode-html-tag-face ((,class (:foreground ,builtin))))
    ;; tab bar
    `(tab-bar ((,class (:background ,bg-dark-special))))
-   ;; Match Zed's tab hierarchy: the strip and inactive tab interiors share
-   ;; the status-bar color, editor-colored boxes separate inactive tabs, and
-   ;; the active tab opens visually into the editor surface.
    `(tab-line ((,class (:background ,bg-dark))))
+   ;; Overline provides the 1px top border.  Box uses the tab's own bg so it
+   ;; acts as invisible padding — no colored top/bottom thick band.
+   ;; The surface1-colored tab-line-separator provides left/right dividers.
    `(tab-line-tab
      ((,class (:inherit tab-line
                :foreground ,fg :background ,bg-dark
-               :box (:line-width (1 . 5) :color ,bg)))))
+               :overline ,surface1
+               :underline (:color ,surface1 :style line :position -8)
+               :box (:line-width (1 . 8) :color ,bg-dark)))))
    `(tab-line-tab-inactive
      ((,class (:inherit tab-line-tab
                :foreground ,fg :background ,bg-dark
-               :box (:line-width (1 . 5) :color ,bg)))))
+               :overline ,surface1
+               :underline (:color ,surface1 :style line :position -8)
+               :box (:line-width (1 . 8) :color ,bg-dark)))))
    `(tab-line-tab-current
      ((,class (:inherit tab-line-tab
                :foreground ,fg-bright :background ,bg
-               :box (:line-width (1 . 5) :color ,bg)))))
+               :overline ,surface1
+               :underline nil
+               :box (:line-width (1 . 8) :color ,bg)))))
    `(tab-line-highlight
      ((,class (:inherit tab-line-tab
                :foreground ,fg-bright :background ,bg-light
-               :box (:line-width (1 . 5) :color ,bg)))))
+               :overline ,surface1
+               :underline (:color ,surface1 :style line :position -8)
+               :box (:line-width (1 . 8) :color ,bg-light)))))
+   `(my/tab-line-separator ((,class (:background ,surface1 :foreground ,surface1))))
    `(centaur-tabs-selected            ((,class (:background ,bg-light))))
    `(centaur-tabs-selected-modified   ((,class (:foreground ,warning :background ,bg-light))))
    `(centaur-tabs-unselected          ((,class (:background ,bg-dark-special))))

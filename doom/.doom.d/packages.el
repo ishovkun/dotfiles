@@ -53,6 +53,7 @@
   :recipe (:host github :repo "mkcms/compiler-explorer.el" :files ("*.el" "dist")))
 
 (package! org-modern)
+(package! breadcrumb)
 
 ;; agent-shell: Claude Code / Codex (and other ACP agents) in a native Emacs
 ;; buffer — same Agent Client Protocol as Zed's claude-acp/codex-acp.

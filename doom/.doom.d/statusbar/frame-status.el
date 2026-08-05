@@ -1,4 +1,6 @@
-;;; frame-status.el -*- lexical-binding: t; -*-
+;;; frame-status.el --- Frame-wide Doom status bar -*- lexical-binding: t; -*-
+
+(require 'svg)
 
 (defvar ishovkun-frame-status-buffer " *frame-status*")
 (defvar ishovkun-frame-status-message "")
@@ -15,8 +17,12 @@
 (defvar ishovkun-frame-status--ensuring-window nil)
 (defvar ishovkun-frame-status--pinning-window nil)
 (defvar ishovkun-frame-status--render-timer nil)
+(defvar ishovkun-frame-status-diagnostic-icon-cache
+  (make-hash-table :test #'equal))
 (defconst ishovkun-frame-status-text-raise -0.12
   "Display raise that optically centers status text in its row.")
+(defconst ishovkun-frame-status-symbol-icon-scale 0.8
+  "Font scale for workspace and VCS symbols relative to status text.")
 
 (defface ishovkun-frame-status-workspace-hover
   '((t (:inherit doom-modeline-highlight)))
@@ -24,9 +30,9 @@
 (defface ishovkun-frame-status-interpreter-hover
   '((t (:inherit doom-modeline-highlight)))
   "Hover face for the interpreter button.")
-(defface ishovkun-frame-status-indent-hover
+(defface ishovkun-frame-status-diagnostics-hover
   '((t (:inherit doom-modeline-highlight)))
-  "Hover face for the indentation button.")
+  "Hover face for the diagnostics button.")
 (defface ishovkun-frame-status-vcs-hover
   '((t (:inherit doom-modeline-highlight)))
   "Hover face for the version-control button.")
@@ -62,7 +68,21 @@
   "Return a copy of TEXT using the tab-bar height in FACE."
   (let ((text (copy-sequence (or text ""))))
     (when (> (length text) 0)
-      (add-face-text-property 0 (length text) face nil text))
+      (add-face-text-property 0 (length text) face nil text)
+      (when-let ((height (plist-get face :height)))
+        (let ((position 0))
+          (while (< position (length text))
+            (let* ((next (next-single-property-change
+                          position 'ishovkun-frame-status-font-scale
+                          text (length text)))
+                   (scale (get-text-property
+                           position 'ishovkun-frame-status-font-scale text)))
+              (when (and scale (numberp height))
+                ;; Apply this after the shared tab height so it wins over the
+                ;; absolute size while preserving the icon's symbol family.
+                (add-face-text-property
+                 position next `(:height ,(round (* height scale))) nil text))
+              (setq position next))))))
     text))
 
 (defun ishovkun-frame-status--center-text-baseline (start end)
@@ -214,41 +234,121 @@ the fake minibuffer cursor."
                  (tmm-prompt binding))
                 ((commandp binding) (call-interactively binding))))))))
 
-(defun ishovkun-frame-status--indent-width-variable ()
-  "Return the indentation-width variable for the current major mode."
-  (or (seq-find (lambda (variable)
-                  (and (boundp variable) (numberp (symbol-value variable))))
-                (cdr (assq major-mode doom-modeline-indent-alist)))
-      'tab-width))
+(defun ishovkun-frame-status--diagnostic-icon-height ()
+  "Return an icon height proportional to the resolved tab-line font."
+  (let* ((font (face-font 'tab-line))
+         (info (and font (font-info font)))
+         (pixels (and (vectorp info) (aref info 2))))
+    ;; Zed's 16px icons accompany roughly 24px-high UI text.  Preserve that
+    ;; proportion while following the shared tab/status font-size controls.
+    (max 12 (round (* (or pixels (frame-char-height)) (/ 2.0 3.0))))))
 
-(defun ishovkun-frame-status--indent-width ()
-  "Return the effective indentation width in the current buffer."
-  (symbol-value (ishovkun-frame-status--indent-width-variable)))
+(defun ishovkun-frame-status--diagnostic-icon (kind color)
+  "Return a cached Zed-style SVG icon of KIND drawn in COLOR."
+  (let* ((height (ishovkun-frame-status--diagnostic-icon-height))
+         (key (list kind color height))
+         (image
+          (or (gethash key ishovkun-frame-status-diagnostic-icon-cache)
+              (let ((svg (svg-create 16 16 :fill "none")))
+                (pcase kind
+                  ('check
+                   (svg-node
+                    svg 'path
+                    :d "M4.625 8.981 7.034 10.771 11.344 4.76"
+                    :stroke color :stroke-width 1.2
+                    :stroke-linecap "round" :stroke-linejoin "round"))
+                  ('warning
+                   (svg-node
+                    svg 'path
+                    :d (concat
+                        "M13.84 11.6 9.037 3.199a1.2 1.2 0 0 0-2.089 0"
+                        "l-4.802 8.403a1.2 1.2 0 0 0 1.05 1.8h9.604"
+                        "a1.201 1.201 0 0 0 1.038-1.8ZM8 6v2.667"
+                        "M8 11.333h.007")
+                    :stroke color :stroke-width 1.2
+                    :stroke-linecap "round" :stroke-linejoin "round"))
+                  ('error
+                   (let ((outline
+                          (concat
+                           "M9.864 3c.132 0 .259.053.353.146l2.636 2.636"
+                           "c.094.094.147.221.147.354v3.728"
+                           "a.5.5 0 0 1-.146.353l-2.637 2.637"
+                           "A.5.5 0 0 1 9.864 13H6.136"
+                           "a.5.5 0 0 1-.354-.146l-2.636-2.636"
+                           "A.5.5 0 0 1 3 9.864V6.136"
+                           "a.5.5 0 0 1 .146-.354l2.636-2.636"
+                           "A.5.5 0 0 1 6.136 3Z")))
+                     (svg-node svg 'path :d outline :fill color
+                               :fill-opacity 0.15 :stroke color
+                               :stroke-width 1.2 :stroke-linejoin "round")
+                     (svg-node svg 'path
+                               :d "M9.5 6.5 6.5 9.5M9.5 9.5 6.5 6.5"
+                               :stroke color :stroke-width 1.2
+                               :stroke-linecap "round"))))
+                (puthash key
+                         (svg-image svg :ascent 'center :height height)
+                         ishovkun-frame-status-diagnostic-icon-cache)))))
+    (propertize " " 'display image)))
 
-(defun ishovkun-frame-status--set-indent (width tabs)
-  "Use WIDTH columns and select tabs when TABS is non-nil."
-  (set (make-local-variable (ishovkun-frame-status--indent-width-variable)) width)
-  (setq-local tab-width width
-              indent-tabs-mode tabs)
-  (ishovkun-frame-status-render))
+(defun ishovkun-frame-status--diagnostic-item (kind count face)
+  "Render a diagnostic KIND with COUNT using FACE."
+  (concat
+   (ishovkun-frame-status--diagnostic-icon
+    kind (face-foreground face nil t))
+   (propertize " " 'display '(space :width 4))
+   (propertize (number-to-string count) 'face face)))
 
-(defun ishovkun-frame-status-select-indent ()
-  "Choose indentation style and width through completion."
+(defun ishovkun-frame-status--diagnostic-counts ()
+  "Return current buffer diagnostic counts, or nil without a checker."
+  (cond
+   ((bound-and-true-p flycheck-mode)
+    (unless (memq flycheck-last-status-change '(nil not-checked no-checker))
+      (let ((counts (doom-modeline--flycheck-count-errors)))
+        (list (alist-get 'error counts 0)
+              (alist-get 'warning counts 0)))))
+   ((and (bound-and-true-p flymake-mode)
+         (boundp 'flymake--state)
+         (hash-table-p flymake--state)
+         (> (hash-table-count flymake--state) 0))
+    (let ((counts (doom-modeline--flymake-count-errors)))
+      (list (alist-get 'error counts 0)
+            (alist-get 'warning counts 0))))))
+
+(defun ishovkun-frame-status--diagnostics ()
+  "Render diagnostics like Zed: check, or separate error/warning counts."
+  (when-let* ((counts (ishovkun-frame-status--diagnostic-counts))
+              (errors (car counts))
+              (warnings (cadr counts)))
+    (let* ((problem-count (+ errors warnings))
+           (body
+            (if (zerop problem-count)
+                (ishovkun-frame-status--diagnostic-icon
+                 'check (face-foreground 'success nil t))
+              (string-join
+               (delq nil
+                     (list
+                      (and (> errors 0)
+                           (ishovkun-frame-status--diagnostic-item
+                            'error errors 'error))
+                      (and (> warnings 0)
+                           (ishovkun-frame-status--diagnostic-item
+                            'warning warnings 'warning))))
+               "  ")))
+           (help
+            (if (zerop problem-count)
+                "No problems\nmouse-1: Open diagnostics"
+              (format "%d error%s, %d warning%s\nmouse-1: Open diagnostics"
+                      errors (if (= errors 1) "" "s")
+                      warnings (if (= warnings 1) "" "s")))))
+      (propertize (concat " " body " ") 'help-echo help))))
+
+(defun ishovkun-frame-status-show-diagnostics ()
+  "Open diagnostics for the selected editor buffer."
   (interactive)
-  (let* ((current-width (ishovkun-frame-status--indent-width))
-         (current (format "%d-column %s" current-width
-                          (if indent-tabs-mode "tabs" "spaces")))
-         (choice (completing-read
-                  "Indentation: "
-                  '("2-column spaces" "4-column spaces" "8-column spaces"
-                    "2-column tabs" "4-column tabs" "8-column tabs"
-                    "Custom width")
-                  nil t nil nil current))
-         (tabs (string-suffix-p "tabs" choice))
-         (width (if (string= choice "Custom width")
-                    (read-number "Indentation width: " current-width)
-                  (string-to-number choice))))
-    (ishovkun-frame-status--set-indent width tabs)))
+  (cond
+   ((bound-and-true-p flycheck-mode) (flycheck-list-errors))
+   ((bound-and-true-p flymake-mode) (flymake-show-buffer-diagnostics))
+   (t (user-error "No diagnostics provider in this buffer"))))
 
 (defun ishovkun-frame-status--python-interpreters ()
   "Return useful Python interpreter candidates for the current project."
@@ -294,7 +394,7 @@ the fake minibuffer cursor."
   '(bar workspace-name fancy-modals matches remote-host
     buffer-position word-count parrot selection-info))
 (defconst ishovkun-frame-status-right
-  '(misc-info persp-name buffer-encoding major-mode indent-info process vcs lsp check))
+  '(misc-info persp-name buffer-encoding major-mode process vcs lsp diagnostics))
 
 (defun ishovkun-frame-status-apply-state-faces (&rest _)
   "Turn Doom's Evil state labels into theme-colored badges."
@@ -327,6 +427,7 @@ the fake minibuffer cursor."
 
 (defun ishovkun-frame-status-refresh-theme (&rest _)
   "Refresh all status and hidden-minibuffer colors from the active theme."
+  (clrhash ishovkun-frame-status-diagnostic-icon-cache)
   (ishovkun-frame-status-apply-state-faces)
   (let ((background (face-background 'mode-line-active nil t)))
     (when-let ((buffer (get-buffer ishovkun-frame-status-buffer)))
@@ -348,34 +449,68 @@ the fake minibuffer cursor."
     (ishovkun-frame-status-render)
     (ishovkun-frame-status--pin-window-height window)))
 
+(defun ishovkun-frame-status--mark-symbol-icons (text)
+  "Mark symbol-font runs in TEXT for reduced status-bar rendering."
+  (let ((position 0))
+    (while (< position (length text))
+      (let* ((next (next-property-change position text (length text)))
+             (face (get-text-property position 'face text)))
+        (when (and face
+                   (string-match-p "Symbols Nerd Font" (format "%S" face)))
+          (add-text-properties
+           position next
+           `(ishovkun-frame-status-font-scale
+             ,ishovkun-frame-status-symbol-icon-scale)
+           text))
+        (setq position next))))
+  text)
+
 (defun ishovkun-frame-status--segments (segments)
   (mapconcat
    (lambda (segment)
      (let ((text
             (copy-sequence
-             (cl-letf (((symbol-function 'doom-modeline--active) (lambda () t)))
-               (format-mode-line
-                `((:eval (,(intern (format "doom-modeline-segment--%s" segment))))))))))
+             (if (eq segment 'diagnostics)
+                 (ishovkun-frame-status--diagnostics)
+               (cl-letf (((symbol-function 'doom-modeline--active)
+                          (lambda () t)))
+                 (format-mode-line
+                  `((:eval
+                     (,(intern
+                        (format "doom-modeline-segment--%s" segment)))))))))))
        (ishovkun-frame-status--adapt-keymaps text)
        (pcase segment
          ((or 'workspace-name 'persp-name)
           (ishovkun-frame-status--buttonize
            text #'persp-switch "mouse-1: Switch workspace"
-           'ishovkun-frame-status-workspace-hover))
+           'ishovkun-frame-status-workspace-hover)
+          ;; Doom italicizes workspace names; use the regular tab typography
+          ;; while leaving the workspace icon in its symbol font.
+          (when (> (length text) 0)
+            (add-face-text-property
+             0 (length text) '(:weight normal :slant normal) nil text)))
          ('major-mode
           (ishovkun-frame-status--buttonize
            text #'ishovkun-frame-status-select-interpreter
            "mouse-1: Select Python interpreter"
-           'ishovkun-frame-status-interpreter-hover))
-         ('indent-info
+           'ishovkun-frame-status-interpreter-hover)
+          ;; Doom makes this segment bold.  Iosevka's bold glyphs look a
+          ;; size larger than the regular tab titles even at the same pixel
+          ;; height, so match the tab typography while retaining its colors.
+          (when (> (length text) 0)
+            (add-face-text-property
+             0 (length text) '(:weight normal) nil text)))
+         ('diagnostics
           (ishovkun-frame-status--buttonize
-           text #'ishovkun-frame-status-select-indent
-           "mouse-1: Change indentation style and width"
-           'ishovkun-frame-status-indent-hover))
+           text #'ishovkun-frame-status-show-diagnostics
+           (or (get-text-property 0 'help-echo text) "Open diagnostics")
+           'ishovkun-frame-status-diagnostics-hover))
          ('vcs
           (ishovkun-frame-status--buttonize
            text #'magit-branch-checkout "mouse-1: Switch Git branch"
            'ishovkun-frame-status-vcs-hover)))
+       (when (memq segment '(workspace-name persp-name vcs))
+         (ishovkun-frame-status--mark-symbol-icons text))
        ;; Keep Doom's intentional badge backgrounds for the Evil state and
        ;; match counter; flatten only ordinary segments onto the bar face.
        (unless (memq segment '(fancy-modals matches))
@@ -491,6 +626,10 @@ the fake minibuffer cursor."
     (cancel-timer ishovkun-frame-status--render-timer))
   (setq ishovkun-frame-status--render-timer
         (run-at-time 0 nil #'ishovkun-frame-status--run-deferred-render)))
+
+(defun ishovkun-frame-status--diagnostics-updated (&rest _)
+  "Refresh the status after an asynchronous diagnostics update."
+  (ishovkun-frame-status--schedule-render))
 
 (defun ishovkun-frame-status--display-message (text)
   "Display echo-area TEXT in the status bar and suppress the echo area."
@@ -670,6 +809,16 @@ the fake minibuffer cursor."
   (when (boundp 'doom-modeline-after-update-env-hook)
     (add-hook 'doom-modeline-after-update-env-hook
               #'ishovkun-frame-status-render))
+  (with-eval-after-load 'flycheck
+    (remove-hook 'flycheck-status-changed-functions
+                 #'ishovkun-frame-status--diagnostics-updated)
+    (add-hook 'flycheck-status-changed-functions
+              #'ishovkun-frame-status--diagnostics-updated))
+  (with-eval-after-load 'flymake
+    (advice-remove #'flymake--handle-report
+                   #'ishovkun-frame-status--diagnostics-updated)
+    (advice-add #'flymake--handle-report :after
+                #'ishovkun-frame-status--diagnostics-updated))
   (advice-remove #'message #'ishovkun-frame-status--message)
   (add-hook 'set-message-functions
             #'ishovkun-frame-status--display-message -100)
