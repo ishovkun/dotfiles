@@ -12,6 +12,7 @@
 (defvar-local ishovkun-frame-status-minibuffer-overlay nil)
 (defvar-local ishovkun-frame-status-saved-cursor-type nil)
 (defvar-local ishovkun-frame-status-saved-cursor-local-p nil)
+(defvar-local ishovkun-frame-status-search-minibuffer-p nil)
 (defvar ishovkun-frame-status-allow-selection nil)
 (defvar ishovkun-frame-status-original-command-error-function nil)
 (defvar ishovkun-frame-status--ensuring-window nil)
@@ -426,7 +427,7 @@ the fake minibuffer cursor."
                    `(:foreground ,background :background ,background)))))
 
 (defun ishovkun-frame-status-refresh-theme (&rest _)
-  "Refresh all status and hidden-minibuffer colors from the active theme."
+  "Refresh status and mirrored-search colors from the active theme."
   (clrhash ishovkun-frame-status-diagnostic-icon-cache)
   (ishovkun-frame-status-apply-state-faces)
   (let ((background (face-background 'mode-line-active nil t)))
@@ -437,7 +438,8 @@ the fake minibuffer cursor."
         (setq ishovkun-frame-status-face-cookie
               (face-remap-add-relative 'default `(:background ,background)))))
     (dolist (buffer (buffer-list))
-      (when (with-current-buffer buffer (minibufferp))
+      (when (with-current-buffer buffer
+              ishovkun-frame-status-search-minibuffer-p)
         (ishovkun-frame-status--remap-minibuffer-background
          buffer background)))
     (dolist (face '(window-divider window-divider-first-pixel
@@ -543,6 +545,12 @@ the fake minibuffer cursor."
              (< (overlay-start left) (overlay-start right))))
      "")))
 
+(defun ishovkun-frame-status--active-search-minibuffer-p ()
+  "Return non-nil when the active minibuffer is an Evil search."
+  (when-let ((window (active-minibuffer-window)))
+    (with-current-buffer (window-buffer window)
+      ishovkun-frame-status-search-minibuffer-p)))
+
 (defun ishovkun-frame-status-render ()
   (let* ((candidate (or (minibuffer-selected-window) (selected-window)))
          (source (if (eq (window-buffer candidate)
@@ -569,14 +577,12 @@ the fake minibuffer cursor."
                size-face))
              (middle-full
               (ishovkun-frame-status--apply-tab-font-size
-               ;; Help display can transiently make Emacs report an active
-               ;; minibuffer.  Enforce one physical line after choosing the
-               ;; input/message branch so neither path can bypass it.
+               ;; Ordinary prompts and messages remain in the minibuffer.
+               ;; Mirror only Evil's dedicated forward/backward search input.
                (ishovkun-frame-status--remove-line-breaks
-                (if (active-minibuffer-window)
+                (if (ishovkun-frame-status--active-search-minibuffer-p)
                     (ishovkun-frame-status--input-with-cursor)
-                  (ishovkun-frame-status--single-line
-                   ishovkun-frame-status-message)))
+                  ""))
                size-face))
              (separator (propertize " " 'face size-face))
              (right-width (string-pixel-width right))
@@ -631,42 +637,21 @@ the fake minibuffer cursor."
   "Refresh the status after an asynchronous diagnostics update."
   (ishovkun-frame-status--schedule-render))
 
-(defun ishovkun-frame-status--display-message (text)
-  "Display echo-area TEXT in the status bar and suppress the echo area."
-  (setq ishovkun-frame-status-message
-        (if (or (null text)
-                (string-match-p
-                 "\\`-- \\(?:INSERT\\|NORMAL\\|VISUAL\\|REPLACE\\) --\\'"
-                 text))
-            ""
-          (ishovkun-frame-status--single-line text)))
-  (ishovkun-frame-status-render)
-  t)
-
-(defun ishovkun-frame-status--clear-message ()
-  "Clear the status message without touching the echo area."
-  (setq ishovkun-frame-status-message "")
-  (ishovkun-frame-status-render)
-  'dont-clear-message)
-
-(defun ishovkun-frame-status--show-help (help)
-  "Show HELP while the mouse is over an annotated status item."
-  (setq ishovkun-frame-status-message
-        (or (ishovkun-frame-status--single-line help) ""))
-  ;; `show-help-function' runs as part of Emacs's own help redisplay.  Writing
-  ;; the status buffer synchronously there can leave the window showing a
-  ;; stale partial frame even though the buffer contents are already correct.
-  (ishovkun-frame-status--schedule-render))
-
-(defun ishovkun-frame-status--command-error (data context signal)
-  "Route quit DATA to the status bar; delegate all other command errors."
-  (if (eq (car-safe data) 'quit)
-      (progn
-        (setq ishovkun-frame-status-message "Quit")
-        (ishovkun-frame-status-render))
-    (funcall (or ishovkun-frame-status-original-command-error-function
-                 #'command-error-default-function)
-             data context signal)))
+(defun ishovkun-frame-status--restore-echo-area ()
+  "Remove message routing installed by older statusbar revisions."
+  (remove-hook 'set-message-functions
+               #'ishovkun-frame-status--display-message)
+  (when (eq clear-message-function #'ishovkun-frame-status--clear-message)
+    (setq clear-message-function #'clear-minibuffer-message))
+  (when (eq show-help-function #'ishovkun-frame-status--show-help)
+    ;; With tooltips disabled, nil sends `help-echo' through the echo area.
+    (setq show-help-function
+          (and (bound-and-true-p tooltip-mode) #'tooltip-show-help)))
+  (when (eq command-error-function #'ishovkun-frame-status--command-error)
+    (setq command-error-function
+          (or ishovkun-frame-status-original-command-error-function
+              #'command-error-default-function)))
+  (setq ishovkun-frame-status-message ""))
 
 (defun ishovkun-frame-status--hide-mode-line ()
   "Remove the mode line from the current buffer."
@@ -742,19 +727,50 @@ the fake minibuffer cursor."
       window)))
 
 (defun ishovkun-frame-status--input-update (&rest _)
-  (let ((contents (buffer-substring-no-properties (point-min) (point-max))))
-    (setq ishovkun-frame-status-input-point (- (point) (point-min))
-          ishovkun-frame-status-input
-          (concat contents
-                  (ishovkun-frame-status--minibuffer-overlay-suffix))))
+  (when ishovkun-frame-status-search-minibuffer-p
+    (let ((contents (buffer-substring-no-properties (point-min) (point-max))))
+      (setq ishovkun-frame-status-input-point (- (point) (point-min))
+            ishovkun-frame-status-input
+            (concat contents
+                    (ishovkun-frame-status--minibuffer-overlay-suffix))))
+    (when (overlayp ishovkun-frame-status-minibuffer-overlay)
+      (move-overlay ishovkun-frame-status-minibuffer-overlay
+                    (point-min) (point-max) (current-buffer)))
+    (ishovkun-frame-status-render)))
+
+(defun ishovkun-frame-status--evil-search-minibuffer-p ()
+  "Return non-nil when the current minibuffer uses Evil's search map."
+  (and (boundp 'evil-ex-search-keymap)
+       (eq (current-local-map) evil-ex-search-keymap)))
+
+(defun ishovkun-frame-status--restore-minibuffer-appearance ()
+  "Remove search mirroring and restore the current minibuffer's appearance."
+  (remove-hook 'after-change-functions
+               #'ishovkun-frame-status--input-update t)
+  (remove-hook 'post-command-hook
+               #'ishovkun-frame-status--input-update t)
   (when (overlayp ishovkun-frame-status-minibuffer-overlay)
-    (move-overlay ishovkun-frame-status-minibuffer-overlay
-                  (point-min) (point-max) (current-buffer)))
-  (ishovkun-frame-status-render))
+    (delete-overlay ishovkun-frame-status-minibuffer-overlay)
+    (setq ishovkun-frame-status-minibuffer-overlay nil))
+  (when ishovkun-frame-status-minibuffer-face-cookie
+    (face-remap-remove-relative
+     ishovkun-frame-status-minibuffer-face-cookie)
+    (setq ishovkun-frame-status-minibuffer-face-cookie nil))
+  (when ishovkun-frame-status-search-minibuffer-p
+    (if ishovkun-frame-status-saved-cursor-local-p
+        (setq-local cursor-type ishovkun-frame-status-saved-cursor-type)
+      (kill-local-variable 'cursor-type)))
+  (setq-local ishovkun-frame-status-search-minibuffer-p nil
+              ishovkun-frame-status-saved-cursor-type nil
+              ishovkun-frame-status-saved-cursor-local-p nil))
 
 (defun ishovkun-frame-status--minibuffer-setup ()
-  (unless (overlayp ishovkun-frame-status-minibuffer-overlay)
-    (setq-local ishovkun-frame-status-saved-cursor-local-p
+  ;; Minibuffer buffers are reused, so clear any stale state before deciding
+  ;; whether this particular invocation is the one narrow mirrored case.
+  (ishovkun-frame-status--restore-minibuffer-appearance)
+  (when (ishovkun-frame-status--evil-search-minibuffer-p)
+    (setq-local ishovkun-frame-status-search-minibuffer-p t
+                ishovkun-frame-status-saved-cursor-local-p
                 (local-variable-p 'cursor-type)
                 ishovkun-frame-status-saved-cursor-type cursor-type
                 ishovkun-frame-status-minibuffer-overlay
@@ -762,32 +778,35 @@ the fake minibuffer cursor."
     (overlay-put ishovkun-frame-status-minibuffer-overlay 'priority 1001)
     (overlay-put ishovkun-frame-status-minibuffer-overlay 'face
                  `(:foreground ,(face-background 'mode-line-active nil t)
-                   :background ,(face-background 'mode-line-active nil t))))
-  (ishovkun-frame-status--remap-minibuffer-background
-   (current-buffer) (face-background 'mode-line-active nil t))
-  (setq-local cursor-type nil)
-  (add-hook 'after-change-functions #'ishovkun-frame-status--input-update nil t)
-  (add-hook 'post-command-hook #'ishovkun-frame-status--input-update nil t)
-  (ishovkun-frame-status--input-update))
+                   :background ,(face-background 'mode-line-active nil t)))
+    (ishovkun-frame-status--remap-minibuffer-background
+     (current-buffer) (face-background 'mode-line-active nil t))
+    (setq-local cursor-type nil)
+    (add-hook 'after-change-functions
+              #'ishovkun-frame-status--input-update nil t)
+    (add-hook 'post-command-hook
+              #'ishovkun-frame-status--input-update nil t)
+    (ishovkun-frame-status--input-update)))
 
 (defun ishovkun-frame-status--evil-ex-echo-update (&rest _)
   "Mirror Evil's transient Ex/search annotation after it is displayed."
   (when-let ((window (active-minibuffer-window)))
     (with-current-buffer (window-buffer window)
-      (ishovkun-frame-status--input-update))))
+      (when ishovkun-frame-status-search-minibuffer-p
+        (ishovkun-frame-status--input-update)))))
 
 (defun ishovkun-frame-status--minibuffer-exit ()
-  (when (overlayp ishovkun-frame-status-minibuffer-overlay)
-    (delete-overlay ishovkun-frame-status-minibuffer-overlay)
-    (setq ishovkun-frame-status-minibuffer-overlay nil))
-  (if ishovkun-frame-status-saved-cursor-local-p
-      (setq-local cursor-type ishovkun-frame-status-saved-cursor-type)
-    (kill-local-variable 'cursor-type))
+  (ishovkun-frame-status--restore-minibuffer-appearance)
   (setq ishovkun-frame-status-input ""
         ishovkun-frame-status-input-point 0)
   (run-at-time 0 nil #'ishovkun-frame-status-render))
 
 (defun ishovkun-frame-status-enable ()
+  (ishovkun-frame-status--restore-echo-area)
+  (dolist (buffer (buffer-list))
+    (when (with-current-buffer buffer (minibufferp))
+      (with-current-buffer buffer
+        (ishovkun-frame-status--restore-minibuffer-appearance))))
   (remove-hook 'enable-theme-functions #'ishovkun-frame-status-apply-state-faces)
   (remove-hook 'enable-theme-functions #'ishovkun-frame-status-refresh-theme)
   (add-hook 'enable-theme-functions #'ishovkun-frame-status-refresh-theme 110)
@@ -819,16 +838,9 @@ the fake minibuffer cursor."
                    #'ishovkun-frame-status--diagnostics-updated)
     (advice-add #'flymake--handle-report :after
                 #'ishovkun-frame-status--diagnostics-updated))
-  (advice-remove #'message #'ishovkun-frame-status--message)
-  (add-hook 'set-message-functions
-            #'ishovkun-frame-status--display-message -100)
-  (setq clear-message-function #'ishovkun-frame-status--clear-message
-        show-help-function #'ishovkun-frame-status--show-help)
-  (unless (eq command-error-function #'ishovkun-frame-status--command-error)
-    (setq ishovkun-frame-status-original-command-error-function
-          command-error-function))
-  (setq command-error-function #'ishovkun-frame-status--command-error)
   (when (fboundp 'evil-ex-echo)
+    (advice-remove #'evil-ex-echo
+                   #'ishovkun-frame-status--evil-ex-echo-update)
     (advice-add #'evil-ex-echo :after
                 #'ishovkun-frame-status--evil-ex-echo-update))
   (ishovkun-frame-status-refresh-theme))
