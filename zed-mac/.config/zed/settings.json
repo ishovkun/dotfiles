@@ -29,8 +29,8 @@
     "claude-acp": {
       "default_config_options": {
         "fast": "off",
-        "mode": "auto",
-        "model": "claude-fable-5",
+        "mode": "default",
+        "model": "opus[1m]",
         "effort": "xhigh"
       },
       "type": "registry"
@@ -92,6 +92,21 @@
         {
           "paths": [
             "/home/scratch.ishovkun_gpu/code/TensorRT-LLM"
+          ]
+        },
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu/code/worktrees/TensorRT-LLM/cosmos3_control"
+          ]
+        },
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu/code/worktrees/TensorRT-LLM/cosmos3_edge"
+          ]
+        },
+        {
+          "paths": [
+            "/home/scratch.ishovkun_gpu/wt-v2v-rebase"
           ]
         },
         {
@@ -199,7 +214,7 @@
   // },
   "edit_predictions": {
     "disabled_globs": [],
-    "provider": "copilot",
+    "provider": "none",
     "mode": "subtle"
   },
   "tab_bar": {
@@ -275,6 +290,30 @@
   // show everywhere — project panel, search, AND the agent @-mention picker (which
   // has no include-ignored setting of its own). Replaces Zed's default [".env*"].
   "file_scan_inclusions": [".env*", ".plans/**"],
+  // Scratch is an NFSv3 hard mount. Avoid polling generated trees that can block
+  // Zed's remote-server workers long enough to starve remote heartbeats.
+  // This list overrides Zed's defaults, so keep the defaults here as well.
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/.jj",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+    "**/.venv",
+    "**/venv",
+    "**/__pycache__",
+    "**/.cache",
+    "**/node_modules",
+    "**/cpp/build*",
+    "**/build",
+    "**/build_*",
+    "**/bazel-*",
+    "**/tensorrt_llm_transfer_agent_binding*.so"
+  ],
   "use_smartcase_search": true,
   "vim": {
     "default_mode": "normal",

@@ -16,6 +16,13 @@
     }
   },
   {
+    "context": "AcpThread > Editor",
+    "bindings": {
+      "ctrl-k": "agent::ScrollOutputToPreviousMessage",
+      "ctrl-j": "agent::ScrollOutputToNextMessage"
+    }
+  },
+  {
     "bindings": {
       "escape": "menu::Cancel",
       "cmd-y": "agent::AllowOnce",
@@ -24,6 +31,9 @@
       "cmd-h": "workspace::ActivatePaneLeft",
       "cmd-k": "workspace::ActivatePaneUp",
       "cmd-j": "workspace::ActivatePaneDown",
+      "cmd-b": "workspace::ToggleLeftDock",
+      "cmd-r": "workspace::ToggleRightDock",
+      "cmd-w": ["pane::CloseActiveItem", { "close_pinned": false }],
       "cmd-m": null,
       // "cmd-shift-l": "vim::ResizePaneRight",
       // "cmd-shift-l": ["workspace::SendKeystrokes", "20 ctrl-w >"],
@@ -100,6 +110,7 @@
       "space t m": "editor::ToggleMinimap",
       "space t t": "editor::ToggleTabBar",
       "space g g": "git::Diff",
+      "space g G": "git::BranchDiff",
       "space g l": "git_graph::Open",
       "space w v": "pane::SplitVertical",
       "space w s": "pane::SplitHorizontal",
@@ -109,6 +120,7 @@
       "space b a": "tab_switcher::ToggleAll",
       "space r": "projects::OpenRemote",
       "space p p": "projects::OpenRecent",
+      "space p a": "workspace::Open",
       "space p r": "editor::Rename",
       "space p t": "zed::OpenProjectTasks",
       "space p d": "debugger::OpenProjectDebugTasks",
@@ -230,6 +242,34 @@
     },
   },
   {
+    "context": "AcpThread > Editor",
+    "bindings": {
+      // Emacs maps these to page-down/page-up; in chat, use both for paste.
+      "ctrl-v": "editor::Paste",
+      "cmd-v": "editor::Paste",
+    },
+  },
+  {
+    "context": "MessageEditor > Editor && VimControl && vim_mode == normal",
+    "bindings": {
+      "ctrl-k": "agent::ScrollOutputToPreviousMessage",
+      "ctrl-j": "agent::ScrollOutputToNextMessage",
+    },
+  },
+  {
+    "context": "AcpThread > Markdown",
+    "bindings": {
+      "j": "agent::ScrollOutputLineDown",
+      "k": "agent::ScrollOutputLineUp",
+      "ctrl-d": "agent::ScrollOutputPageDown",
+      "ctrl-e": "agent::ScrollOutputPageUp",
+      "g g": "agent::ScrollOutputToTop",
+      "shift-g": "agent::ScrollOutputToBottom",
+      "ctrl-c": "markdown::Copy",
+      "cmd-c": "markdown::Copy",
+    },
+  },
+  {
     "context": "Editor && !agent_diff && !AgentPanel",
     "use_key_equivalents": true,
     "bindings": {
@@ -334,6 +374,7 @@
     "context": "Terminal",
     "bindings": {
       // "cmd-n": "tab_switcher::Toggle",
+      "ctrl-k": ["terminal::SendKeystroke", "ctrl-k"],
       "cmd-n": ["terminal::SendKeystroke", "alt-n"],
       "cmd-b": ["terminal::SendKeystroke", "alt-b"],
       "cmd-f": ["terminal::SendKeystroke", "alt-f"],

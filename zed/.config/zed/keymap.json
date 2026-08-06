@@ -16,18 +16,35 @@
     }
   },
   {
+    "context": "AcpThread > Editor",
+    "bindings": {
+      "ctrl-k": "agent::ScrollOutputToPreviousMessage",
+      "ctrl-j": "agent::ScrollOutputToNextMessage"
+    }
+  },
+  {
     "bindings": {
       "escape": "menu::Cancel",
       "alt-y": "agent::AllowOnce",
       "alt-x": "command_palette::Toggle",
+      "cmd-y": "agent::AllowOnce",
+      "cmd-x": "command_palette::Toggle",
       "alt-l": "workspace::ActivatePaneRight",
       "alt-h": "workspace::ActivatePaneLeft",
       "alt-k": "workspace::ActivatePaneUp",
       "alt-j": "workspace::ActivatePaneDown",
+      "cmd-l": "workspace::ActivatePaneRight",
+      "cmd-h": "workspace::ActivatePaneLeft",
+      "cmd-k": "workspace::ActivatePaneUp",
+      "cmd-j": "workspace::ActivatePaneDown",
       "alt-b": "workspace::ToggleLeftDock",
       "alt-r": "workspace::ToggleRightDock",
       "alt-w": ["pane::CloseActiveItem", { "close_pinned": false }],
       "alt-m": null,
+      "cmd-b": "workspace::ToggleLeftDock",
+      "cmd-r": "workspace::ToggleRightDock",
+      "cmd-w": ["pane::CloseActiveItem", { "close_pinned": false }],
+      "cmd-m": null,
       // "alt-shift-l": "vim::ResizePaneRight",
       // "alt-shift-l": ["workspace::SendKeystrokes", "20 ctrl-w >"],
       // "alt-shift-k": "vim::ResizePaneUp",
@@ -49,15 +66,38 @@
         "ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w -",
 
       ],
+      "cmd-shift-l": [
+        "workspace::SendKeystrokes",
+        "ctrl-w > ctrl-w > ctrl-w > ctrl-w > ctrl-w > ctrl-w > ctrl-w >",
+      ],
+      "cmd-shift-h": [
+        "workspace::SendKeystrokes",
+        "ctrl-w < ctrl-w < ctrl-w < ctrl-w < ctrl-w < ctrl-w < ctrl-w <",
+      ],
+      "cmd-shift-k": [
+        "workspace::SendKeystrokes",
+        "ctrl-w + ctrl-w + ctrl-w + ctrl-w + ctrl-w + ctrl-w + ctrl-w +",
+      ],
+      "cmd-shift-j": [
+        "workspace::SendKeystrokes",
+        "ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w - ctrl-w -",
+
+      ],
       "alt-+": ["zed::IncreaseUiFontSize", { "persist": false }],
       "alt-_": ["zed::DecreaseUiFontSize", { "persist": false }],
       "alt-`": "workspace::ToggleBottomDock",
+      "cmd-+": ["zed::IncreaseUiFontSize", { "persist": false }],
+      "cmd-_": ["zed::DecreaseUiFontSize", { "persist": false }],
+      "cmd-`": "workspace::ToggleBottomDock",
       "ctrl-`": "workspace::ToggleBottomDock",
       "ctrl-\\": "workspace::ToggleLeftDock",
       "alt-\\": "workspace::ToggleLeftDock",
+      "cmd-\\": "workspace::ToggleLeftDock",
       // "alt-[": "workspace::ToggleRightDock",
       "alt-[": "agent::ToggleFocus",
       "alt-'": "multi_workspace::ToggleWorkspaceSidebar",
+      "cmd-[": "agent::ToggleFocus",
+      "cmd-'": "multi_workspace::ToggleWorkspaceSidebar",
     },
   },
   {
@@ -67,6 +107,8 @@
       "ctrl-j": "menu::SelectNext",
       "alt-p": "menu::SelectPrevious",
       "alt-n": "menu::SelectNext",
+      "cmd-p": "menu::SelectPrevious",
+      "cmd-n": "menu::SelectNext",
       // "k": "menu::SelectPrevious",
       // "j": "menu::SelectNext"
     },
@@ -78,6 +120,8 @@
       "ctrl-j": "menu::SelectNext",
       "alt-p": "menu::SelectPrevious",
       "alt-n": "menu::SelectNext",
+      "cmd-p": "menu::SelectPrevious",
+      "cmd-n": "menu::SelectNext",
     },
   },
   {
@@ -87,6 +131,10 @@
       "alt-e": "vim::ScrollUp",
       "alt-u": "vim::ScrollUp",
       "alt-y": "agent::AllowOnce",
+      "cmd-d": "vim::ScrollDown",
+      "cmd-e": "vim::ScrollUp",
+      "cmd-u": "vim::ScrollUp",
+      "cmd-y": "agent::AllowOnce",
       "space f f": "file_finder::Toggle",
       "space space": ["file_finder::Toggle", { "separate_history": true }],
       "space o e": "dev::OpenKeyContextView",
@@ -103,6 +151,7 @@
       "space t m": "editor::ToggleMinimap",
       "space t t": "editor::ToggleTabBar",
       "space g g": "git::Diff",
+      "space g G": "git::BranchDiff",
       "space g l": "git_graph::Open",
       "space w v": "pane::SplitVertical",
       "space w s": "pane::SplitHorizontal",
@@ -133,6 +182,7 @@
       ", r": "vim::ToggleRegistersView",
       ", m": "vim::ToggleMarksView",
       "alt-g": "git_panel::ToggleFocus",
+      "cmd-g": "git_panel::ToggleFocus",
     },
   },
   {
@@ -142,6 +192,7 @@
       "ctrl-s": "workspace::Save",
       "ctrl-shift-s": "workspace::SaveAll",
       "alt-s": "workspace::Save",
+      "cmd-s": "workspace::Save",
       "ctrl-e": "vim::ScrollUp",
       "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
       "ctrl-j": "editor::LineDown",
@@ -149,6 +200,9 @@
       "alt-n": "pane::ActivateNextItem",
       "alt-p": "pane::ActivatePreviousItem",
       "alt-shift-r": "editor::ReloadFile",
+      "cmd-n": "pane::ActivateNextItem",
+      "cmd-p": "pane::ActivatePreviousItem",
+      "cmd-shift-r": "editor::ReloadFile",
       // "alt-n": "tab_switcher::ToggleAll",
       // "enter": "task::Rerun",
       // Save file and run
@@ -156,6 +210,7 @@
       // save all and run
       "enter": ["workspace::SendKeystrokes", "ctrl-shift-s alt-r"],
       "alt-enter": "repl::Run",
+      "cmd-enter": "repl::Run",
       "j": ["vim::Down", { "display_lines": true }],
       "k": ["vim::Up", { "display_lines": true }],
       // "tab": "editor::AutoIndent",
@@ -226,11 +281,20 @@
     },
   },
   {
+    "context": "os == macos > (VimControl && !menu && !AgentPanel)",
+    "bindings": {
+      // Save all and invoke the macOS run shortcut.
+      "enter": ["workspace::SendKeystrokes", "ctrl-shift-s cmd-alt-r"],
+    },
+  },
+  {
     "context": "AgentPanel",
     "use_key_equivalents": true,
     "bindings": {
       "alt-shift-r": "agent::OpenRulesLibrary",
       "alt-shift-p": "agent::ManageProfiles",
+      "cmd-shift-r": "agent::OpenRulesLibrary",
+      "cmd-shift-p": "agent::ManageProfiles",
     },
   },
   {
@@ -239,6 +303,7 @@
       // Emacs maps these to page-down/page-up; in chat, use both for paste.
       "ctrl-v": "editor::Paste",
       "alt-v": "editor::Paste",
+      "cmd-v": "editor::Paste",
     },
   },
   {
@@ -259,6 +324,7 @@
       "shift-g": "agent::ScrollOutputToBottom",
       "ctrl-c": "markdown::Copy",
       "alt-c": "markdown::Copy",
+      "cmd-c": "markdown::Copy",
     },
   },
   {
@@ -266,6 +332,7 @@
     "use_key_equivalents": true,
     "bindings": {
       "alt-y": "agent::AllowOnce",
+      "cmd-y": "agent::AllowOnce",
     },
   },
   {
@@ -273,6 +340,7 @@
     "bindings": {
       "enter": "markdown::OpenPreview",
       "alt-enter": "markdown::OpenFollowingPreview",
+      "cmd-enter": "markdown::OpenFollowingPreview",
     },
   },
   {
@@ -287,6 +355,8 @@
       "space space": ["file_finder::Toggle", { "separate_history": true }],
       "alt-n": "pane::ActivateNextItem",
       "alt-p": "pane::ActivatePreviousItem",
+      "cmd-n": "pane::ActivateNextItem",
+      "cmd-p": "pane::ActivatePreviousItem",
       "space f k": "zed::OpenKeymapFile",
       "space w v": "pane::SplitVertical",
       "space w s": "pane::SplitHorizontal",
@@ -334,6 +404,7 @@
       ", p": "editor::GoToPreviousDiagnostic",
       "ctrl-p": "editor::GoToPreviousDiagnostic",
       "alt-;": ["workspace::SendKeystrokes", "shift-a space space"],
+      "cmd-;": ["workspace::SendKeystrokes", "shift-a space space"],
     },
   },
   {
@@ -373,6 +444,12 @@
       "alt-d": ["terminal::SendKeystroke", "alt-d"],
       "alt-shift-j": "vim::ResizePaneDown",
       "alt-shift-k": "vim::ResizePaneUp",
+      "cmd-n": ["terminal::SendKeystroke", "alt-n"],
+      "cmd-b": ["terminal::SendKeystroke", "alt-b"],
+      "cmd-f": ["terminal::SendKeystroke", "alt-f"],
+      "cmd-d": ["terminal::SendKeystroke", "alt-d"],
+      "cmd-shift-j": "vim::ResizePaneDown",
+      "cmd-shift-k": "vim::ResizePaneUp",
     },
   },
   {
@@ -382,6 +459,9 @@
       "alt-e": ["terminal::SendKeystroke", "alt-e"],
       "alt-p": ["terminal::SendKeystroke", "alt-p"],
       "alt-t": "workspace::NewTerminal",
+      "cmd-e": ["terminal::SendKeystroke", "alt-e"],
+      "cmd-p": ["terminal::SendKeystroke", "alt-p"],
+      "cmd-t": "workspace::NewTerminal",
     },
   },
   {
@@ -391,11 +471,14 @@
       "ctrl-e": "terminal::ScrollPageUp",
       "alt-e": "terminal::ScrollPageUp",
       "alt-d": "terminal::ScrollPageDown",
+      "cmd-e": "terminal::ScrollPageUp",
+      "cmd-d": "terminal::ScrollPageDown",
       "shift-e": ["terminal::SendKeystroke", "e"],
       "shift-B": ["terminal::SendKeystroke", "b"],
       "enter": "terminal::ToggleViMode",
       "space tab": "pane::AlternateFile",
       "alt-t": "workspace::NewTerminal",
+      "cmd-t": "workspace::NewTerminal",
       // "/": "search::FocusSearch",
       "/": "buffer_search::Deploy",
     },
@@ -418,6 +501,8 @@
       "ctrl-j": "menu::SelectNext",
       "alt-k": "menu::SelectPrevious",
       "alt-j": "menu::SelectNext",
+      "cmd-k": "menu::SelectPrevious",
+      "cmd-j": "menu::SelectNext",
     },
   },
   {
@@ -511,6 +596,8 @@
       "space space": ["file_finder::Toggle", { "separate_history": true }],
       "alt-p": "menu::SelectPrevious",
       "alt-n": "menu::SelectNext",
+      "cmd-p": "menu::SelectPrevious",
+      "cmd-n": "menu::SelectNext",
       "space t f": "project_panel::ToggleFocus",
     },
   },
