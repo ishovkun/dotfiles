@@ -292,6 +292,8 @@
    )
   ;; org
   (:after org :map org-mode-map
+    :desc "Scroll down one line" :nv "C-j" #'scroll-up-line
+    :desc "Scroll up one line"   :nv "C-k" #'scroll-down-line
     :desc "Preview LaTeX" :niv "<M-return>" #'org-latex-preview)
   ;; c++
   (:map c++-mode-map
@@ -724,7 +726,7 @@
                                 :slant 'normal
                                 :overline border-color
                                 :underline `(:color ,border-color :style line :position ,box-pad-)
-                                :box `(:line-width (1 . ,box-pad) :color ,hover-bg)))))))))
+                                :box `(:line-width (1 . ,box-pad) :color ,hover-bg))))))))
 
   (defun my/tab-line--clear-agent-edited (&rest _)
     "Clear the Agent Shell edit marker after a subsequent human edit."
@@ -862,7 +864,8 @@ Chat takes precedence over Popup, and Popup over Terminal."
              (lambda (buffer)
                (and (buffer-live-p buffer)
                     (equal (my/tab-line-buffer-group buffer) group)))
-             (delete-dups (cons (current-buffer) candidates)))))
+             (delete-dups
+              (cons (current-buffer) (copy-sequence candidates))))))
       (seq-sort-by #'buffer-name #'string< buffers)))
 
   (defun my/tab-line--select-buffer (buffer &optional window)
@@ -1482,24 +1485,6 @@ Chat takes precedence over Popup, and Popup over Terminal."
   (setq ein:output-area-inlined-images t)
   (setq ein:worksheet-enable-undo nil)  ;this allows to undo
   )
-;; ----------------------------------- Copilot ---------------------------------
-;; accept completion from copilot and fallback to company
-(use-package! copilot
-  :init
-  (setq copilot-install-dir
-        (expand-file-name ".cache/copilot/" doom-emacs-dir))
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word))
-  :config
-  (add-to-list 'copilot-major-mode-alist '("cuda" . "rust"))
-  (add-to-list 'copilot-indentation-alist '(python-mode 2))
-  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2))
-  )
-
 ;; ----------------------------------- Shell -----------------------------------
 ;; (when (display-graphic-p)
 ;;   (use-package mini-modeline

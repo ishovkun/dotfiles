@@ -47,8 +47,6 @@
 
 (package! doom-snippets :disable t)
 
-(package! copilot
-  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
 (package! compiler-explorer
   :recipe (:host github :repo "mkcms/compiler-explorer.el" :files ("*.el" "dist")))
 
