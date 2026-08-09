@@ -117,8 +117,9 @@ determine the exact padding."
       (if (integerp doom-nord-aurora-mod-padded-modeline) doom-nord-aurora-mod-padded-modeline 4)))
 
    (region-fg
-    (when (memq doom-nord-aurora-mod-region-highlight '(frost snowstorm))
-      base0))
+    (if (memq doom-nord-aurora-mod-region-highlight '(frost snowstorm))
+        base0
+      'unspecified))
 
    (modeline-fg     'unspecified)
    (modeline-fg-alt base6)
