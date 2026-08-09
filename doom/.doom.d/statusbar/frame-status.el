@@ -503,10 +503,11 @@ the fake minibuffer cursor."
             (add-face-text-property
              0 (length text) '(:weight normal) nil text)))
          ('diagnostics
-          (ishovkun-frame-status--buttonize
-           text #'ishovkun-frame-status-show-diagnostics
-           (or (get-text-property 0 'help-echo text) "Open diagnostics")
-           'ishovkun-frame-status-diagnostics-hover))
+          (when (> (length text) 0)
+            (ishovkun-frame-status--buttonize
+             text #'ishovkun-frame-status-show-diagnostics
+             (or (get-text-property 0 'help-echo text) "Open diagnostics")
+             'ishovkun-frame-status-diagnostics-hover)))
          ('vcs
           (ishovkun-frame-status--buttonize
            text #'magit-branch-checkout "mouse-1: Switch Git branch"
