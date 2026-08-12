@@ -73,6 +73,8 @@ install_user_script() {
   page_script_file="$script_dir/$page_script_name"
   platform_page_file="$script_dir/platforms/$platform/$page_script_name"
   installed_platform_page="$recipe_dir/ctrl-jk-platform-page.js"
+  platform_host_file="$script_dir/platforms/$platform/$service-host.js"
+  installed_host_file="$recipe_dir/ctrl-jk-host.js"
 
   if [ ! -d "$recipe_dir" ]; then
     printf '%s recipe not found: %s\n' "$service" "$recipe_dir" >&2
@@ -90,6 +92,11 @@ install_user_script() {
     cp "$platform_page_file" "$installed_platform_page"
   elif [ -f "$installed_platform_page" ]; then
     rm -f "$installed_platform_page"
+  fi
+  if [ -f "$platform_host_file" ]; then
+    cp "$platform_host_file" "$installed_host_file"
+  elif [ -f "$installed_host_file" ]; then
+    rm -f "$installed_host_file"
   fi
   printf 'Installed %s Ctrl+J/K user script in:\n%s\n' "$service" "$user_file"
 }

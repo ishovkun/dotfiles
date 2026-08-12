@@ -16,6 +16,11 @@ and installs the matching extension automatically. The macOS Slack extension
 handles the Ferdium-scoped `Cmd+H/L` bridge and cycles focus through the
 conversation list, primary chat, and thread/AI pane.
 
+On macOS, the Slack extension also keeps Slack's top-bar controls clickable
+while preserving draggable gaps. Slack reports its live toolbar geometry to a
+small bridge in Ferdium's outer renderer, so the drag regions follow Slack's
+responsive layout instead of relying on fixed pixels or percentages.
+
 ## Install
 
 Run:

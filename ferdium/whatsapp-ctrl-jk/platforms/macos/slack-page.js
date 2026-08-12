@@ -6,6 +6,174 @@ const macosEmitLog = (event, details = {}) => {
   );
 };
 
+const macosInstallAdaptiveDragRegionReporter = () => {
+  const styleId = 'dotfiles-slack-adaptive-drag-region-reporter';
+  if (document.getElementById(styleId)) {
+    return;
+  }
+
+  const toolbarSelector = [
+    '[data-qa="top-nav"]',
+    '.p-ia4_top_nav[role="toolbar"]',
+  ].join(',');
+  const interactiveSelector = [
+    'a',
+    'button',
+    'input',
+    'select',
+    'textarea',
+    '[contenteditable="true"]',
+    '[role="button"]',
+    '[role="combobox"]',
+    '[role="link"]',
+    '[role="menuitem"]',
+    '[role="textbox"]',
+    '[tabindex]:not([tabindex="-1"])',
+    '.p-ia4_top_nav__native_ui_spacer',
+  ].join(',');
+
+  const style = document.createElement('style');
+  style.id = styleId;
+  style.textContent = `
+    :is([data-qa="top-nav"], .p-ia4_top_nav[role="toolbar"])
+      :is(
+        a,
+        button,
+        input,
+        select,
+        textarea,
+        [contenteditable="true"],
+        [role="button"],
+        [role="combobox"],
+        [role="link"],
+        [role="menuitem"],
+        [role="textbox"],
+        [tabindex]:not([tabindex="-1"])
+      ) {
+      outline: 2px solid #ff9d00 !important;
+      outline-offset: -2px !important;
+    }
+  `;
+  (document.head || document.documentElement).append(style);
+
+  let lastPayload;
+  let reportTimer;
+  let observedToolbar;
+  let toolbarResizeObserver;
+  let toolbarMutationObserver;
+
+  const report = () => {
+    const toolbar = document.querySelector(toolbarSelector);
+    if (!toolbar) {
+      return;
+    }
+
+    if (toolbar !== observedToolbar) {
+      observedToolbar = toolbar;
+      toolbarResizeObserver?.disconnect();
+      toolbarMutationObserver?.disconnect();
+      toolbarResizeObserver = new ResizeObserver(() => scheduleReport());
+      toolbarResizeObserver.observe(toolbar);
+      toolbarMutationObserver = new MutationObserver(() => scheduleReport());
+      toolbarMutationObserver.observe(toolbar, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        attributeFilter: [
+          'aria-hidden',
+          'class',
+          'disabled',
+          'style',
+          'tabindex',
+        ],
+      });
+    }
+
+    const toolbarBounds = toolbar.getBoundingClientRect();
+    if (toolbarBounds.width <= 0 || toolbarBounds.height <= 0) {
+      return;
+    }
+
+    const padding = 4;
+    const intervals = [...toolbar.querySelectorAll(interactiveSelector)]
+      .filter(element => {
+        const bounds = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return (
+          bounds.width > 0 &&
+          bounds.height > 0 &&
+          bounds.bottom > toolbarBounds.top &&
+          bounds.top < toolbarBounds.bottom &&
+          style.display !== 'none' &&
+          style.visibility !== 'hidden' &&
+          style.pointerEvents !== 'none'
+        );
+      })
+      .map(element => {
+        const bounds = element.getBoundingClientRect();
+        return {
+          left: Math.max(toolbarBounds.left, bounds.left - padding),
+          right: Math.min(toolbarBounds.right, bounds.right + padding),
+        };
+      })
+      .sort((left, right) => left.left - right.left)
+      .reduce((merged, interval) => {
+        const previous = merged[merged.length - 1];
+        if (previous && interval.left <= previous.right) {
+          previous.right = Math.max(previous.right, interval.right);
+        } else {
+          merged.push(interval);
+        }
+        return merged;
+      }, []);
+
+    const gaps = [];
+    let cursor = toolbarBounds.left;
+    for (const interval of intervals) {
+      if (interval.left - cursor >= 18) {
+        gaps.push({ left: cursor, right: interval.left });
+      }
+      cursor = Math.max(cursor, interval.right);
+    }
+    if (toolbarBounds.right - cursor >= 18) {
+      gaps.push({ left: cursor, right: toolbarBounds.right });
+    }
+
+    const payload = {
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      },
+      regions: gaps.map(gap => ({
+        x: Math.round(gap.left),
+        y: Math.round(toolbarBounds.top),
+        width: Math.round(gap.right - gap.left),
+        height: Math.round(toolbarBounds.height),
+      })),
+    };
+    const serialized = JSON.stringify(payload);
+    if (serialized === lastPayload) {
+      return;
+    }
+    lastPayload = serialized;
+    window.dispatchEvent(
+      new CustomEvent('dotfiles-slack-drag-regions', { detail: payload }),
+    );
+    macosEmitLog('adaptive-drag-regions-reported', payload);
+  };
+
+  const scheduleReport = () => {
+    clearTimeout(reportTimer);
+    reportTimer = setTimeout(report, 50);
+  };
+
+  window.addEventListener('resize', scheduleReport, true);
+  scheduleReport();
+  macosEmitLog('adaptive-drag-region-reporter-installed');
+};
+
+macosInstallAdaptiveDragRegionReporter();
+
 const macosLastFocused = {};
 
 const macosIsVisible = element =>
@@ -24,6 +192,163 @@ const macosLargestVisible = selector =>
         leftBounds.width * leftBounds.height
       );
     })[0];
+
+const macosSearchSelector = [
+  '[data-qa*="search" i]',
+  '[aria-label*="search" i]',
+  '[placeholder*="search" i]',
+  '[title*="search" i]',
+  '[role="search"]',
+  'input[type="search"]',
+].join(',');
+
+const macosRoundBounds = bounds => ({
+  x: Math.round(bounds.x),
+  y: Math.round(bounds.y),
+  width: Math.round(bounds.width),
+  height: Math.round(bounds.height),
+  right: Math.round(bounds.right),
+  bottom: Math.round(bounds.bottom),
+});
+
+const macosDescribeElement = element => {
+  if (!(element instanceof Element)) {
+    return undefined;
+  }
+
+  const style = getComputedStyle(element);
+  const className = typeof element.className === 'string'
+    ? element.className.trim().split(/\s+/).slice(0, 5).join(' ')
+    : undefined;
+  const searchLabel = [
+    element.getAttribute('aria-label'),
+    element.getAttribute('placeholder'),
+    element.getAttribute('title'),
+  ].some(value => value?.toLowerCase().includes('search'));
+
+  return {
+    tag: element.tagName,
+    id: element.id || undefined,
+    className: className || undefined,
+    role: element.getAttribute('role') || undefined,
+    dataQa: element.getAttribute('data-qa') || undefined,
+    searchLabel,
+    bounds: macosRoundBounds(element.getBoundingClientRect()),
+    pointerEvents: style.pointerEvents,
+    visibility: style.visibility,
+    display: style.display,
+    opacity: style.opacity,
+    position: style.position,
+    zIndex: style.zIndex,
+  };
+};
+
+const macosSearchCandidates = () =>
+  [...document.querySelectorAll(macosSearchSelector)]
+    .filter(element => {
+      const bounds = element.getBoundingClientRect();
+      return (
+        bounds.width > 0 &&
+        bounds.height > 0 &&
+        bounds.right > 0 &&
+        bounds.bottom > 0 &&
+        bounds.left < window.innerWidth &&
+        bounds.top < window.innerHeight
+      );
+    })
+    .slice(0, 12);
+
+const macosLogSearchLayout = event => {
+  macosEmitLog(event, {
+    href: window.location.href,
+    viewport: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      devicePixelRatio: window.devicePixelRatio,
+    },
+    active: macosDescribeElement(document.activeElement),
+    candidates: macosSearchCandidates().map(macosDescribeElement),
+  });
+};
+
+let macosSearchLayoutTimer;
+const macosScheduleSearchLayout = event => {
+  clearTimeout(macosSearchLayoutTimer);
+  macosSearchLayoutTimer = setTimeout(
+    () => macosLogSearchLayout(event),
+    250,
+  );
+};
+
+macosScheduleSearchLayout('search-layout-loaded');
+window.addEventListener(
+  'resize',
+  () => macosScheduleSearchLayout('search-layout-resized'),
+  true,
+);
+
+const macosNearBounds = (x, y, bounds, margin = 40) =>
+  x >= bounds.left - margin &&
+  x <= bounds.right + margin &&
+  y >= bounds.top - margin &&
+  y <= bounds.bottom + margin;
+
+const macosLogSearchPointer = event => {
+  if (!event.isTrusted) {
+    return;
+  }
+
+  const candidates = macosSearchCandidates();
+  const nearCandidate = candidates.some(element =>
+    macosNearBounds(
+      event.clientX,
+      event.clientY,
+      element.getBoundingClientRect(),
+    ),
+  );
+  const inTopBar = event.clientY <= Math.min(160, window.innerHeight / 5);
+  const pathHasSearch = event.composedPath().some(
+    element => element instanceof Element && element.matches(macosSearchSelector),
+  );
+
+  if (!nearCandidate && !inTopBar && !pathHasSearch) {
+    return;
+  }
+
+  macosEmitLog('search-pointer', {
+    type: event.type,
+    button: event.button,
+    defaultPrevented: event.defaultPrevented,
+    point: {
+      x: Math.round(event.clientX),
+      y: Math.round(event.clientY),
+    },
+    viewport: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      devicePixelRatio: window.devicePixelRatio,
+    },
+    target: macosDescribeElement(event.target),
+    hitStack: document
+      .elementsFromPoint(event.clientX, event.clientY)
+      .slice(0, 8)
+      .map(macosDescribeElement),
+    candidates: candidates.map(macosDescribeElement),
+  });
+
+  setTimeout(() => {
+    macosEmitLog('search-pointer-result', {
+      sourceType: event.type,
+      active: macosDescribeElement(document.activeElement),
+      visibleDialogs: [...document.querySelectorAll('[role="dialog"]')]
+        .filter(macosIsVisible)
+        .length,
+    });
+  }, 100);
+};
+
+window.addEventListener('pointerdown', macosLogSearchPointer, true);
+window.addEventListener('click', macosLogSearchPointer, true);
 
 const macosGetPanes = () => {
   const sidebar = macosLargestVisible('.p-view_contents--sidebar');
