@@ -7,10 +7,11 @@ const macosEmitLog = (event, details = {}) => {
 };
 
 const macosInstallAdaptiveDragRegionReporter = () => {
-  const styleId = 'dotfiles-slack-adaptive-drag-region-reporter';
-  if (document.getElementById(styleId)) {
+  const marker = 'data-dotfiles-slack-adaptive-drag-region-reporter';
+  if (document.documentElement.hasAttribute(marker)) {
     return;
   }
+  document.documentElement.setAttribute(marker, '');
 
   const toolbarSelector = [
     '[data-qa="top-nav"]',
@@ -31,30 +32,6 @@ const macosInstallAdaptiveDragRegionReporter = () => {
     '[tabindex]:not([tabindex="-1"])',
     '.p-ia4_top_nav__native_ui_spacer',
   ].join(',');
-
-  const style = document.createElement('style');
-  style.id = styleId;
-  style.textContent = `
-    :is([data-qa="top-nav"], .p-ia4_top_nav[role="toolbar"])
-      :is(
-        a,
-        button,
-        input,
-        select,
-        textarea,
-        [contenteditable="true"],
-        [role="button"],
-        [role="combobox"],
-        [role="link"],
-        [role="menuitem"],
-        [role="textbox"],
-        [tabindex]:not([tabindex="-1"])
-      ) {
-      outline: 2px solid #ff9d00 !important;
-      outline-offset: -2px !important;
-    }
-  `;
-  (document.head || document.documentElement).append(style);
 
   let lastPayload;
   let reportTimer;
@@ -95,7 +72,7 @@ const macosInstallAdaptiveDragRegionReporter = () => {
     }
 
     const padding = 4;
-    const intervals = [...toolbar.querySelectorAll(interactiveSelector)]
+    const noDragBounds = [...toolbar.querySelectorAll(interactiveSelector)]
       .filter(element => {
         const bounds = element.getBoundingClientRect();
         const style = getComputedStyle(element);
@@ -113,42 +90,44 @@ const macosInstallAdaptiveDragRegionReporter = () => {
         const bounds = element.getBoundingClientRect();
         return {
           left: Math.max(toolbarBounds.left, bounds.left - padding),
+          top: Math.max(toolbarBounds.top, bounds.top - padding),
           right: Math.min(toolbarBounds.right, bounds.right + padding),
+          bottom: Math.min(toolbarBounds.bottom, bounds.bottom + padding),
         };
       })
-      .sort((left, right) => left.left - right.left)
-      .reduce((merged, interval) => {
-        const previous = merged[merged.length - 1];
-        if (previous && interval.left <= previous.right) {
-          previous.right = Math.max(previous.right, interval.right);
-        } else {
-          merged.push(interval);
+      .sort((left, right) => (
+        (right.right - right.left) * (right.bottom - right.top) -
+        (left.right - left.left) * (left.bottom - left.top)
+      ))
+      .reduce((outermost, bounds) => {
+        const contained = outermost.some(candidate => (
+          candidate.left <= bounds.left &&
+          candidate.top <= bounds.top &&
+          candidate.right >= bounds.right &&
+          candidate.bottom >= bounds.bottom
+        ));
+        if (!contained) {
+          outermost.push(bounds);
         }
-        return merged;
+        return outermost;
       }, []);
-
-    const gaps = [];
-    let cursor = toolbarBounds.left;
-    for (const interval of intervals) {
-      if (interval.left - cursor >= 18) {
-        gaps.push({ left: cursor, right: interval.left });
-      }
-      cursor = Math.max(cursor, interval.right);
-    }
-    if (toolbarBounds.right - cursor >= 18) {
-      gaps.push({ left: cursor, right: toolbarBounds.right });
-    }
 
     const payload = {
       viewport: {
         width: window.innerWidth,
         height: window.innerHeight,
       },
-      regions: gaps.map(gap => ({
-        x: Math.round(gap.left),
+      toolbar: {
+        x: Math.round(toolbarBounds.left),
         y: Math.round(toolbarBounds.top),
-        width: Math.round(gap.right - gap.left),
+        width: Math.round(toolbarBounds.width),
         height: Math.round(toolbarBounds.height),
+      },
+      noDragRegions: noDragBounds.map(bounds => ({
+        x: Math.round(bounds.left),
+        y: Math.round(bounds.top),
+        width: Math.round(bounds.right - bounds.left),
+        height: Math.round(bounds.bottom - bounds.top),
       })),
     };
     const serialized = JSON.stringify(payload);
@@ -159,7 +138,6 @@ const macosInstallAdaptiveDragRegionReporter = () => {
     window.dispatchEvent(
       new CustomEvent('dotfiles-slack-drag-regions', { detail: payload }),
     );
-    macosEmitLog('adaptive-drag-regions-reported', payload);
   };
 
   const scheduleReport = () => {

@@ -34,9 +34,11 @@
   const render = () => {
     layer.replaceChildren();
 
-    const activeSlackWrappers = document.querySelectorAll(
-      '.services__webview.is-active[data-name="Slack"]',
-    );
+    const allWrappers = [...document.querySelectorAll('.services__webview')];
+    const activeSlackWrappers = allWrappers.filter(wrapper => (
+      wrapper.classList.contains('is-active') &&
+      wrapper.dataset.name === 'Slack'
+    ));
     for (const wrapper of activeSlackWrappers) {
       const webview = wrapper.querySelector('webview');
       const layout = webview && layouts.get(webview);
@@ -48,41 +50,50 @@
       const scaleX = webviewBounds.width / layout.viewport.width;
       const scaleY = webviewBounds.height / layout.viewport.height;
 
-      for (const region of layout.regions || []) {
+      const toolbar = layout.toolbar;
+      if (!toolbar || toolbar.width <= 0 || toolbar.height <= 0) {
+        continue;
+      }
+
+      const dragRegion = document.createElement('div');
+      Object.assign(dragRegion.style, {
+        left: `${webviewBounds.left + toolbar.x * scaleX}px`,
+        pointerEvents: 'none',
+        position: 'fixed',
+        top: `${webviewBounds.top + toolbar.y * scaleY}px`,
+        userSelect: 'none',
+        width: `${toolbar.width * scaleX}px`,
+        height: `${toolbar.height * scaleY}px`,
+      });
+      dragRegion.style.setProperty('app-region', 'drag', 'important');
+      dragRegion.style.setProperty(
+        '-webkit-app-region',
+        'drag',
+        'important',
+      );
+      layer.append(dragRegion);
+
+      for (const region of layout.noDragRegions || []) {
         if (region.width <= 0 || region.height <= 0) {
           continue;
         }
 
-        const dragRegion = document.createElement('div');
-        const width = region.width * scaleX;
-        Object.assign(dragRegion.style, {
-          alignItems: 'center',
-          background: 'rgba(43, 214, 255, 0.55)',
-          border: '2px solid #00c8ff',
-          boxSizing: 'border-box',
-          color: '#07151f',
-          display: 'flex',
-          font: '700 10px/1 -apple-system, BlinkMacSystemFont, sans-serif',
-          justifyContent: 'center',
+        const noDragRegion = document.createElement('div');
+        Object.assign(noDragRegion.style, {
           left: `${webviewBounds.left + region.x * scaleX}px`,
-          letterSpacing: '0.08em',
           pointerEvents: 'none',
           position: 'fixed',
           top: `${webviewBounds.top + region.y * scaleY}px`,
-          userSelect: 'none',
-          width: `${width}px`,
+          width: `${region.width * scaleX}px`,
           height: `${region.height * scaleY}px`,
         });
-        dragRegion.style.setProperty('app-region', 'drag', 'important');
-        dragRegion.style.setProperty(
+        noDragRegion.style.setProperty('app-region', 'no-drag', 'important');
+        noDragRegion.style.setProperty(
           '-webkit-app-region',
-          'drag',
+          'no-drag',
           'important',
         );
-        if (width >= 54) {
-          dragRegion.textContent = 'DRAG';
-        }
-        layer.append(dragRegion);
+        layer.append(noDragRegion);
       }
     }
   };
@@ -98,18 +109,6 @@
       }
       layouts.set(webview, event.args[0]);
       render();
-      requestAnimationFrame(() => {
-        webview.send('dotfiles-slack-drag-regions-applied', {
-          receivedRegions: event.args[0]?.regions?.length || 0,
-          renderedRegions: layer.children.length,
-          computedRegions: [...layer.children].map(region => ({
-            appRegion: getComputedStyle(region).getPropertyValue(
-              '-webkit-app-region',
-            ),
-            bounds: region.getBoundingClientRect().toJSON(),
-          })),
-        });
-      });
     });
   };
 

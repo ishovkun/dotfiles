@@ -57,11 +57,6 @@ module.exports = (_config, userscript) => {
       }
     });
 
-    ipcRenderer.on(
-      'dotfiles-slack-drag-regions-applied',
-      (_event, details) => log('adaptive-drag-regions-applied', details),
-    );
-
     if (fs.existsSync(hostScriptFile)) {
       try {
         const remoteModule = path.join(
