@@ -78,16 +78,20 @@ local function screenSlice(max, xFrac, wFrac, yFrac, hFrac)
     )
 end
 
-local function framesApproxEqual(a, b)
-    local tol = 2
-    return math.abs(a.x - b.x) <= tol
-        and math.abs(a.y - b.y) <= tol
-        and math.abs(a.w - b.w) <= tol
-        and math.abs(a.h - b.h) <= tol
+local function frameDistance(a, b)
+    return math.abs(a.x - b.x)
+        + math.abs(a.y - b.y)
+        + math.abs(a.w - b.w)
+        + math.abs(a.h - b.h)
 end
 
--- Set the focused window to the first slice; if it is already there, use the
--- second one instead. Slices are {xFrac, wFrac, yFrac, hFrac}.
+-- Toggle the focused window between two slices. Slices are {xFrac, wFrac, yFrac, hFrac}.
+--
+-- Picks whichever target the window is currently farther from, rather than
+-- testing whether it sits exactly on the first one. setFrame is a request, not
+-- a guarantee: terminals quantise to character cells and some apps enforce a
+-- minimum width, so the window lands a few pixels off what we asked for. An
+-- exact-match test then never fires and the toggle sticks on one slice.
 local function toggleBetweenSlices(first, second)
     local win = hs.window.focusedWindow()
     if win == nil then
@@ -98,10 +102,10 @@ local function toggleBetweenSlices(first, second)
         return
     end
     local max = screen:frame()
-    local target = screenSlice(max, table.unpack(first))
-    if framesApproxEqual(win:frame(), target) then
-        target = screenSlice(max, table.unpack(second))
-    end
+    local a = screenSlice(max, table.unpack(first))
+    local b = screenSlice(max, table.unpack(second))
+    local cur = win:frame()
+    local target = frameDistance(cur, a) < frameDistance(cur, b) and b or a
     win:setFrame(target)
     border.update()
 end
