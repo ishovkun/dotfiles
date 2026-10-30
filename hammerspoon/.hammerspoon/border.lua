@@ -1,20 +1,35 @@
 local M = {}
 
-local canvas = nil
+-- One canvas for the whole session, moved and resized on focus changes.
+-- Creating a fresh full-window canvas per focus event leaked a hidden window
+-- (and its window-sized drawing buffers, in Hammerspoon and WindowServer)
+-- every time, even with canvas:delete(): hundreds of windows, GBs of memory.
 local color = {red = 0x5E/255, green = 0x81/255, blue = 0xAC/255, alpha = 1.0}
 local width = 1
 local mouseHeld = false
 local updateTimer = nil
 
+local canvas = hs.canvas.new({x = 0, y = 0, w = 1, h = 1})
+canvas:appendElements({
+    type = "rectangle",
+    action = "stroke",
+    strokeColor = color,
+    strokeWidth = width,
+    frame = {x = width / 2, y = width / 2, w = 1, h = 1},
+    roundedRectRadii = {xRadius = 16, yRadius = 16},
+})
+canvas:behavior({"canJoinAllSpaces"})
+canvas:level(hs.canvas.windowLevels.floating)
+M._canvas = canvas
+
+local function hide()
+    canvas:hide()
+end
+
 function M.update()
-    if canvas then
-        canvas:delete()
-        canvas = nil
-    end
-    if mouseHeld then return end
+    if mouseHeld then return hide() end
     local win = hs.window.focusedWindow()
-    if win == nil then return end
-    if win:isFullScreen() then return end
+    if win == nil or win:isFullScreen() then return hide() end
     -- Skip if the window's space isn't currently active on any screen
     -- (e.g. after SLSProcessAssignToSpace moved it to a hidden space).
     local win_spaces = hs.spaces.windowSpaces(win:id()) or {}
@@ -24,29 +39,15 @@ function M.update()
     for _, sid in ipairs(win_spaces) do
         if active_set[sid] then visible = true; break end
     end
-    if not visible then return end
+    if not visible then return hide() end
     local f = win:frame()
-    canvas = hs.canvas.new({
+    canvas:frame({
         x = f.x - width,
         y = f.y - width,
         w = f.w + width * 2,
         h = f.h + width * 2,
     })
-    canvas:appendElements({
-        type = "rectangle",
-        action = "stroke",
-        strokeColor = color,
-        strokeWidth = width,
-        frame = {
-            x = width / 2,
-            y = width / 2,
-            w = f.w + width,
-            h = f.h + width,
-        },
-        roundedRectRadii = {xRadius = 16, yRadius = 16},
-    })
-    canvas:behavior({"canJoinAllSpaces"})
-    canvas:level(hs.canvas.windowLevels.floating)
+    canvas:elementAttribute(1, "frame", {x = width / 2, y = width / 2, w = f.w + width, h = f.h + width})
     canvas:show()
 end
 
@@ -93,12 +94,7 @@ M._mouseTap = hs.eventtap.new({
     local t = event:getType()
     if t == hs.eventtap.event.types.leftMouseDown then
         mouseHeld = true
-        hs.timer.doAfter(0, function()
-            if canvas then
-                canvas:delete()
-                canvas = nil
-            end
-        end)
+        hs.timer.doAfter(0, hide)
     elseif t == hs.eventtap.event.types.leftMouseUp then
         mouseHeld = false
         M.scheduleUpdate()
