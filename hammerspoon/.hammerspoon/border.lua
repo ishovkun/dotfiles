@@ -22,14 +22,38 @@ canvas:behavior({"canJoinAllSpaces"})
 canvas:level(hs.canvas.windowLevels.floating)
 M._canvas = canvas
 
+-- hs.window.filter misses windowDestroyed for some apps (closing a Finder
+-- window fires no filter event at all), which left the border on screen.
+-- Watch the bordered window itself instead; only one such watcher exists.
+local targetWatcher = nil
+local targetId = nil
+
+local function watchTarget(win)
+    if win and win:id() == targetId then return end
+    if targetWatcher then targetWatcher:stop(); targetWatcher = nil end
+    targetId = win and win:id() or nil
+    if not win then return end
+    targetWatcher = win:newWatcher(function() M.scheduleUpdate() end)
+    targetWatcher:start({
+        hs.uielement.watcher.elementDestroyed,
+        hs.uielement.watcher.windowMoved,
+        hs.uielement.watcher.windowResized,
+        hs.uielement.watcher.windowMinimized,
+    })
+end
+
 local function hide()
     canvas:hide()
+    watchTarget(nil)
 end
 
 function M.update()
     if mouseHeld then return hide() end
     local win = hs.window.focusedWindow()
     if win == nil or win:isFullScreen() then return hide() end
+    -- Only frame real app windows. Finder can report a leftover Quick Look
+    -- panel (subrole "Quick Look") as focused after its last window closes.
+    if not win:isStandard() or not win:isVisible() then return hide() end
     -- Skip if the window's space isn't currently active on any screen
     -- (e.g. after SLSProcessAssignToSpace moved it to a hidden space).
     local win_spaces = hs.spaces.windowSpaces(win:id()) or {}
@@ -49,6 +73,7 @@ function M.update()
     })
     canvas:elementAttribute(1, "frame", {x = width / 2, y = width / 2, w = f.w + width, h = f.h + width})
     canvas:show()
+    watchTarget(win)
 end
 
 -- Focus changes generate both unfocused and focused events. Coalesce them and
@@ -72,12 +97,16 @@ M._filter:subscribe({
     hs.window.filter.windowHidden,
     hs.window.filter.windowFullscreened,
     hs.window.filter.windowUnfullscreened,
+    hs.window.filter.windowNotVisible,
 }, M.scheduleUpdate)
 
 -- window.filter misses some destructions when a whole app quits (cmd-Q),
--- so also refresh on app termination.
+-- so also refresh on app termination and when an app is deactivated (its last
+-- window closed and focus moved to another app).
 M._appWatcher = hs.application.watcher.new(function(_, eventType)
-    if eventType == hs.application.watcher.terminated then
+    if eventType == hs.application.watcher.terminated
+        or eventType == hs.application.watcher.activated
+        or eventType == hs.application.watcher.deactivated then
         M.scheduleUpdate()
     end
 end)
