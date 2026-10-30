@@ -1,2 +1,10 @@
 /.DS_Store
 **/.yas-compiled-snippets.el
+
+# Never track secrets, even if one gets stow-linked into the repo by accident.
+secrets.sh
+**/secrets.sh
+
+# Vale downloads packages into styles/ on `vale sync`; track only our own style.
+vale/styles/*
+!vale/styles/Igor/

@@ -1,0 +1,21 @@
+---
+extends: existence
+message: "Chat residue: '%s'. Say what the thing is or does, in plain words."
+level: error
+ignorecase: true
+tokens:
+  - '(the|an?) (adapter|pipeline|executor|caller|client)''s business'
+  - is (the|their|its) business
+  - '\bdeliberately\b'
+  - by definition
+  - declared honestly
+  - safely agreed
+  - (the )?explicit price of
+  - nothing else in the design depends on
+  - does not stand in (its|the) way
+  - with the reason
+  - the comparison that matters
+  - spend (their|its) .{0,20}cost in different places
+  - in short,? the design
+  - in one paragraph
+  - the design in one list

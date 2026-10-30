@@ -1,0 +1,7 @@
+---
+extends: existence
+message: "Per-document banned term: '%s'. Add the word to the doc's .vale.ini Igor.BannedTerms list if it is a real term there."
+level: warning
+ignorecase: true
+tokens:
+  - '\brollouts?\b'

@@ -1,0 +1,8 @@
+---
+extends: existence
+message: "Outline fragment as a run-in label: '%s'. Write a sentence or make it a heading."
+level: warning
+scope: raw
+nonword: true
+tokens:
+  - '(?m)^\*?(Not goals|Non-goals|Deferred|Delivery|Implementation plan|In short|Summary|TL;DR|Note)\*?:'

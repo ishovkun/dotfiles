@@ -1,0 +1,10 @@
+---
+extends: existence
+message: "Code-shaped sentence: '%s'. Describe the behaviour, not the implementation steps."
+level: warning
+ignorecase: true
+tokens:
+  - (assigns|assigned) .{0,20} before incrementing
+  - increments nothing
+  - '\bresolves to (the|its|an?) (assigned|returned)'
+  - every row is a predicate

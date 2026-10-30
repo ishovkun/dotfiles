@@ -23,6 +23,12 @@ then
     git clone https://github.com/VundleVim/Vundle.vim.git "${HOME}/.vim/bundle/Vundle.vim"
     vim +PluginInstall +qall
 fi
+# Vale prose linter: global config plus the ai-tells package
+ln -sfn "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/vale/.vale.ini" "${HOME}/.vale.ini"
+if command -v vale >/dev/null 2>&1
+then
+    vale sync >/dev/null
+fi
 
 # enable 24bit colors
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )

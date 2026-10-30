@@ -1,0 +1,22 @@
+---
+extends: existence
+message: "Leaks how the doc was made: '%s'. A reader never saw that process; cite a source or delete."
+level: error
+ignorecase: true
+tokens:
+  - '\bagents?\b(?! ?(-|_)?(sdk|api|framework))'
+  - reviewing agent
+  - agent review
+  - '\bsurveyed\b'
+  - primary sources
+  - read from (the|their) implementation
+  - not (the|their) (cookbook|documentation)
+  - (the|this) draft
+  - earlier (version|draft|revision)s?
+  - previous (version|draft|revision)s?
+  - the old design
+  - we decided
+  - as discussed
+  - per (igor|our discussion|the review)
+  - '\b(Pacific|PT|PST|PDT) time\b'
+  - design for implementation
