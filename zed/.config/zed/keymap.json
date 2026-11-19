@@ -9,6 +9,14 @@
     }
   },
   {
+    // Step through agent threads in sidebar order (top to bottom), wraps around
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-shift-j": "multi_workspace::NextThread",
+      "ctrl-shift-k": "multi_workspace::PreviousThread"
+    }
+  },
+  {
     "context": "AgentPanel",
     "bindings": {
       "ctrl-tab": "agents_sidebar::ToggleThreadSwitcher",
