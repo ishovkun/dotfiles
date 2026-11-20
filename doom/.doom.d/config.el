@@ -1673,16 +1673,108 @@ Chat takes precedence over Popup, and Popup over Terminal."
 ;; (use-package company-box :hook (company-mode . company-box-mode))
 ;; ----------------------------------- Deft ----------------------------------
 (after! deft
- (setq deft-directory "~/notes")
- (setq deft-extensions '("org" "md"))
- (setq deft-auto-save-interval 60.0)
- (setq deft-use-filename-as-title nil)
- (setq deft-use-filter-string-for-filename t)
- (setq deft-file-naming-rules
-       '((noslash . "-")
-         (nospace . "-")
-         (case-fn . downcase)))
- )
+  (setq deft-directory "~/notes"
+        deft-extensions '("org" "md")
+        deft-auto-save-interval 60.0
+        deft-use-filename-as-title nil
+        deft-use-filter-string-for-filename t
+        deft-file-naming-rules
+        '((noslash . "-")
+          (nospace . "-")
+          (case-fn . downcase)))
+
+  (defun my/deft-edit-filter ()
+    "Enter insert state to append to Deft's live filter."
+    (interactive)
+    (evil-insert-state))
+
+  (defun my/deft-start-filter ()
+    "Clear Deft's current filter and enter insert state."
+    (interactive)
+    (deft-filter-clear)
+    (evil-insert-state))
+
+  (defun my/deft-next-result ()
+    "Move to the next Deft result, wrapping at the end."
+    (interactive)
+    (unless (forward-button 1 t nil t)
+      (message "No Deft results.")))
+
+  (defun my/deft-previous-result ()
+    "Move to the previous Deft result, wrapping at the beginning."
+    (interactive)
+    (unless (backward-button 1 t nil t)
+      (message "No Deft results.")))
+
+  (defun my/deft-first-result ()
+    "Move to the first Deft result."
+    (interactive)
+    (goto-char (point-min))
+    (unless (forward-button 1 nil nil t)
+      (message "No Deft results.")))
+
+  (defun my/deft-last-result ()
+    "Move to the last Deft result."
+    (interactive)
+    (goto-char (point-max))
+    (unless (backward-button 1 nil nil t)
+      (message "No Deft results.")))
+
+  (defun my/deft-disable-evil-snipe ()
+    "Keep Evil Snipe from shadowing Deft's browser bindings."
+    (when (fboundp 'evil-snipe-local-mode)
+      (evil-snipe-local-mode -1))
+    (when (fboundp 'evil-snipe-override-local-mode)
+      (evil-snipe-override-local-mode -1)))
+
+  ;; Deft treats printable characters as filter input.  Keep that behavior in
+  ;; insert state, and make normal state a conventional results browser.
+  (set-evil-initial-state! 'deft-mode 'insert)
+  (add-hook 'deft-mode-hook #'my/deft-disable-evil-snipe)
+  (after! evil-snipe
+    (add-to-list 'evil-snipe-disabled-modes 'deft-mode))
+  (evil-define-key* '(normal motion) deft-mode-map
+    (kbd "i")          #'my/deft-edit-filter
+    (kbd "I")          #'my/deft-edit-filter
+    (kbd "a")          #'my/deft-edit-filter
+    (kbd "A")          #'my/deft-edit-filter
+    (kbd "/")          #'my/deft-start-filter
+    (kbd "j")          #'my/deft-next-result
+    (kbd "k")          #'my/deft-previous-result
+    (kbd "C-j")        #'my/deft-next-result
+    (kbd "C-k")        #'my/deft-previous-result
+    (kbd "gj")         #'my/deft-next-result
+    (kbd "gk")         #'my/deft-previous-result
+    (kbd "gg")         #'my/deft-first-result
+    (kbd "G")          #'my/deft-last-result
+    (kbd "RET")        #'deft-complete
+    (kbd "<return>")   #'deft-complete
+    (kbd "o")          #'deft-complete
+    (kbd "O")          #'deft-open-file-other-window
+    (kbd "q")          #'quit-window
+    (kbd "gr")         #'deft-refresh
+    (kbd "c")          #'deft-filter-clear
+    (kbd "d")          #'deft-delete-file
+    (kbd "D")          #'deft-archive-file
+    (kbd "r")          #'deft-rename-file
+    (kbd "n")          #'deft-new-file
+    (kbd "N")          #'deft-new-file-named
+    (kbd "f")          #'deft-find-file
+    (kbd "s")          #'deft-toggle-sort-method
+    (kbd "t")          #'deft-toggle-incremental-search)
+  (evil-define-key* 'insert deft-mode-map
+    (kbd "RET")        #'deft-complete
+    (kbd "<return>")   #'deft-complete
+    (kbd "C-j")        #'my/deft-next-result
+    (kbd "C-k")        #'my/deft-previous-result
+    (kbd "C-n")        #'my/deft-next-result
+    (kbd "C-p")        #'my/deft-previous-result
+    (kbd "DEL")        #'deft-filter-decrement
+    (kbd "<backspace>") #'deft-filter-decrement
+    (kbd "M-DEL")      #'deft-filter-decrement-word
+    (kbd "M-<backspace>") #'deft-filter-decrement-word
+    (kbd "C-w")        #'deft-filter-decrement-word
+    (kbd "C-u")        #'deft-filter-clear))
 ;; ----------------------------------- Org ----------------------------------
 (after! org
   (progn
