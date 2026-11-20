@@ -341,7 +341,7 @@
    `(helm-bookmark-w3m ((,class (:foreground ,type))))
    ;; ivy
    `(ivy-current-match   ((,class (:background ,region :distant-foreground unspecified :extend t))))
-   `(ivy-posframe-border ((,class (:background ,bg-dark))))
+   `(ivy-posframe-border ((,class (:background ,lavender))))
    `(ivy-posframe        ((,class (:background ,bg-dark))))
    ;; darken special buffers
    `(solaire-default-face        ((,class (:background ,bg-dark-special))))

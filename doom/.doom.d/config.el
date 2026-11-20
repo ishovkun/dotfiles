@@ -1281,28 +1281,191 @@ Chat takes precedence over Popup, and Popup over Terminal."
 ;;   (add-hook 'text-mode-hook 'yascroll-bar-mode)
 ;;     )
 
-;; posframe
-(if window-system
-    (use-package! ivy-posframe
-      :config
-      ;; (setq ivy-posframe-parameters
-      ;;       '((left-fringe . 20)
-      ;;         (right-fringe . 20)
-      ;;         ))
-      (setq ivy-posframe-display-functions-alist
-            '((swiper          . nil)
-              (counsel-ag      . nil)
-              (complete-symbol . ivy-posframe-display-at-point)
-              ;; (t               . ivy-posframe-display-at-frame-center))
-              (t               . ivy-posframe-display-at-frame-top-center))
-            ivy-fixed-height-minibuffer nil
-            ivy-posframe-border-width 20
-            ivy-posframe-parameters `((min-width . 50)
-                                      (min-height . ,ivy-height))
-            )
-      :config
-    (ivy-posframe-mode 1)
-))
+;; Render Ivy in a floating child frame.  `window-system' is nil while an
+;; Emacs daemon loads this file, even though graphical frames may be created
+;; later, so enable it per frame rather than skipping its configuration.
+(defconst my/ivy-posframe-corner-radius 12
+  "Corner radius, in pixels, for the native Ivy Posframe mask.")
+
+(defconst my/ivy-posframe-horizontal-padding 12
+  "Horizontal padding, in pixels, inside Ivy's Posframe.")
+
+(defconst my/ivy-posframe-top-offset 50
+  "Distance, in pixels, between the frame top and Ivy's Posframe.")
+
+(define-fringe-bitmap
+  'my/ivy-posframe-divider-bitmap
+  (vector (1- (ash 1 my/ivy-posframe-horizontal-padding)))
+  1 my/ivy-posframe-horizontal-padding 'top)
+
+(defface my/ivy-posframe-divider-fringe
+  '((t (:inherit ivy-posframe-border)))
+  "Face used for the project-picker divider inside Posframe fringes."
+  :group 'ivy-posframe)
+
+(defun my/ivy-posframe--load-native-styler ()
+  "Build and load the macOS Ivy Posframe styling module when available."
+  (when (and (eq system-type 'darwin)
+             (featurep 'dynamic-modules))
+    (condition-case error-data
+        (let* ((source
+                (expand-file-name "native/ivy-posframe-ns.m" doom-user-dir))
+               (header
+                (expand-file-name "../../../include/emacs-module.h"
+                                  invocation-directory))
+               (compiler (executable-find "clang"))
+               (digest
+                (with-temp-buffer
+                  (insert-file-contents-literally source)
+                  (secure-hash 'sha256 (current-buffer))))
+               (module
+                (expand-file-name
+                 (format "ivy-posframe-ns-%d-%s%s"
+                         emacs-major-version (substring digest 0 12)
+                         module-file-suffix)
+                 doom-cache-dir)))
+          (unless (file-exists-p module)
+            (unless (and compiler (file-exists-p header))
+              (error "clang or emacs-module.h is unavailable"))
+            (make-directory (file-name-directory module) t)
+            (with-temp-buffer
+              (let ((status
+                     (call-process
+                      compiler nil t nil
+                      "-O2" "-Wall" "-Wextra" "-fPIC"
+                      "-bundle" "-undefined" "dynamic_lookup"
+                      (concat "-I" (file-name-directory header))
+                      "-framework" "Cocoa"
+                      "-framework" "QuartzCore"
+                      "-o" module source)))
+                (unless (zerop status)
+                  (error "native module build failed: %s"
+                         (string-trim (buffer-string)))))))
+          (unless (fboundp 'my/ivy-posframe--style-native-frames)
+            (module-load module))
+          (fboundp 'my/ivy-posframe--style-native-frames))
+      (error
+       (message "Ivy Posframe native rounding unavailable: %s"
+                (error-message-string error-data))
+       nil))))
+
+(defface my/ivy-posframe-background
+  '((t (:inherit ivy-posframe :extend t)))
+  "Face used to normalize Ivy Posframe background surfaces."
+  :group 'ivy-posframe)
+
+(defface my/ivy-posframe-padding
+  '((t (:inherit my/ivy-posframe-background :height 0.4 :extend t
+        :box nil :underline nil :overline nil)))
+  "Face used for the vertical padding inside Ivy's Posframe."
+  :group 'ivy-posframe)
+
+(use-package! ivy-posframe
+  :after ivy
+  :config
+  (my/ivy-posframe--load-native-styler)
+
+  (defun my/ivy-posframe--frame-top-center-offset (info)
+    "Position Ivy Posframe below the frame top according to INFO."
+    (let ((position (posframe-poshandler-frame-top-center info)))
+      (cons (car position)
+            (+ (cdr position) my/ivy-posframe-top-offset))))
+
+  (defun my/ivy-posframe-display-at-frame-top-center (string)
+    "Display STRING centered below the top of the current frame."
+    (ivy-posframe--display
+     string #'my/ivy-posframe--frame-top-center-offset))
+
+  (setq ivy-posframe-display-functions-alist
+        '((swiper          . nil)
+          (counsel-ag      . nil)
+          (complete-symbol . ivy-posframe-display-at-point)
+          (t               . my/ivy-posframe-display-at-frame-top-center))
+        ivy-fixed-height-minibuffer nil
+        ivy-posframe-border-width
+        (if (fboundp 'my/ivy-posframe--style-native-frames) 0 1)
+        ivy-posframe-parameters `((title . "ivy-posframe")
+                                  (min-width . 50)
+                                  (min-height . ,ivy-height)
+                                  (left-fringe . ,my/ivy-posframe-horizontal-padding)
+                                  (right-fringe . ,my/ivy-posframe-horizontal-padding)
+                                  ,@(when (eq system-type 'darwin)
+                                      '((undecorated . t)
+                                        (undecorated-round . nil)))))
+
+  (defun my/ivy-posframe--add-padding (args)
+    "Add theme-aware padding to Ivy Posframe call ARGS."
+    (if (not (equal (car args) ivy-posframe-buffer))
+        args
+      (let ((background (face-background 'ivy-posframe nil t)))
+        (set-face-attribute 'my/ivy-posframe-background nil
+                            :background background)
+        (set-face-attribute 'my/ivy-posframe-padding nil
+                            :foreground background
+                            :background background)
+        (with-current-buffer (get-buffer-create ivy-posframe-buffer)
+          ;; Solaire otherwise prepends its ordinary-buffer background to the
+          ;; fringe and header faces after our Posframe remaps.
+          (when (bound-and-true-p solaire-mode)
+            (solaire-mode -1))
+          (setq-local header-line-format nil
+                      mode-line-format " "
+                      face-remapping-alist
+                      (append
+                       '((default my/ivy-posframe-background default)
+                         (mode-line my/ivy-posframe-padding mode-line)
+                         (mode-line-inactive
+                          my/ivy-posframe-padding mode-line-inactive)
+                         (fringe my/ivy-posframe-background fringe))
+                       (seq-remove
+                        (lambda (entry)
+                          (memq (car entry)
+                                '(default header-line mode-line
+                                  mode-line-inactive fringe)))
+                        face-remapping-alist)))))
+      (append args '(:respect-mode-line t))))
+
+  (advice-remove 'posframe-show #'my/ivy-posframe--add-padding)
+  (advice-add 'posframe-show :filter-args #'my/ivy-posframe--add-padding)
+
+  (defun my/ivy-posframe--style-rounded-frame (&rest _)
+    "Apply the native rounded mask to the visible Ivy Posframe."
+    (let ((background (face-background 'ivy-posframe nil t)))
+      (when-let* ((buffer (get-buffer ivy-posframe-buffer))
+                  (frame (buffer-local-value 'posframe--frame buffer))
+                  ((frame-live-p frame)))
+        (set-face-attribute 'default frame :background background)
+        (set-face-attribute 'fringe frame
+                            :foreground background :background background)
+        (set-face-attribute 'header-line frame :background background)
+        (set-face-attribute 'mode-line frame :background background)
+        (set-face-attribute 'mode-line-inactive frame :background background)
+        (set-face-attribute 'my/ivy-posframe-background frame
+                            :background background)
+        (set-face-attribute 'my/ivy-posframe-padding frame
+                            :foreground background :background background)))
+    (when (fboundp 'my/ivy-posframe--style-native-frames)
+      (when-let ((rgb (color-values
+                       (face-background 'ivy-posframe-border nil t))))
+        (apply #'my/ivy-posframe--style-native-frames
+               my/ivy-posframe-corner-radius
+               (mapcar (lambda (component)
+                         (round (/ component 257.0)))
+                       rgb)))))
+
+  (advice-remove 'ivy-posframe--display
+                 #'my/ivy-posframe--style-rounded-frame)
+  (advice-add 'ivy-posframe--display :after
+              #'my/ivy-posframe--style-rounded-frame)
+
+  (defun my/ivy-posframe-enable-on-graphical-frame (&optional frame)
+    "Enable floating Ivy menus when FRAME is graphical."
+    (when (display-graphic-p frame)
+      (ivy-posframe-mode 1)))
+
+  (add-hook 'after-make-frame-functions
+            #'my/ivy-posframe-enable-on-graphical-frame)
+  (my/ivy-posframe-enable-on-graphical-frame (selected-frame)))
 
 ;; ----------------------------- dired ----------------------------------
 (after! dirvish
