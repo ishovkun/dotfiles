@@ -558,6 +558,20 @@ instead."
       :desc "Preview Emacs" "v" #'markdown-live-preview-mode
       )
 
+;; Doom's markdown module caps the preview body at 740px, which truncates wide
+;; tables and forces horizontal scrolling.  Widen the body and let tables use
+;; the full window while keeping prose at a readable measure.
+(after! markdown-mode
+  (setq markdown-xhtml-header-content
+        (concat "<meta name='viewport' content='width=device-width, initial-scale=1'>"
+                "<style>"
+                " body { box-sizing: border-box; max-width: none; width: auto;"
+                "        margin: 24px; padding: 0; }"
+                " table { border-collapse: collapse; width: max-content; }"
+                " td, th { white-space: nowrap; padding: 2px 10px;"
+                "          border: 1px solid #d0d7de; }"
+                "</style>")))
+
 (map! :after ein
       (:map ein:notebook-mode-map
        :desc "Save notebook" :nvi "C-s"  #'ein:notebook-save-notebook-command
