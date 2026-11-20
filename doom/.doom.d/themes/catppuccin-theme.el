@@ -55,6 +55,8 @@
   (custom-theme-set-faces
    'catppuccin
    `(default                      ((,class (:background ,bg :foreground ,fg))))
+   `(my/agent-shell-input-region-face
+     ((,class (:background ,bg :extend t))))
    `(font-lock-builtin-face       ((,class (:foreground ,builtin))))
    `(font-lock-comment-face       ((,class (:foreground ,comment :italic t))))
    `(font-lock-negation-char-face ((,class (:foreground ,const))))

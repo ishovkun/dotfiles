@@ -52,6 +52,37 @@
   (require 'agent-shell)
   (my/agent-shell--toggle-chat-window))
 
+(defun my/agent-shell-conversations ()
+  "Open one global popup for live and resumable Agent Shell conversations."
+  (interactive)
+  (require 'agent-shell)
+  (my/agent-shell--select-conversation))
+
+(defun my/agent-shell-new-conversation ()
+  "Start a fresh conversation for the relevant Agent Shell context.
+
+Reuse the current or project Agent Shell's agent and directory.  If no shell
+exists yet, fall back to Agent Shell's normal agent chooser."
+  (interactive)
+  (require 'agent-shell)
+  (if-let ((shell-buffer
+            (or (and (derived-mode-p 'my/agent-shell-composer-mode)
+                     (boundp 'my/agent-shell-composer-shell-buffer)
+                     (buffer-local-value
+                      'my/agent-shell-composer-shell-buffer
+                      (current-buffer)))
+                (agent-shell-shell-buffer :no-error t :no-create t))))
+      (let* ((state (buffer-local-value 'agent-shell--state shell-buffer))
+             (location (buffer-local-value 'default-directory shell-buffer)))
+        ;; Do not ask Agent Shell to display a new conversation in the
+        ;; dedicated composer window.
+        (when-let ((shell-window (get-buffer-window shell-buffer t)))
+          (select-window shell-window))
+        (agent-shell--new-shell
+         :location location
+         :config (map-elt state :agent-config)))
+    (call-interactively #'agent-shell-new-shell)))
+
 (defvar my/ui-font-scale 1.0
   "Scale factor for mode lines, tab lines, and minibuffer text.")
 
@@ -215,6 +246,8 @@ instead."
   :nv "C-<tab>"     #'my/tab-line-next
   :nv "C-S-<tab>"   #'my/tab-line-previous
   :nvi "M-r"        #'my/agent-shell-toggle-chat-window
+  :nvi "M-'"        #'my/agent-shell-conversations
+  :nvi "s-'"        #'my/agent-shell-conversations
   :nv "M-<backspace>" #'kill-current-buffer
   )
  :nvi "M-="        #'my/buffer-font-size-increase
@@ -537,6 +570,7 @@ instead."
     )
   )
   (:prefix "o"
+    :desc "New agent conversation" :nv "/" #'my/agent-shell-new-conversation
     ;; debugging
     (:after realgud :desc "toggle debug shortcuts" :n "k" #'realgud-short-key-mode)
     :desc "Open vterm" :n "t" #'+vterm/here
@@ -2492,7 +2526,758 @@ is included in the measurement."
             (delete-window chat-window)))
       (if-let ((chat-buffer (my/agent-shell--fallback-chat-buffer)))
           (my/agent-shell--show-chat-buffer chat-buffer)
-        (call-interactively #'agent-shell))))
+        ;; The picker always offers "＋ New conversation…" as its first row, so
+        ;; it covers the empty-history case too; no need for the bare provider
+        ;; chooser anymore.
+        (my/agent-shell--select-conversation))))
+
+  ;; Cmd-' is the global conversation switcher.  Live Agent Shell buffers and
+  ;; top-level Codex/Claude histories from every working directory share one
+  ;; popup; the directory is only a column, never a filter.  The history cache
+  ;; is memory-only and contains metadata plus a short title, not transcripts.
+  (defconst my/agent-shell--codex-history-directory
+    (expand-file-name "~/.codex/sessions"))
+  (defconst my/agent-shell--claude-history-directory
+    (expand-file-name "~/.claude/projects"))
+  (defconst my/agent-shell--zed-database
+    (expand-file-name
+     "~/Library/Application Support/Zed/db/0-stable/db.sqlite"))
+  (defconst my/agent-shell--title-overrides-file
+    (expand-file-name "agent-shell-title-overrides.el" doom-cache-dir))
+  (defconst my/agent-shell--history-read-limit (* 768 1024))
+  (defvar my/agent-shell--history-cache (make-hash-table :test #'equal))
+  (defvar my/agent-shell--zed-title-cache nil)
+  (defvar my/agent-shell--title-overrides nil)
+  (defvar my/agent-shell--title-overrides-loaded nil)
+  (defvar my/agent-shell--active-conversation-choices nil)
+  (defvar my/agent-shell-conversation-history nil)
+
+  (defun my/agent-shell--normalized-title (text)
+    "Return TEXT as a compact one-line conversation title."
+    (when (stringp text)
+      (let ((title (string-trim
+                    (replace-regexp-in-string
+                     "[[:space:]\n\r]+" " "
+                     (substring-no-properties text)))))
+        (unless (string-empty-p title)
+          title))))
+
+  (defun my/agent-shell--history-preamble-p (text)
+    "Return non-nil when TEXT is injected session setup, not a user prompt."
+    (string-match-p
+     (rx string-start
+         "<"
+         (or "recommended_plugins"
+             "environment_context"
+             "permissions instructions"
+             "apps_instructions"
+             "plugins_instructions"
+             "skills_instructions"
+             "system-reminder"
+             "ide_opened_file"
+             "local-command-caveat"
+             "local-command-stdout"
+             "local-command-stderr"
+             "command-name"
+             "command-message")
+         ">")
+     text))
+
+  (defun my/agent-shell--history-message-text (payload)
+    "Extract user-visible text from a Codex message PAYLOAD."
+    (my/agent-shell--normalized-title
+     (mapconcat
+      (lambda (content)
+        (if (and (listp content)
+                 (member (map-elt content 'type)
+                         '("input_text" "text")))
+            (or (map-elt content 'text) "")
+          ""))
+      (append (or (map-elt payload 'content) '()) nil)
+      " ")))
+
+  (defun my/agent-shell--history-file-signature (file)
+    "Return a cheap cache signature for Codex history FILE."
+    (when-let ((attributes (file-attributes file 'string)))
+      (list (file-attribute-size attributes)
+            (file-attribute-modification-time attributes))))
+
+  (defun my/agent-shell--load-title-overrides ()
+    "Load persistent Emacs conversation title overrides once."
+    (unless my/agent-shell--title-overrides-loaded
+      (setq my/agent-shell--title-overrides-loaded t)
+      (when (file-readable-p my/agent-shell--title-overrides-file)
+        (condition-case error-data
+            (with-temp-buffer
+              (insert-file-contents my/agent-shell--title-overrides-file)
+              (goto-char (point-min))
+              (let ((value (read (current-buffer))))
+                (when (listp value)
+                  (setq my/agent-shell--title-overrides value))))
+          (error
+           (display-warning
+            'agent-shell
+            (format "Could not read conversation title overrides: %s"
+                    (error-message-string error-data))
+            :warning)))))
+    my/agent-shell--title-overrides)
+
+  (defun my/agent-shell--title-key (entry)
+    "Return the persistent title key for conversation ENTRY."
+    (cons (plist-get entry :config-id) (plist-get entry :id)))
+
+  (defun my/agent-shell--local-title-override (entry)
+    "Return the Emacs title override for conversation ENTRY."
+    (alist-get (my/agent-shell--title-key entry)
+               (my/agent-shell--load-title-overrides)
+               nil nil #'equal))
+
+  (defun my/agent-shell--save-title-overrides ()
+    "Persist Emacs conversation title overrides atomically."
+    (let* ((directory (file-name-directory
+                       my/agent-shell--title-overrides-file))
+           (temporary-file nil))
+      (make-directory directory t)
+      (setq temporary-file
+            (make-temp-file
+             (expand-file-name ".agent-shell-title-overrides-" directory)))
+      (unwind-protect
+          (let ((coding-system-for-write 'utf-8-unix))
+            (with-temp-file temporary-file
+              (insert ";; Local Agent Shell conversation titles.\n")
+              (prin1 my/agent-shell--title-overrides (current-buffer))
+              (insert "\n"))
+            (rename-file temporary-file
+                         my/agent-shell--title-overrides-file t)
+            (setq temporary-file nil))
+        (when (and temporary-file (file-exists-p temporary-file))
+          (delete-file temporary-file)))))
+
+  (defun my/agent-shell--set-title-override (entry title)
+    "Persist TITLE as the Emacs override for conversation ENTRY."
+    (let ((key (my/agent-shell--title-key entry)))
+      (unless (and (cdr key) (stringp (cdr key)))
+        (user-error "Conversation has no session ID yet"))
+      (my/agent-shell--load-title-overrides)
+      (setf (alist-get key my/agent-shell--title-overrides
+                       nil nil #'equal)
+            title)
+      (my/agent-shell--save-title-overrides)))
+
+  (defun my/agent-shell--zed-database-signature ()
+    "Return a cache signature for Zed's database and live WAL."
+    (list (my/agent-shell--history-file-signature
+           my/agent-shell--zed-database)
+          (my/agent-shell--history-file-signature
+           (concat my/agent-shell--zed-database "-wal"))))
+
+  (defun my/agent-shell--read-zed-title-overrides ()
+    "Return a session-ID hash table of Zed's renamed conversation titles.
+
+Zed's SQLite database is queried read-only.  The cache invalidates whenever
+the database or its write-ahead log changes."
+    (let ((signature (my/agent-shell--zed-database-signature)))
+      (if (and my/agent-shell--zed-title-cache
+               (equal signature (car my/agent-shell--zed-title-cache)))
+          (cdr my/agent-shell--zed-title-cache)
+        (let ((titles (make-hash-table :test #'equal))
+              (success nil))
+          (when (and (file-readable-p my/agent-shell--zed-database)
+                     (executable-find "sqlite3"))
+            (condition-case nil
+                (with-temp-buffer
+                  (when (zerop
+                         (call-process
+                          "sqlite3" nil t nil
+                          "-readonly" "-json"
+                          my/agent-shell--zed-database
+                          (concat
+                           "SELECT session_id, title_override "
+                           "FROM sidebar_threads "
+                           "WHERE session_id IS NOT NULL "
+                           "AND title_override IS NOT NULL "
+                           "AND trim(title_override) <> '';")))
+                    (goto-char (point-min))
+                    (dolist (row
+                             (if (eobp)
+                                 nil
+                               (json-parse-buffer
+                                :object-type 'alist :array-type 'list
+                                :null-object nil :false-object nil)))
+                      (when-let* ((session-id (map-elt row 'session_id))
+                                  (title (my/agent-shell--normalized-title
+                                          (map-elt row 'title_override))))
+                        (puthash session-id title titles)))
+                    (setq success t)))
+              (error nil)))
+          (if success
+              (progn
+                (setq my/agent-shell--zed-title-cache
+                      (cons signature titles))
+                titles)
+            (or (cdr-safe my/agent-shell--zed-title-cache) titles))))))
+
+  (defun my/agent-shell--apply-title-overrides (entry zed-titles)
+    "Return a copy of ENTRY with Emacs or Zed title overrides applied."
+    (let* ((copy (copy-sequence entry))
+           (local-title (my/agent-shell--local-title-override entry))
+           (zed-title (and (plist-get entry :id)
+                           (gethash (plist-get entry :id) zed-titles)))
+           (title (or local-title zed-title)))
+      (when title
+        (setq copy (plist-put copy :title title)
+              copy (plist-put copy :title-source
+                              (if local-title 'emacs 'zed))))
+      copy))
+
+  (defun my/agent-shell--parse-history-file (file)
+    "Return popup metadata from Codex history FILE.
+
+Only the beginning of FILE is inspected, stopping after session metadata and
+the first real user prompt.  Internal subagent sessions are excluded."
+    (let (id cwd created title ignored)
+      (condition-case nil
+          (with-temp-buffer
+            (insert-file-contents
+             file nil 0 my/agent-shell--history-read-limit)
+            (goto-char (point-min))
+            (catch 'finished
+              (while (not (eobp))
+                (let* ((line (buffer-substring-no-properties
+                              (line-beginning-position) (line-end-position)))
+                       (record
+                        (condition-case nil
+                            (json-parse-string
+                             line :object-type 'alist :array-type 'list
+                             :null-object nil :false-object nil)
+                          (error nil)))
+                       (type (and record (map-elt record 'type)))
+                       (payload (and record (map-elt record 'payload))))
+                  (cond
+                   ((equal type "session_meta")
+                    (let ((source (map-elt payload 'source)))
+                      ;; Codex represents internal delegated runs with an
+                      ;; object-valued source.  They are implementation detail,
+                      ;; not conversations the user should switch to.
+                      (if (consp source)
+                          (progn
+                            (setq ignored t)
+                            (throw 'finished nil))
+                        (setq id (or (map-elt payload 'id)
+                                     (map-elt payload 'session_id)
+                                     (map-elt payload 'sessionId))
+                              cwd (map-elt payload 'cwd)
+                              created (map-elt payload 'timestamp)))))
+                   ((and (equal type "response_item")
+                         (equal (map-elt payload 'type) "message")
+                         (equal (map-elt payload 'role) "user"))
+                    (when-let ((text
+                                (my/agent-shell--history-message-text payload)))
+                      (unless (my/agent-shell--history-preamble-p text)
+                        (setq title text)
+                        (when id
+                          (throw 'finished t))))))
+                  (forward-line 1)))))
+        (error (setq ignored t)))
+      (when (and (not ignored) (stringp id) (stringp cwd))
+        (let* ((attributes (file-attributes file 'string))
+               (modified (and attributes
+                              (file-attribute-modification-time attributes))))
+          (list :kind 'history
+                :id id
+                :cwd (file-name-as-directory (expand-file-name cwd))
+                :title (or title "Untitled conversation")
+                :time (or modified
+                          (and created
+                               (condition-case nil
+                                   (date-to-time created)
+                                 (error nil)))
+                          '(0 0 0 0))
+                :config-id 'codex
+                :file file)))))
+
+  (defun my/agent-shell--cached-history-entry (file)
+    "Return cached popup metadata for Codex history FILE."
+    (let* ((signature (my/agent-shell--history-file-signature file))
+           (cached (gethash file my/agent-shell--history-cache :missing)))
+      (if (and (not (eq cached :missing))
+               (equal signature (car cached)))
+          (cdr cached)
+        (let ((entry (my/agent-shell--parse-history-file file)))
+          (puthash file (cons signature entry)
+                   my/agent-shell--history-cache)
+          entry))))
+
+  (defun my/agent-shell--codex-history-entries ()
+    "Return resumable top-level Codex sessions from every directory."
+    (when (file-directory-p my/agent-shell--codex-history-directory)
+      (delq nil
+            (mapcar
+             #'my/agent-shell--cached-history-entry
+             (directory-files-recursively
+              my/agent-shell--codex-history-directory
+              (rx "rollout-" (+ any) ".jsonl" string-end))))))
+
+  (defun my/agent-shell--claude-message-text (message)
+    "Extract user-visible text from a Claude MESSAGE object."
+    (let ((content (map-elt message 'content)))
+      (my/agent-shell--normalized-title
+       (cond
+        ((stringp content) content)
+        ((listp content)
+         (mapconcat
+          (lambda (part)
+            (if (and (listp part)
+                     (equal (map-elt part 'type) "text"))
+                (or (map-elt part 'text) "")
+              ""))
+          content " "))
+        (t "")))))
+
+  (defun my/agent-shell--claude-clean-title (text)
+    "Remove Claude's injected reminder blocks from user TEXT."
+    (when text
+      (let ((clean text))
+        (dolist (tag '("system-reminder" "ide_opened_file" "ide_selection"))
+          (setq clean
+                (replace-regexp-in-string
+                 (format "<%s>.*?</%s>" tag tag) " " clean)))
+        (my/agent-shell--normalized-title clean))))
+
+  (defun my/agent-shell--parse-claude-history-file (file)
+    "Return popup metadata from top-level Claude history FILE."
+    (unless (string-match-p (rx "/subagents/") file)
+      (let (id cwd created title ignored)
+        (condition-case nil
+            (with-temp-buffer
+              (insert-file-contents
+               file nil 0 my/agent-shell--history-read-limit)
+              (goto-char (point-min))
+              (catch 'finished
+                (while (not (eobp))
+                  (let* ((line (buffer-substring-no-properties
+                                (line-beginning-position) (line-end-position)))
+                         (record
+                          (condition-case nil
+                              (json-parse-string
+                               line :object-type 'alist :array-type 'list
+                               :null-object nil :false-object nil)
+                            (error nil))))
+                    (when (and record (equal (map-elt record 'type) "user"))
+                      (if (map-elt record 'isSidechain)
+                          (progn
+                            (setq ignored t)
+                            (throw 'finished nil))
+                        (setq id (or (map-elt record 'sessionId) id)
+                              cwd (or (map-elt record 'cwd) cwd)
+                              created (or (map-elt record 'timestamp) created))
+                        (unless (map-elt record 'isMeta)
+                          (when-let* ((message (map-elt record 'message))
+                                      (text (my/agent-shell--claude-clean-title
+                                             (my/agent-shell--claude-message-text
+                                              message))))
+                            (unless (my/agent-shell--history-preamble-p text)
+                              (setq title text)
+                              (when (and id cwd)
+                                (throw 'finished t)))))))
+                    (forward-line 1)))))
+          (error (setq ignored t)))
+        (when (and (not ignored) (stringp id) (stringp cwd))
+          (let* ((attributes (file-attributes file 'string))
+                 (modified (and attributes
+                                (file-attribute-modification-time attributes))))
+            (list :kind 'history
+                  :id id
+                  :cwd (file-name-as-directory (expand-file-name cwd))
+                  :title (or title "Untitled conversation")
+                  :time (or modified
+                            (and created
+                                 (condition-case nil
+                                     (date-to-time created)
+                                   (error nil)))
+                            '(0 0 0 0))
+                  :config-id 'claude-code
+                  :file file))))))
+
+  (defun my/agent-shell--cached-claude-history-entry (file)
+    "Return cached popup metadata for Claude history FILE."
+    (let* ((signature (my/agent-shell--history-file-signature file))
+           (cached (gethash file my/agent-shell--history-cache :missing)))
+      (if (and (not (eq cached :missing))
+               (equal signature (car cached)))
+          (cdr cached)
+        (let ((entry (my/agent-shell--parse-claude-history-file file)))
+          (puthash file (cons signature entry)
+                   my/agent-shell--history-cache)
+          entry))))
+
+  (defun my/agent-shell--claude-history-entries ()
+    "Return resumable top-level Claude sessions from every directory."
+    (when (file-directory-p my/agent-shell--claude-history-directory)
+      (delq nil
+            (mapcar
+             #'my/agent-shell--cached-claude-history-entry
+             (directory-files-recursively
+              my/agent-shell--claude-history-directory
+              (rx ".jsonl" string-end))))))
+
+  (defun my/agent-shell--history-entries ()
+    "Return resumable Codex and Claude sessions, newest first."
+    (seq-sort
+     (lambda (a b)
+       (time-less-p (plist-get b :time) (plist-get a :time)))
+     (append (my/agent-shell--codex-history-entries)
+             (my/agent-shell--claude-history-entries))))
+
+  (defun my/agent-shell--live-entry (shell-buffer)
+    "Return popup metadata for live Agent Shell SHELL-BUFFER."
+    (with-current-buffer shell-buffer
+      (let* ((state agent-shell--state)
+             (title (map-nested-elt state '(:session :title)))
+             (config (map-elt state :agent-config)))
+        (list :kind 'live
+              :id (map-nested-elt state '(:session :id))
+              :cwd default-directory
+              :title (or (my/agent-shell--normalized-title title)
+                         (buffer-name shell-buffer))
+              :time (or buffer-display-time (current-time))
+              :status (agent-shell-status :shell-buffer shell-buffer)
+              :config-id (map-elt config :identifier)
+              :shell shell-buffer))))
+
+  (defun my/agent-shell--conversation-entries ()
+    "Return live and historical conversations for the global popup."
+    (let* ((zed-titles (my/agent-shell--read-zed-title-overrides))
+           (history
+            (mapcar (lambda (entry)
+                      (my/agent-shell--apply-title-overrides
+                       entry zed-titles))
+                    (my/agent-shell--history-entries)))
+           (live
+            (mapcar (lambda (shell-buffer)
+                      (my/agent-shell--apply-title-overrides
+                       (my/agent-shell--live-entry shell-buffer)
+                       zed-titles))
+                    (agent-shell-buffers)))
+           (live-ids (delq nil (mapcar (lambda (entry)
+                                         (plist-get entry :id))
+                                       live))))
+      (append live
+              (seq-remove
+               (lambda (entry)
+                 (member (plist-get entry :id) live-ids))
+               history))))
+
+  (defun my/agent-shell--popup-path (directory)
+    "Return DIRECTORY in a compact but unambiguous popup form."
+    (directory-file-name
+     (abbreviate-file-name (expand-file-name directory))))
+
+  (defun my/agent-shell--popup-column (value width face)
+    "Format VALUE to WIDTH columns using FACE."
+    (let* ((short (truncate-string-to-width value width nil nil "…"))
+           (padding (make-string (max 0 (- width (string-width short))) ?\s)))
+      (propertize (concat short padding) 'face face)))
+
+  (defun my/agent-shell--popup-status (entry)
+    "Return the status label and face for popup ENTRY."
+    (if (eq (plist-get entry :kind) 'history)
+        (cons "↩ PREV" 'shadow)
+      (pcase (plist-get entry :status)
+        ('busy (cons "● BUSY" 'warning))
+        ('blocked (cons "● WAIT" 'error))
+        (_ (cons "● LIVE" 'success)))))
+
+  (defun my/agent-shell--popup-agent (entry)
+    "Return the short agent name for popup ENTRY."
+    (pcase (plist-get entry :config-id)
+      ('codex "Codex")
+      ('claude-code "Claude")
+      (identifier (capitalize (format "%s" (or identifier 'agent))))))
+
+  (defun my/agent-shell--popup-time (entry)
+    "Return a human-readable timestamp for popup ENTRY."
+    (agent-shell--format-session-date
+     (format-time-string "%Y-%m-%dT%H:%M:%SZ"
+                         (plist-get entry :time) t)))
+
+  (defun my/agent-shell--conversation-choices (entries)
+    "Return unique display-choice alists for conversation ENTRIES."
+    (let* ((path-width
+            (min 42
+                 (max 8
+                      (apply #'max
+                             (mapcar
+                              (lambda (entry)
+                                (string-width
+                                 (my/agent-shell--popup-path
+                                  (plist-get entry :cwd))))
+                              entries)))))
+           (title-width 58)
+           (seen (make-hash-table :test #'equal))
+           choices)
+      (dolist (entry entries (nreverse choices))
+        (pcase-let* ((`(,status . ,status-face)
+                       (my/agent-shell--popup-status entry))
+                      (base
+                       (concat
+                        (my/agent-shell--popup-column status 7 status-face)
+                        "  "
+                        (my/agent-shell--popup-column
+                         (my/agent-shell--popup-agent entry)
+                         6 'font-lock-keyword-face)
+                        "  "
+                        (my/agent-shell--popup-column
+                         (my/agent-shell--popup-path
+                          (plist-get entry :cwd))
+                         path-width 'agent-shell-session-directory)
+                        "  "
+                        (my/agent-shell--popup-column
+                         (plist-get entry :title)
+                         title-width 'agent-shell-session-title)
+                        "  "
+                        (propertize (my/agent-shell--popup-time entry)
+                                    'face 'agent-shell-session-date)))
+                      (count (1+ (gethash base seen 0)))
+                      (label (if (= count 1)
+                                 base
+                               (concat base
+                                       (propertize (format "  #%d" count)
+                                                   'face 'shadow)))))
+          (puthash base count seen)
+          (push (cons label entry) choices)))))
+
+  (defun my/agent-shell--shell-for-session-id (session-id)
+    "Return a live Agent Shell buffer for SESSION-ID, if one exists."
+    (and session-id
+         (seq-find
+          (lambda (shell-buffer)
+            (with-current-buffer shell-buffer
+              (equal session-id
+                     (map-nested-elt agent-shell--state
+                                     '(:session :id)))))
+          (agent-shell-buffers))))
+
+  (defun my/agent-shell--current-shell-for-rename ()
+    "Return the current or most recently used live Agent Shell buffer."
+    (or (and (my/tab-line--chat-buffer-p)
+             (my/tab-line--shell-for-chat-buffer (current-buffer)))
+        (and (buffer-live-p my/agent-shell-last-chat-buffer)
+             (my/tab-line--shell-for-chat-buffer
+              my/agent-shell-last-chat-buffer))
+        (car (agent-shell-buffers))))
+
+  (defun my/agent-shell--rename-entry (entry)
+    "Prompt for and persist a new title for conversation ENTRY."
+    (let* ((current-title (or (plist-get entry :title)
+                              "Untitled conversation"))
+           (short-title (truncate-string-to-width current-title 48 nil nil "…"))
+           (new-title
+            (my/agent-shell--normalized-title
+             (read-string (format "Rename \"%s\" to: " short-title)
+                          nil nil current-title))))
+      (unless new-title
+        (user-error "Conversation title cannot be empty"))
+      (my/agent-shell--set-title-override entry new-title)
+      (when-let ((shell-buffer
+                  (or (and (buffer-live-p (plist-get entry :shell))
+                           (plist-get entry :shell))
+                      (my/agent-shell--shell-for-session-id
+                       (plist-get entry :id)))))
+        (with-current-buffer shell-buffer
+          (agent-shell--set-session-title new-title)))
+      (message "Conversation renamed to: %s" new-title)
+      new-title))
+
+  (defun my/agent-shell-rename-conversation ()
+    "Rename the current Agent Shell conversation persistently."
+    (interactive)
+    (let ((shell-buffer (my/agent-shell--current-shell-for-rename)))
+      (unless shell-buffer
+        (user-error "No live Agent Shell conversation"))
+      (let ((zed-titles (my/agent-shell--read-zed-title-overrides)))
+        (my/agent-shell--rename-entry
+         (my/agent-shell--apply-title-overrides
+          (my/agent-shell--live-entry shell-buffer) zed-titles)))))
+
+  (defun my/agent-shell--keep-local-session-title (original title)
+    "Apply a persistent local title override around ORIGINAL TITLE update."
+    (let* ((session-id (map-nested-elt agent-shell--state '(:session :id)))
+           (config-id (map-nested-elt
+                       agent-shell--state '(:agent-config :identifier)))
+           (entry (list :id session-id :config-id config-id)))
+      (funcall original
+               (or (and session-id
+                        (my/agent-shell--local-title-override entry))
+                   title))))
+
+  (advice-remove #'agent-shell--set-session-title
+                 #'my/agent-shell--keep-local-session-title)
+  (advice-add #'agent-shell--set-session-title :around
+              #'my/agent-shell--keep-local-session-title)
+
+  (defun my/agent-shell--display-buffer-for-shell (shell-buffer)
+    "Return the user-facing buffer associated with SHELL-BUFFER."
+    (or (and (buffer-live-p my/agent-shell-last-chat-buffer)
+             (eq shell-buffer
+                 (my/tab-line--shell-for-chat-buffer
+                  my/agent-shell-last-chat-buffer))
+             my/agent-shell-last-chat-buffer)
+        (and (my/tab-line--chat-buffer-p)
+             (eq shell-buffer
+                 (my/tab-line--shell-for-chat-buffer (current-buffer)))
+             (current-buffer))
+        (and agent-shell-prefer-viewport-interaction
+             (agent-shell-viewport--buffer
+              :shell-buffer shell-buffer :existing-only t))
+        shell-buffer))
+
+  (defun my/agent-shell--config-for-entry (entry)
+    "Return the installed Agent Shell configuration for ENTRY."
+    (seq-find
+     (lambda (config)
+       (eq (map-elt config :identifier)
+           (plist-get entry :config-id)))
+     (agent-shell--resolved-agent-configs)))
+
+  (defun my/agent-shell--open-conversation (entry)
+    "Open live or historical conversation ENTRY in the remembered layout."
+    (let ((session-id (plist-get entry :id)))
+      (if-let ((shell-buffer
+                (or (and (eq (plist-get entry :kind) 'live)
+                         (plist-get entry :shell))
+                    (my/agent-shell--shell-for-session-id session-id))))
+          (my/agent-shell--show-chat-buffer
+           (my/agent-shell--display-buffer-for-shell shell-buffer))
+        (let* ((cwd (plist-get entry :cwd))
+               (config (my/agent-shell--config-for-entry entry)))
+          (unless (file-directory-p cwd)
+            (user-error "Conversation directory no longer exists: %s" cwd))
+          (unless config
+            (user-error "%s Agent Shell configuration is unavailable"
+                        (my/agent-shell--popup-agent entry)))
+          (let* ((default-directory cwd)
+                 (agent-shell-cwd-function (let ((directory cwd))
+                                             (lambda () directory)))
+                 (shell-buffer
+                  (agent-shell--start
+                   :config config
+                   :session-id session-id
+                   :new-session t
+                   :no-focus t)))
+            (with-current-buffer shell-buffer
+              ;; ACP bootstrapping continues asynchronously, so retain the
+              ;; exact original directory beyond this command's dynamic let.
+              (setq-local agent-shell-cwd-function
+                          (let ((directory cwd))
+                            (lambda () directory)))
+              (agent-shell--set-session-title (plist-get entry :title)))
+            (my/agent-shell--show-chat-buffer
+             (or (and agent-shell-prefer-viewport-interaction
+                      (agent-shell-viewport--buffer
+                       :shell-buffer shell-buffer))
+                 shell-buffer)))))))
+
+  (defun my/agent-shell--entry-for-popup-choice (choice)
+    "Return the conversation entry represented by popup CHOICE."
+    (cdr (assoc-string choice
+                       my/agent-shell--active-conversation-choices t)))
+
+  (defun my/agent-shell--open-popup-choice (choice)
+    "Ivy action that opens CHOICE, or starts a new named conversation."
+    (if-let ((entry (my/agent-shell--entry-for-popup-choice choice)))
+        (if (eq (plist-get entry :kind) 'new)
+            (my/agent-shell--create-named-conversation)
+          (my/agent-shell--open-conversation entry))
+      (user-error "No conversation selected")))
+
+  (defun my/agent-shell--rename-popup-choice (choice)
+    "Ivy action that persistently renames conversation CHOICE."
+    (if-let ((entry (my/agent-shell--entry-for-popup-choice choice)))
+        (if (eq (plist-get entry :kind) 'new)
+            (user-error "Nothing to rename: this starts a new conversation")
+          (my/agent-shell--rename-entry entry))
+      (user-error "No conversation selected")))
+
+  ;; A synthetic first row in the picker that starts a brand-new conversation
+  ;; with a name the user types, instead of only resuming existing ones.
+  (defconst my/agent-shell--new-conversation-choice
+    (propertize "＋  New conversation…" 'face 'font-lock-keyword-face)
+    "Synthetic picker label that starts a fresh, custom-named conversation.")
+
+  (defun my/agent-shell--project-directory ()
+    "Return a sensible working directory for a new conversation."
+    (or (when-let ((project (project-current nil)))
+          (expand-file-name (project-root project)))
+        default-directory))
+
+  (defun my/agent-shell--persist-new-title (shell-buffer title attempts)
+    "Register TITLE as a persistent override once SHELL-BUFFER has a session id.
+Agent Shell assigns the ACP session id asynchronously, so poll briefly (up
+to ~10s) until it lands, then store the override and reapply the title so it
+survives the agent's own later naming."
+    (when (and (buffer-live-p shell-buffer) (< attempts 50))
+      (if-let ((session-id
+                (with-current-buffer shell-buffer
+                  (map-nested-elt agent-shell--state '(:session :id)))))
+          (with-current-buffer shell-buffer
+            (let ((config-id (map-nested-elt
+                              agent-shell--state '(:agent-config :identifier))))
+              (my/agent-shell--set-title-override
+               (list :config-id config-id :id session-id) title)
+              (agent-shell--set-session-title title)))
+        (run-with-timer 0.2 nil #'my/agent-shell--persist-new-title
+                        shell-buffer title (1+ attempts)))))
+
+  (defun my/agent-shell--create-named-conversation ()
+    "Prompt for a title, pick an agent, and start a fresh named conversation."
+    (require 'agent-shell)
+    (let* ((title (my/agent-shell--normalized-title
+                   (read-string "New conversation title: ")))
+           (location (my/agent-shell--project-directory))
+           (shell-buffer
+            (let ((default-directory location))
+              ;; :config nil lets Agent Shell resolve the preferred agent or
+              ;; prompt for one, exactly as its own new-shell command does.
+              (agent-shell--new-shell :location location :no-display t))))
+      (when title
+        (with-current-buffer shell-buffer
+          (agent-shell--set-session-title title))
+        (my/agent-shell--persist-new-title shell-buffer title 0))
+      (my/agent-shell--show-chat-buffer
+       (or (and agent-shell-prefer-viewport-interaction
+                (agent-shell-viewport--buffer :shell-buffer shell-buffer))
+           shell-buffer))))
+
+  (defun my/agent-shell--select-conversation ()
+    "Resume a conversation, or start a fresh named one, from one global popup."
+    (let* ((entries (my/agent-shell--conversation-entries))
+           (choices (cons (cons my/agent-shell--new-conversation-choice
+                                '(:kind new))
+                          (my/agent-shell--conversation-choices entries)))
+           (labels (mapcar #'car choices)))
+      (setq my/agent-shell--active-conversation-choices choices)
+      (if (fboundp 'ivy-read)
+          (ivy-read "Conversations: " labels
+                    :require-match t
+                    :sort nil
+                    :history 'my/agent-shell-conversation-history
+                    :caller 'my/agent-shell-conversations
+                    :action #'my/agent-shell--open-popup-choice)
+        (my/agent-shell--open-popup-choice
+         (completing-read "Conversations: " labels nil t)))))
+
+  (when (fboundp 'ivy-add-actions)
+    (ivy-add-actions
+     'my/agent-shell-conversations
+     '(("r" my/agent-shell--rename-popup-choice "rename"))))
+
+  (map! :map (agent-shell-mode-map
+              agent-shell-viewport-edit-mode-map
+              agent-shell-viewport-view-mode-map)
+        :localleader
+        :desc "Rename conversation" :n "r"
+        #'my/agent-shell-rename-conversation)
 
   (add-hook 'post-command-hook #'my/agent-shell--remember-chat)
 
@@ -2531,7 +3316,1269 @@ is included in the measurement."
 
   (defun my/agent-shell--prompt-buffer-p ()
     "Return non-nil when point is in an Agent Shell prompt buffer."
-    (derived-mode-p 'agent-shell-mode 'agent-shell-viewport-edit-mode))
+    (derived-mode-p 'agent-shell-mode
+                    'agent-shell-viewport-edit-mode
+                    'my/agent-shell-composer-mode))
+
+  ;; Keep a staged follow-up inside the transcript, after all streaming
+  ;; output.  It does not enter Agent Shell's native queue until the current
+  ;; turn has finished, so the user can keep editing or cancel it meanwhile.
+  (defface my/agent-shell-input-region-face
+    '((t (:inherit default :extend t)))
+    "Face for the Agent Shell input region embedded in the transcript.")
+
+  (defvar-local my/agent-shell--inline-queue-start nil)
+  (defvar-local my/agent-shell--inline-queue-content-start nil)
+  (defvar-local my/agent-shell--inline-queue-content-end nil)
+  (defvar-local my/agent-shell--inline-queue-end nil)
+  (defvar-local my/agent-shell--inline-queue-queued-p nil)
+  (defvar-local my/agent-shell--inline-queue-subscription nil)
+  (defvar-local my/agent-shell--inline-queue-overlay nil)
+  (defvar-local my/agent-shell--inline-input-padding-overlay nil)
+  (defvar-local my/agent-shell--historical-user-prompt-overlays nil)
+
+  (defun my/agent-shell--face-includes-p (face target)
+    "Return non-nil when FACE contains TARGET anywhere in its face tree."
+    (or (eq face target)
+        (and (consp face)
+             (or (my/agent-shell--face-includes-p (car face) target)
+                 (my/agent-shell--face-includes-p (cdr face) target)))))
+
+  (defun my/agent-shell--next-end-of-prompt-marker (position limit)
+    "Return the next Shell Maker prompt-end marker from POSITION to LIMIT."
+    (let ((position position)
+          found)
+      (while (and (< position limit) (not found))
+        (if (get-text-property position 'shell-maker--marker)
+            (setq found position)
+          (setq position
+                (next-single-property-change
+                 position 'shell-maker--marker nil limit))))
+      found))
+
+  (defun my/agent-shell--refresh-historical-user-prompts ()
+    "Paint completed user prompts like the live editable input region."
+    (when (and (derived-mode-p 'agent-shell-mode)
+               (stringp comint-prompt-regexp)
+               (not (string-empty-p comint-prompt-regexp)))
+      (mapc #'delete-overlay
+            my/agent-shell--historical-user-prompt-overlays)
+      (setq my/agent-shell--historical-user-prompt-overlays nil)
+      (save-excursion
+        (save-restriction
+          (widen)
+          (let ((limit (point-max)))
+            (goto-char (point-min))
+            ;; A just-created Comint buffer can temporarily use the zero-width
+            ;; regexp `^'.  Always advance past a zero-width match so bootstrap
+            ;; buffers remain finite until Agent Shell installs its real prompt.
+            (while (and (< (point) limit)
+                        (re-search-forward comint-prompt-regexp limit t))
+              (let ((start (match-beginning 0))
+                    (prompt-end (match-end 0)))
+                ;; Match only actual Comint prompts, not prompt-like text in an
+                ;; agent response.  A completed prompt must also have Shell
+                ;; Maker's invisible end marker; the live input has none.
+                (when (my/agent-shell--face-includes-p
+                       (get-text-property start 'font-lock-face)
+                       'comint-highlight-prompt)
+                  (when-let ((end
+                              (my/agent-shell--next-end-of-prompt-marker
+                               prompt-end limit)))
+                    (let ((overlay
+                           (make-overlay start end (current-buffer))))
+                      (overlay-put overlay 'face
+                                   'my/agent-shell-input-region-face)
+                      (overlay-put overlay 'evaporate t)
+                      (overlay-put overlay
+                                   'my/agent-shell-historical-user-prompt t)
+                      (push overlay
+                            my/agent-shell--historical-user-prompt-overlays))))
+                (when (= start prompt-end)
+                  (goto-char (min limit (1+ prompt-end)))))))))))
+
+  (defun my/agent-shell--after-end-of-prompt-marker (&rest _)
+    "Refresh historical user prompt backgrounds after a submission."
+    (when (derived-mode-p 'agent-shell-mode)
+      (my/agent-shell--refresh-historical-user-prompts)))
+
+  (defcustom my/agent-shell-stall-timeout 180
+    "Seconds without ACP activity before recovering a busy prompt."
+    :type 'integer
+    :group 'agent-shell)
+
+  (defcustom my/agent-shell-stall-check-interval 10
+    "Seconds between Agent Shell stall checks."
+    :type 'integer
+    :group 'agent-shell)
+
+  (defcustom my/agent-shell-recovery-retry-limit 3
+    "Maximum automatic reconnect attempts for one recovery snapshot."
+    :type 'integer
+    :group 'agent-shell)
+
+  (defcustom my/agent-shell-recovery-retry-delay 5
+    "Seconds before retrying a failed automatic recovery."
+    :type 'number
+    :group 'agent-shell)
+
+  (defvar-local my/agent-shell--last-acp-activity-time nil)
+  (defvar-local my/agent-shell--stall-watchdog-timer nil)
+  (defvar-local my/agent-shell--auto-recovery-in-progress nil)
+
+  (defun my/agent-shell--note-acp-activity (client)
+    "Record incoming protocol activity for CLIENT's Agent Shell buffer."
+    (when-let ((shell-buffer (and client
+                                  (map-elt client :context-buffer))))
+      (when (buffer-live-p shell-buffer)
+        (with-current-buffer shell-buffer
+          (setq my/agent-shell--last-acp-activity-time (current-time))))))
+
+  (defun my/acp--incoming-message-description (arguments)
+    "Return a compact description of an ACP routing call ARGUMENTS."
+    (let* ((message (plist-get arguments :message))
+           (object (and message (map-elt message :object)))
+           (id (and object (or (map-elt object 'id)
+                               (map-elt object :id))))
+           (method (and object (or (map-elt object 'method)
+                                   (map-elt object :method)))))
+      (cond
+       (method (format "%s%s" method (if id (format " id=%s" id) "")))
+       (id (format "response id=%s" id))
+       (t "unidentified message"))))
+
+  (defun my/acp--route-incoming-message-safely (original &rest arguments)
+    "Route an ACP message without allowing one callback to wedge its queue.
+
+`acp.el' drains its private message queue from a zero-delay timer.  If a
+response callback signals, that timer exits before clearing its private busy
+flag, so all later ACP messages remain queued forever.  Keep the dispatcher
+alive, retain the error on the client for diagnosis, and surface a warning."
+    (let ((client (plist-get arguments :client)))
+      (my/agent-shell--note-acp-activity client)
+      (condition-case error-data
+          (apply original arguments)
+      ((error quit)
+       (let* ((description
+               (my/acp--incoming-message-description arguments))
+              (warning
+               (format "ACP callback failed while routing %s: %S"
+                       description error-data)))
+         (when client
+           (ignore-errors
+             (map-put! client :my/last-routing-error
+                       (list :time (current-time)
+                             :message description
+                             :error error-data)))
+           (ignore-errors
+             (acp--log client "ROUTING CALLBACK ERROR" "%s" warning)))
+         (condition-case nil
+             (display-warning 'agent-shell warning :error)
+           (error (message "%s" warning)))
+         ;; The dispatcher itself can now continue, but a failed prompt
+         ;; callback may have left Agent Shell's request state busy.  Recheck
+         ;; after the rest of this ACP batch has had a chance to finish.
+         (when-let ((shell-buffer (and client
+                                       (map-elt client :context-buffer))))
+           (when (and (buffer-live-p shell-buffer)
+                      (fboundp 'my/agent-shell--stall-watchdog-tick))
+             (run-at-time
+              1 nil #'my/agent-shell--stall-watchdog-tick
+              shell-buffer t))))
+       nil))))
+
+  (advice-remove #'acp--route-incoming-message
+                 #'my/acp--route-incoming-message-safely)
+  (advice-add #'acp--route-incoming-message :around
+              #'my/acp--route-incoming-message-safely)
+
+  (defun my/agent-shell--pending-requests (&optional shell-buffer)
+    "Return SHELL-BUFFER's native pending-request FIFO."
+    (when-let ((buffer (or shell-buffer (current-buffer))))
+      (when (buffer-live-p buffer)
+        (with-current-buffer buffer
+          (condition-case nil
+              (map-elt (agent-shell--state) :pending-requests)
+            (error nil))))))
+
+  (defun my/agent-shell--pending-index-at-point ()
+    "Return the native pending-request index represented at point."
+    (or (get-text-property (point) 'my/agent-shell-pending-index)
+        (and (> (point) (point-min))
+             (get-text-property (1- (point))
+                                'my/agent-shell-pending-index))))
+
+  (defun my/agent-shell--inline-queue-active-p (&optional shell-buffer)
+    "Return non-nil when SHELL-BUFFER has a live inline follow-up."
+    (with-current-buffer (or shell-buffer (current-buffer))
+      (and (markerp my/agent-shell--inline-queue-start)
+           (marker-position my/agent-shell--inline-queue-start)
+           (markerp my/agent-shell--inline-queue-content-start)
+           (marker-position my/agent-shell--inline-queue-content-start)
+           (markerp my/agent-shell--inline-queue-content-end)
+           (marker-position my/agent-shell--inline-queue-content-end)
+           (markerp my/agent-shell--inline-queue-end)
+           (marker-position my/agent-shell--inline-queue-end))))
+
+  (defun my/agent-shell--inline-queue-text (&optional shell-buffer)
+    "Return SHELL-BUFFER's staged follow-up without text properties."
+    (with-current-buffer (or shell-buffer (current-buffer))
+      (when (my/agent-shell--inline-queue-active-p)
+        (buffer-substring-no-properties
+         my/agent-shell--inline-queue-content-start
+         my/agent-shell--inline-queue-content-end))))
+
+  (defun my/agent-shell--inline-queue-has-text-p (&optional shell-buffer)
+    "Return non-nil when SHELL-BUFFER's inline input is non-empty."
+    (when-let ((text (my/agent-shell--inline-queue-text shell-buffer)))
+      (not (string-empty-p (string-trim text)))))
+
+  (defun my/agent-shell--insert-input-sentinel ()
+    "Insert the invisible editable boundary before the protected footer."
+    (insert (propertize " "
+                        'display ""
+                        'my/agent-shell-input-sentinel t
+                        'rear-nonsticky t)))
+
+  (defun my/agent-shell--repair-input-sentinel (&rest _)
+    "Restore the embedded input sentinel if an edit deleted it."
+    (when (and (my/agent-shell--inline-queue-active-p)
+               (not (get-text-property
+                     my/agent-shell--inline-queue-content-end
+                     'my/agent-shell-input-sentinel)))
+      (let ((inhibit-modification-hooks t)
+            (inhibit-read-only t)
+            (at-end (= (point)
+                       my/agent-shell--inline-queue-content-end))
+            (saved-point (copy-marker (point) t)))
+        (save-excursion
+          (goto-char my/agent-shell--inline-queue-content-end)
+          (set-marker-insertion-type
+           my/agent-shell--inline-queue-content-end nil)
+          (my/agent-shell--insert-input-sentinel)
+          (set-marker-insertion-type
+           my/agent-shell--inline-queue-content-end t))
+        (goto-char (if at-end
+                       my/agent-shell--inline-queue-content-end
+                     saved-point))
+        (set-marker saved-point nil))))
+
+  (defun my/agent-shell--insert-inline-queue-block (text &optional point-offset)
+    "Append an inline queue block containing TEXT to the current shell.
+
+POINT-OFFSET, when non-nil, restores point that many characters into TEXT."
+    (let ((inhibit-read-only t)
+          (symbol (if my/agent-shell--inline-queue-queued-p "⏳" "✎"))
+          (pending (my/agent-shell--pending-requests))
+          visual-start)
+      (goto-char (point-max))
+      (setq my/agent-shell--inline-queue-start (copy-marker (point) nil))
+      (unless (bolp)
+        (insert (propertize "\n" 'read-only t
+                            'rear-nonsticky '(read-only)
+                            'my/agent-shell-inline-queue t)))
+      (setq visual-start (point))
+      ;; Native pending requests are real queue content, so keep them visible
+      ;; and selectable.  Unlike the hint below, these lines are deliberately
+      ;; tangible: `i' pulls one back into the composer and C-c removes it.
+      (cl-loop for prompt in pending
+               for index from 0
+               do
+               (let ((start (point))
+                     (preview
+                      (truncate-string-to-width
+                       (replace-regexp-in-string
+                        "[\n\r]+" " ↵ " (string-trim prompt))
+                       100 nil nil "…")))
+                 (insert (format " ⏳  %d · %s\n" (1+ index) preview))
+                 (add-text-properties
+                  start (point)
+                  `(read-only t
+                    rear-nonsticky (read-only field face font-lock-face
+                                              my/agent-shell-pending-index)
+                    field output
+                    font-lock-face font-lock-comment-face
+                    my/agent-shell-pending-index ,index
+                    my/agent-shell-inline-queue t))))
+      (insert (propertize
+               (format
+                " %s  %s\n"
+                symbol
+                (if my/agent-shell--inline-queue-queued-p
+                    "Queued · edit freely · C-c unqueue · C-RET force-send"
+                  (if pending
+                      (format
+                       "Prompt · %d queued · type + RET enqueue · empty RET force FIFO · ⇧RET newline · C-c interrupt · C-RET force-send"
+                       (length pending))
+                    "Prompt · RET send/queue · ⇧RET newline · C-c interrupt · C-RET force-send")))
+               'read-only t
+               'rear-nonsticky '(read-only field face
+                                  font-lock-face)
+               'field 'output
+               'font-lock-face 'font-lock-comment-face
+               'my/agent-shell-inline-queue t))
+      (setq my/agent-shell--inline-queue-content-start
+            (copy-marker (point) nil))
+      (insert (or text ""))
+      (let ((content-end (point)))
+        ;; Keep an editable zero-width sentinel between an empty draft and the
+        ;; protected footer.  Without it, Emacs treats insertion at that exact
+        ;; boundary as an attempt to modify the read-only footer.
+        (my/agent-shell--insert-input-sentinel)
+        (insert (propertize
+                 "\n"
+                 'read-only t
+                 'field 'output
+                 'font-lock-face 'font-lock-comment-face
+                 'my/agent-shell-inline-queue t))
+        ;; Set this after inserting the read-only footer; an insertion-type-t
+        ;; marker created beforehand would advance past the footer too.
+        (setq my/agent-shell--inline-queue-content-end
+              (copy-marker content-end t)))
+      (setq my/agent-shell--inline-queue-end (copy-marker (point) nil))
+      (when (overlayp my/agent-shell--inline-queue-overlay)
+        (delete-overlay my/agent-shell--inline-queue-overlay))
+      (setq my/agent-shell--inline-queue-overlay
+            (make-overlay visual-start
+                          my/agent-shell--inline-queue-end
+                          (current-buffer) nil t))
+      (overlay-put my/agent-shell--inline-queue-overlay
+                   'face 'my/agent-shell-input-region-face)
+      (when (overlayp my/agent-shell--inline-input-padding-overlay)
+        (delete-overlay my/agent-shell--inline-input-padding-overlay))
+      (setq my/agent-shell--inline-input-padding-overlay
+            (make-overlay my/agent-shell--inline-queue-content-start
+                          my/agent-shell--inline-queue-end
+                          (current-buffer) nil t))
+      (let ((prefix
+             (propertize " " 'face 'my/agent-shell-input-region-face)))
+        (overlay-put my/agent-shell--inline-input-padding-overlay
+                     'line-prefix prefix)
+        (overlay-put my/agent-shell--inline-input-padding-overlay
+                     'wrap-prefix prefix))
+      (overlay-put my/agent-shell--inline-input-padding-overlay
+                   'evaporate t)
+      (goto-char (+ (marker-position
+                     my/agent-shell--inline-queue-content-start)
+                    (min (or point-offset (length (or text "")))
+                         (length (or text "")))))))
+
+  (defun my/agent-shell--relocate-inline-queue (&optional force)
+    "Keep the current inline follow-up after all newly streamed output.
+
+When FORCE is non-nil, rebuild it even if it is already last; this refreshes
+the draft/queued symbol and help text."
+    (when (my/agent-shell--inline-queue-active-p)
+      (let* ((text (my/agent-shell--inline-queue-text))
+             (inside (and (>= (point) my/agent-shell--inline-queue-content-start)
+                          (<= (point) my/agent-shell--inline-queue-content-end)))
+             (offset (and inside
+                          (- (point)
+                             my/agent-shell--inline-queue-content-start)))
+             (saved-point (and (not inside) (copy-marker (point) t))))
+        (when (or force
+                  (< my/agent-shell--inline-queue-end (point-max)))
+          (let ((inhibit-read-only t))
+            (with-silent-modifications
+              (when (overlayp my/agent-shell--inline-queue-overlay)
+                (delete-overlay my/agent-shell--inline-queue-overlay)
+                (setq my/agent-shell--inline-queue-overlay nil))
+              (when (overlayp my/agent-shell--inline-input-padding-overlay)
+                (delete-overlay my/agent-shell--inline-input-padding-overlay)
+                (setq my/agent-shell--inline-input-padding-overlay nil))
+              (delete-region my/agent-shell--inline-queue-start
+                             my/agent-shell--inline-queue-end)
+              (my/agent-shell--insert-inline-queue-block text offset)))
+          (unless inside
+            (goto-char saved-point))
+          (when saved-point
+            (set-marker saved-point nil))))))
+
+  (defun my/agent-shell--take-pending-request (index)
+    "Remove and return native pending request INDEX from the current shell."
+    (let ((pending (my/agent-shell--pending-requests)))
+      (unless (and (integerp index) (>= index 0) (< index (length pending)))
+        (user-error "No queued request here"))
+      (let ((prompt (nth index pending)))
+        (map-put! (agent-shell--state) :pending-requests
+                  (append (seq-take pending index)
+                          (seq-drop pending (1+ index))))
+        prompt)))
+
+  (defun my/agent-shell-edit-pending-request-at-point ()
+    "Move the queued request at point back into the editable composer."
+    (interactive)
+    (let ((index (my/agent-shell--pending-index-at-point)))
+      (unless index
+        (user-error "No queued request here"))
+      (when (my/agent-shell--inline-queue-has-text-p)
+        (user-error "Finish or clear the current draft before editing the queue"))
+      (let ((prompt (my/agent-shell--take-pending-request index)))
+        (my/agent-shell--relocate-inline-queue t)
+        (goto-char my/agent-shell--inline-queue-content-end)
+        (insert prompt)
+        (message "Queued request moved back to the composer"))))
+
+  (defun my/agent-shell-remove-pending-request-at-point ()
+    "Remove the queued request represented at point."
+    (interactive)
+    (let ((index (my/agent-shell--pending-index-at-point)))
+      (unless index
+        (user-error "No queued request here"))
+      (my/agent-shell--take-pending-request index)
+      (my/agent-shell--relocate-inline-queue t)
+      (goto-char my/agent-shell--inline-queue-content-end)
+      (message "Queued request removed")))
+
+  (defun my/agent-shell--native-input-range ()
+    "Return the verified native input range, or nil during bootstrapping.
+
+The range begins at the end of the current Comint prompt, never at
+`comint-accum-marker'.  Agent Shell can leave that marker at the beginning of
+the buffer while it is loading a session, which otherwise makes the welcome
+text and restored transcript look like an unsent prompt."
+    (condition-case nil
+        (when-let* ((state (agent-shell--state))
+                    ((eq (map-elt state :buffer) (current-buffer)))
+                    (prompt comint-last-prompt)
+                    ((consp prompt))
+                    (start-marker (car prompt))
+                    (end-marker (cdr prompt))
+                    ((markerp start-marker))
+                    ((markerp end-marker))
+                    ((eq (marker-buffer start-marker) (current-buffer)))
+                    ((eq (marker-buffer end-marker) (current-buffer)))
+                    (start (marker-position start-marker))
+                    (end (marker-position end-marker))
+                    ((< start end))
+                    ((<= end (point-max)))
+                    ((stringp comint-prompt-regexp))
+                    ((not (string-empty-p comint-prompt-regexp)))
+                    (process (get-buffer-process (current-buffer)))
+                    (process-marker (process-mark process))
+                    ((markerp process-marker))
+                    ((eq (marker-buffer process-marker) (current-buffer)))
+                    ((= (marker-position process-marker) end))
+                    ((save-excursion
+                       (save-match-data
+                         (goto-char start)
+                         (and (looking-at comint-prompt-regexp)
+                              (= (match-end 0) end)))))
+                    ((agent-shell--live-input-prompt-p prompt))
+                    ((not (text-property-any end (point-max)
+                                             'field 'output)))
+                    ((not (text-property-not-all end (point-max)
+                                                 'read-only nil))))
+          (cons end (point-max)))
+      (error nil)))
+
+  (defun my/agent-shell--native-input-text ()
+    "Return only verified native prompt text, without properties."
+    (when-let ((range (my/agent-shell--native-input-range)))
+      (buffer-substring-no-properties (car range) (cdr range))))
+
+  (defun my/agent-shell--take-shell-input ()
+    "Remove and return verified native input, or nil if absent or unsafe."
+    (when-let* ((range (my/agent-shell--native-input-range))
+                (input (buffer-substring-no-properties
+                        (car range) (cdr range)))
+                ((not (string-empty-p (string-trim input)))))
+      (let ((inhibit-read-only t))
+        (delete-region (car range) (cdr range)))
+      input))
+
+  (defun my/agent-shell--inline-queue-insert (text)
+    "Insert TEXT into the current shell's inline follow-up."
+    (unless (my/agent-shell--inline-queue-active-p)
+      (unless (my/agent-shell--ensure-inline-input)
+        (user-error "Agent session is still starting")))
+    (unless (and (>= (point) my/agent-shell--inline-queue-content-start)
+                 (<= (point) my/agent-shell--inline-queue-content-end))
+      (goto-char my/agent-shell--inline-queue-content-end))
+    (insert text))
+
+  (defun my/agent-shell--ensure-inline-input (&optional focus migrate-native)
+    "Ensure the current shell has one embedded input region.
+
+When FOCUS is non-nil, move into the editable region without disturbing a
+cursor already inside it.  When MIGRATE-NATIVE is non-nil, preserve any old
+Comint draft while switching interfaces.  Never create or migrate the custom
+input while Agent Shell is bootstrapping and has no trustworthy live prompt."
+    (when (derived-mode-p 'agent-shell-mode)
+      (let* ((active (my/agent-shell--inline-queue-active-p))
+             (native-range (and (not active)
+                                (my/agent-shell--native-input-range)))
+             (native-text (and native-range
+                               (buffer-substring-no-properties
+                                (car native-range) (cdr native-range)))))
+        ;; A non-empty native draft must be migrated atomically.  If this call
+        ;; was not authorized to migrate it, leave both it and the transcript
+        ;; untouched until the next migration-aware command.
+        (when (or active
+                  (and native-range
+                       (or migrate-native
+                           (string-empty-p (string-trim native-text)))))
+          (unless active
+            (my/agent-shell--insert-inline-queue-block
+             (and migrate-native (my/agent-shell--take-shell-input))))
+          (my/agent-shell--hide-native-prompt (current-buffer))
+          (when focus
+            (unless (and (>= (point) my/agent-shell--inline-queue-content-start)
+                         (<= (point) my/agent-shell--inline-queue-content-end))
+              (goto-char my/agent-shell--inline-queue-content-end)))
+          my/agent-shell--inline-queue-content-end))))
+
+  (defun my/agent-shell--disarm-inline-queue ()
+    "Stop waiting to accept the current shell's inline follow-up."
+    (when my/agent-shell--inline-queue-subscription
+      (agent-shell-unsubscribe
+       :subscription my/agent-shell--inline-queue-subscription)
+      (setq my/agent-shell--inline-queue-subscription nil)))
+
+  (defun my/agent-shell--delete-inline-queue (&optional keep-subscription)
+    "Delete the current shell's inline follow-up.
+
+Unless KEEP-SUBSCRIPTION is non-nil, also stop its event subscription."
+    (when (my/agent-shell--inline-queue-active-p)
+      (unless keep-subscription
+        (my/agent-shell--disarm-inline-queue))
+      (let ((inhibit-read-only t))
+        (when (overlayp my/agent-shell--inline-queue-overlay)
+          (delete-overlay my/agent-shell--inline-queue-overlay)
+          (setq my/agent-shell--inline-queue-overlay nil))
+        (when (overlayp my/agent-shell--inline-input-padding-overlay)
+          (delete-overlay my/agent-shell--inline-input-padding-overlay)
+          (setq my/agent-shell--inline-input-padding-overlay nil))
+        (delete-region my/agent-shell--inline-queue-start
+                       my/agent-shell--inline-queue-end))
+      (dolist (marker (list my/agent-shell--inline-queue-start
+                            my/agent-shell--inline-queue-content-start
+                            my/agent-shell--inline-queue-content-end
+                            my/agent-shell--inline-queue-end))
+        (when (markerp marker)
+          (set-marker marker nil)))
+      (setq my/agent-shell--inline-queue-start nil
+            my/agent-shell--inline-queue-content-start nil
+            my/agent-shell--inline-queue-content-end nil
+            my/agent-shell--inline-queue-end nil
+            my/agent-shell--inline-queue-queued-p nil)))
+
+  (defun my/agent-shell--submit-inline-prompt (shell-buffer prompt)
+    "Submit or enqueue PROMPT and immediately restore an empty input.
+
+When SHELL-BUFFER is busy, or already has pending requests, append PROMPT to
+its native FIFO.  Otherwise submit it immediately."
+    (with-current-buffer shell-buffer
+      (let ((enqueue (or (shell-maker-busy)
+                         (my/agent-shell--pending-requests shell-buffer))))
+        (my/agent-shell--delete-inline-queue)
+        (condition-case error-data
+            (progn
+              (if enqueue
+                  (agent-shell--enqueue-request :prompt prompt)
+                (agent-shell-queue-request prompt))
+              ;; Output advice may already have restored the input region.
+              (unless (my/agent-shell--inline-queue-active-p)
+                (my/agent-shell--insert-inline-queue-block ""))
+              (my/agent-shell--hide-native-prompt shell-buffer)
+              (goto-char my/agent-shell--inline-queue-content-end)
+              (when enqueue
+                (message "Request queued at FIFO position %d"
+                         (length (my/agent-shell--pending-requests
+                                  shell-buffer)))))
+          (error
+           ;; A failed submission must never eat the user's draft.
+           (unless (my/agent-shell--inline-queue-active-p)
+             (my/agent-shell--insert-inline-queue-block prompt))
+           (signal (car error-data) (cdr error-data)))))))
+
+  (defun my/agent-shell--force-next-pending-request ()
+    "Force the first native pending request through, preserving FIFO order."
+    (let* ((shell-buffer (current-buffer))
+           (pending (my/agent-shell--pending-requests shell-buffer)))
+      (unless pending
+        (user-error "Nothing to send"))
+      (if (shell-maker-busy)
+          (progn
+            ;; Do not reorder the queue: the existing head remains the next
+            ;; request resumed after interruption.
+            (my/agent-shell--interrupt-for-forced-request shell-buffer)
+            (message "Interrupted active turn; force-submitting FIFO head"))
+        (agent-shell--process-pending-request))))
+
+  (defun my/agent-shell--queue-inline-prompt ()
+    "Apply the embedded composer's default FIFO Return behavior.
+
+Non-empty input is submitted immediately when idle or appended to the native
+queue when busy.  Empty input force-submits the existing FIFO head."
+    (my/agent-shell--ensure-inline-input t t)
+    (if (my/agent-shell--inline-queue-has-text-p)
+      (my/agent-shell--submit-inline-prompt
+       (current-buffer) (my/agent-shell--inline-queue-text))
+      (my/agent-shell--force-next-pending-request)))
+
+  (defun my/agent-shell--unqueue-inline-prompt ()
+    "Unqueue the inline prompt without deleting its editable text."
+    (if my/agent-shell--inline-queue-queued-p
+        (progn
+          (my/agent-shell--disarm-inline-queue)
+          (setq my/agent-shell--inline-queue-queued-p nil)
+          (my/agent-shell--relocate-inline-queue t)
+          (message "Queued follow-up canceled; draft remains editable"))
+      (keyboard-quit)))
+
+  (defun my/agent-shell--accept-inline-queue-if-ready (shell-buffer)
+    "Submit SHELL-BUFFER's queued inline follow-up once the agent is ready."
+    (when (buffer-live-p shell-buffer)
+      (with-current-buffer shell-buffer
+        (when (and my/agent-shell--inline-queue-queued-p
+                   (my/agent-shell--inline-queue-active-p)
+                   (not (shell-maker-busy)))
+          (let ((prompt (my/agent-shell--inline-queue-text)))
+            (if (string-empty-p (string-trim prompt))
+                (my/agent-shell--unqueue-inline-prompt)
+              (my/agent-shell--submit-inline-prompt
+               shell-buffer prompt)))))))
+
+  (defun my/agent-shell--arm-inline-queue (shell-buffer)
+    "Arrange for SHELL-BUFFER's inline follow-up to be accepted when ready."
+    (with-current-buffer shell-buffer
+      (unless my/agent-shell--inline-queue-subscription
+        (setq my/agent-shell--inline-queue-subscription
+              (agent-shell-subscribe-to
+               :shell-buffer shell-buffer
+               :on-event
+               (lambda (event)
+                 (when (memq (map-elt event :event)
+                             '(turn-complete error clean-up))
+                   ;; Completion events fire before every callback has
+                   ;; returned.  Accept only after Shell Maker is idle.
+                   (run-at-time
+                    0 nil
+                    (lambda ()
+                      (my/agent-shell--accept-inline-queue-if-ready
+                       shell-buffer))))))))))
+
+  (defun my/agent-shell--around-process-pending-request
+      (original &rest arguments)
+    "Let Agent Shell process native pending requests around inline input."
+    (if (not (and (derived-mode-p 'agent-shell-mode)
+                  (my/agent-shell--inline-queue-active-p)))
+        (apply original arguments)
+      (let* ((text (my/agent-shell--inline-queue-text))
+             (queued my/agent-shell--inline-queue-queued-p)
+             (inside (and (>= (point) my/agent-shell--inline-queue-content-start)
+                          (<= (point) my/agent-shell--inline-queue-content-end)))
+             (offset (and inside
+                          (- (point)
+                             my/agent-shell--inline-queue-content-start))))
+        (my/agent-shell--delete-inline-queue t)
+        (unwind-protect
+            (apply original arguments)
+          (when (derived-mode-p 'agent-shell-mode)
+            ;; Output advice can create a temporary empty region during the
+            ;; native submission.  Replace it with the preserved user draft.
+            (when (my/agent-shell--inline-queue-active-p)
+              (my/agent-shell--delete-inline-queue t))
+            (setq my/agent-shell--inline-queue-queued-p queued)
+            (my/agent-shell--insert-inline-queue-block text offset))))))
+
+  (defun my/agent-shell--around-fragment-update (original &rest arguments)
+    "Keep the inline follow-up and its cursors stable across a fragment update.
+
+Agent Shell restores point from a numeric position after updating a fragment.
+When streamed output grows above our inline composer, that position becomes
+stale and lands in the response.  Capture offsets inside the composer before
+the update, then restore those offsets after relocating the composer."
+    (let* ((state (plist-get arguments :state))
+           (shell-buffer (and state (map-elt state :buffer)))
+           (point-offset
+            (and (buffer-live-p shell-buffer)
+                 (with-current-buffer shell-buffer
+                   (when (and (my/agent-shell--inline-queue-active-p)
+                              (>= (point)
+                                  my/agent-shell--inline-queue-content-start)
+                              (<= (point)
+                                  my/agent-shell--inline-queue-content-end))
+                     (- (point)
+                        my/agent-shell--inline-queue-content-start)))))
+           (window-offsets
+            (and (buffer-live-p shell-buffer)
+                 (with-current-buffer shell-buffer
+                   (when (my/agent-shell--inline-queue-active-p)
+                     (delq
+                      nil
+                      (mapcar
+                       (lambda (window)
+                         (let ((position (window-point window)))
+                           (when (and
+                                  (>= position
+                                      my/agent-shell--inline-queue-content-start)
+                                  (<= position
+                                      my/agent-shell--inline-queue-content-end))
+                             (list
+                              :window window
+                              :offset
+                              (- position
+                                 my/agent-shell--inline-queue-content-start)
+                              ;; Point offsets keep the cursor in the draft,
+                              ;; but they do not keep it on the same display
+                              ;; row.  Upstream restores `window-start' while
+                              ;; streaming because our protected footer means
+                              ;; point is not literally at `point-max'.  Once
+                              ;; enough output arrives, redisplay recenters the
+                              ;; draft.  Remember its row only while it is
+                              ;; visible so deliberate scrollback still wins.
+                              :screen-row
+                              (and (pos-visible-in-window-p
+                                    position window)
+                                   (count-screen-lines
+                                    (window-start window) position
+                                    nil window))))))
+                       (get-buffer-window-list shell-buffer nil t))))))))
+      (prog1 (apply original arguments)
+        (when (buffer-live-p shell-buffer)
+          (with-current-buffer shell-buffer
+            (my/agent-shell--relocate-inline-queue)
+            (when (my/agent-shell--inline-queue-active-p)
+              (let* ((start (marker-position
+                             my/agent-shell--inline-queue-content-start))
+                     (end (marker-position
+                           my/agent-shell--inline-queue-content-end))
+                     (restore-position
+                      (lambda (offset)
+                        (+ start (min offset (- end start))))))
+                (when point-offset
+                  (goto-char (funcall restore-position point-offset)))
+                (dolist (entry window-offsets)
+                  (let ((window (plist-get entry :window)))
+                    (when (and (window-live-p window)
+                               (eq (window-buffer window) shell-buffer))
+                      (let ((position
+                             (funcall restore-position
+                                      (plist-get entry :offset))))
+                        (set-window-point window position)
+                        (when-let ((row (plist-get entry :screen-row)))
+                          ;; This runs from asynchronous process callbacks.
+                          ;; Never select the window here: doing so outside the
+                          ;; command loop can leave Evil with a nil state.
+                          (let ((start
+                                 (save-excursion
+                                   (goto-char position)
+                                   (vertical-motion (- row) window)
+                                   (point))))
+                            (set-window-start window start t))))))))))))))
+
+  (defun my/agent-shell--after-shell-output (process _string)
+    "Move an inline follow-up after Shell Maker appends raw output."
+    (when-let ((shell-buffer (process-buffer process)))
+      (when (buffer-live-p shell-buffer)
+        (with-current-buffer shell-buffer
+          (when (derived-mode-p 'agent-shell-mode)
+            (my/agent-shell--relocate-inline-queue)
+            (my/agent-shell--ensure-editable-input-boundary))))))
+
+  (defun my/agent-shell--ensure-editable-input-boundary ()
+    "Prevent the protected transcript from making the live prompt sticky.
+
+Agent Shell sometimes represents its fresh prompt as a zero-width boundary.
+The preceding response character is read-only; unless that property is made
+rear-nonsticky, Emacs also rejects insertion immediately after it."
+    (when (and (derived-mode-p 'agent-shell-mode)
+               (> (point-max) (point-min)))
+      (let* ((position (1- (point-max)))
+             (existing (get-text-property position 'rear-nonsticky))
+             (rear-nonsticky
+              (delete-dups
+               (append (if (listp existing) existing (and existing (list existing)))
+                       '(read-only field front-sticky
+                         inhibit-line-move-field-capture font-lock-face)))))
+        (with-silent-modifications
+          (put-text-property position (point-max)
+                             'rear-nonsticky rear-nonsticky)))))
+
+  (defun my/agent-shell--focus-editable-input ()
+    "Keep Evil insert state inside the embedded Agent Shell input region."
+    (when (derived-mode-p 'agent-shell-mode)
+      (if (my/agent-shell--pending-index-at-point)
+          (my/agent-shell-edit-pending-request-at-point)
+        (my/agent-shell--ensure-inline-input t t))))
+
+  (defun my/agent-shell--keep-normal-cursor-in-inline-input ()
+    "Keep an Insert-to-Normal transition inside the inline prompt.
+
+Evil moves point back one character when Insert state exits.  At the start of
+an empty prompt that crosses into the protected header, whose intangible text
+then sends point much farther back into the transcript.  Restore the nearest
+editable prompt boundary only for a transition directly from Insert state;
+subsequent Normal-state motion remains unrestricted."
+    (when (and (derived-mode-p 'agent-shell-mode)
+               (eq evil-previous-state 'insert)
+               (my/agent-shell--inline-queue-active-p))
+      (let ((start (marker-position
+                    my/agent-shell--inline-queue-content-start))
+            (end (marker-position
+                  my/agent-shell--inline-queue-content-end)))
+        (unless (<= start (point) end)
+          (goto-char (if (< (point) start) start end))))))
+
+  (defun my/agent-shell--keep-cursor-out-of-inline-footer (window)
+    "Keep WINDOW's cursor on the editable side of inline prompt padding."
+    (when (window-live-p window)
+      (with-current-buffer (window-buffer window)
+        (when (and (derived-mode-p 'agent-shell-mode)
+                   (my/agent-shell--inline-queue-active-p))
+          (let ((position (window-point window)))
+            ;; `cursor-intangible-mode' skips ordinary protected spans, but at
+            ;; end-of-buffer it has no later tangible position to choose.  The
+            ;; inline footer is always at that edge, so explicitly keep point
+            ;; at the editable boundary instead of below the painted prompt.
+            (when (and (> position my/agent-shell--inline-queue-content-end)
+                       (<= position my/agent-shell--inline-queue-end))
+              (set-window-point
+               window my/agent-shell--inline-queue-content-end)))))))
+
+  (defun my/agent-shell--enable-inline-queue-editing ()
+    "Route Evil insert state into Agent Shell's embedded input region."
+    ;; The hint and padding are display chrome, not transcript or input.
+    ;; Make normal/Evil/mouse motion jump across them instead of allowing
+    ;; point to become stranded in read-only text.
+    (cursor-intangible-mode 1)
+    (add-hook 'pre-redisplay-functions
+              #'my/agent-shell--keep-cursor-out-of-inline-footer t t)
+    (add-hook 'evil-insert-state-entry-hook
+              #'my/agent-shell--focus-editable-input nil t)
+    (add-hook 'evil-normal-state-entry-hook
+              #'my/agent-shell--keep-normal-cursor-in-inline-input nil t)
+    (add-hook 'after-change-functions
+              #'my/agent-shell--repair-input-sentinel nil t)
+    (my/agent-shell--refresh-historical-user-prompts))
+
+  (add-hook 'agent-shell-mode-hook
+            #'my/agent-shell--enable-inline-queue-editing)
+
+  (advice-remove #'agent-shell--update-fragment
+                 #'my/agent-shell--after-fragment-update)
+  (advice-remove #'agent-shell--update-fragment
+                 #'my/agent-shell--around-fragment-update)
+  (advice-add #'agent-shell--update-fragment :around
+              #'my/agent-shell--around-fragment-update)
+  (advice-remove #'shell-maker--output-filter
+                 #'my/agent-shell--after-shell-output)
+  (advice-add #'shell-maker--output-filter :after
+              #'my/agent-shell--after-shell-output)
+  (advice-remove #'shell-maker-insert-end-of-prompt-marker
+                 #'my/agent-shell--after-end-of-prompt-marker)
+  (advice-add #'shell-maker-insert-end-of-prompt-marker :after
+              #'my/agent-shell--after-end-of-prompt-marker)
+
+  ;; A Zed-style composer lives in its own small window below the transcript.
+  ;; Shell Maker remains responsible for the read-only conversation buffer;
+  ;; user editing never touches its Comint prompt boundary.
+  (defvar-local my/agent-shell--composer-buffer nil)
+  (defvar-local my/agent-shell-composer-shell-buffer nil)
+  (defvar-local my/agent-shell-composer-queued-p nil)
+  (defvar-local my/agent-shell-composer-subscription nil)
+  (defvar my/agent-shell--syncing-composer-windows nil)
+
+  (defvar my/agent-shell-composer-mode-map
+    (let ((map (make-sparse-keymap)))
+      map)
+    "Keymap for `my/agent-shell-composer-mode'.")
+
+  (define-derived-mode my/agent-shell-composer-mode text-mode "Agent Input"
+    "Major mode for the dedicated Agent Shell prompt composer."
+    (visual-line-mode 1)
+    (setq-local mode-line-format nil
+                cursor-type 'bar
+                header-line-format
+                '(:eval
+                  (propertize
+                   (if my/agent-shell-composer-queued-p
+                       " ⏳ Queued — edit freely · C-c unqueues · C-RET force-sends "
+                     " ✎ Prompt — RET sends · ⇧RET adds a line · C-c interrupts · C-RET force-sends ")
+                   'face 'mode-line-emphasis)))
+    (when (fboundp 'display-line-numbers-mode)
+      (display-line-numbers-mode -1))
+    (when-let ((background (face-background 'highlight nil t)))
+      (face-remap-add-relative 'default `(:background ,background))))
+
+  (defun my/agent-shell--composer-live-p (&optional shell-buffer)
+    "Return non-nil when SHELL-BUFFER has an associated live composer."
+    (with-current-buffer (or shell-buffer (current-buffer))
+      (and (buffer-live-p my/agent-shell--composer-buffer)
+           my/agent-shell--composer-buffer)))
+
+  (defun my/agent-shell--composer-buffer (&optional shell-buffer create)
+    "Return SHELL-BUFFER's composer, creating it when CREATE is non-nil."
+    (let ((shell-buffer (or shell-buffer (current-buffer))))
+      (with-current-buffer shell-buffer
+        (or (my/agent-shell--composer-live-p)
+            (when create
+              (let ((composer
+                     (generate-new-buffer
+                      (format "%s [input]" (buffer-name shell-buffer)))))
+                (setq my/agent-shell--composer-buffer composer)
+                (with-current-buffer composer
+                  (my/agent-shell-composer-mode)
+                  (setq my/agent-shell-composer-shell-buffer shell-buffer)
+                  (add-hook
+                   'kill-buffer-hook
+                   (lambda ()
+                     (when (fboundp 'my/agent-shell--disarm-composer)
+                       (ignore-errors
+                         (my/agent-shell--disarm-composer composer)))
+                     (when (buffer-live-p shell-buffer)
+                       (with-current-buffer shell-buffer
+                         (setq my/agent-shell--composer-buffer nil))))
+                   nil t))
+                (add-hook
+                 'kill-buffer-hook
+                 (lambda ()
+                   (when (buffer-live-p composer)
+                     (kill-buffer composer)))
+                 nil t)
+                composer))))))
+
+  (defun my/agent-shell--composer-window (&optional shell-buffer)
+    "Return the live composer window associated with SHELL-BUFFER."
+    (when-let ((composer
+                (my/agent-shell--composer-buffer
+                 (or shell-buffer (current-buffer)))))
+      (get-buffer-window composer t)))
+
+  (defun my/agent-shell--composer-text (&optional composer-buffer)
+    "Return COMPOSER-BUFFER's prompt without text properties."
+    (with-current-buffer (or composer-buffer (current-buffer))
+      (buffer-substring-no-properties (point-min) (point-max))))
+
+  (defun my/agent-shell--composer-has-text-p (&optional composer-buffer)
+    "Return non-nil when COMPOSER-BUFFER contains non-whitespace text."
+    (not (string-empty-p
+          (string-trim
+           (my/agent-shell--composer-text composer-buffer)))))
+
+  (defun my/agent-shell--composer-clear (&optional composer-buffer)
+    "Erase COMPOSER-BUFFER and reset its queued state."
+    (with-current-buffer (or composer-buffer (current-buffer))
+      (let ((inhibit-read-only t))
+        (erase-buffer))
+      (setq my/agent-shell-composer-queued-p nil)
+      (force-mode-line-update t)))
+
+  (defun my/agent-shell--migrate-old-prompt (shell-buffer composer-buffer)
+    "Move any unsent shell or legacy inline prompt into COMPOSER-BUFFER."
+    (let (text queued)
+      (with-current-buffer shell-buffer
+        (cond
+         ((my/agent-shell--inline-queue-active-p)
+          (setq text (my/agent-shell--inline-queue-text)
+                queued my/agent-shell--inline-queue-queued-p)
+          (my/agent-shell--delete-inline-queue))
+         ((my/agent-shell--native-input-text)
+          (setq text (my/agent-shell--take-shell-input)))))
+      (when (and text (not (string-empty-p text)))
+        (with-current-buffer composer-buffer
+          (unless (= (point-min) (point-max))
+            (goto-char (point-max))
+            (insert "\n"))
+          (insert text)
+          (setq my/agent-shell-composer-queued-p
+                (or my/agent-shell-composer-queued-p queued))
+          (goto-char (point-max)))
+        (when queued
+          (if (with-current-buffer shell-buffer (shell-maker-busy))
+            (my/agent-shell--arm-composer composer-buffer)
+            (my/agent-shell--accept-composer-if-ready composer-buffer))))))
+
+  (defun my/agent-shell--hide-native-prompt (shell-buffer)
+    "Hide SHELL-BUFFER's terminal prompt; input belongs in its composer."
+    (with-current-buffer shell-buffer
+      (add-to-invisibility-spec 'my/agent-shell-native-prompt)
+      (when-let* ((prompt comint-last-prompt)
+                  (start (marker-position (car prompt)))
+                  (end (marker-position (cdr prompt)))
+                  ((< start end)))
+        (with-silent-modifications
+          (put-text-property start end 'invisible
+                             'my/agent-shell-native-prompt)))))
+
+  (defun my/agent-shell--show-composer (shell-buffer &optional select)
+    "Show SHELL-BUFFER's composer directly below it.
+
+When SELECT is non-nil, focus the composer and enter Evil insert state."
+    (when (buffer-live-p shell-buffer)
+      (when-let ((shell-window (get-buffer-window shell-buffer t)))
+        (let* ((composer (my/agent-shell--composer-buffer shell-buffer t))
+               (composer-window (get-buffer-window composer t)))
+          (my/agent-shell--migrate-old-prompt shell-buffer composer)
+          (my/agent-shell--hide-native-prompt shell-buffer)
+          (unless (window-live-p composer-window)
+            (setq composer-window
+                  (condition-case nil
+                      (split-window shell-window -6 'below)
+                    (error
+                     (display-buffer-in-side-window
+                      composer
+                      '((side . bottom) (window-height . 6))))))
+            (set-window-buffer composer-window composer)
+            (set-window-dedicated-p composer-window t)
+            (set-window-parameter composer-window
+                                  'my/agent-shell-composer-shell
+                                  shell-buffer)
+            (set-window-margins composer-window 1 1))
+          (when select
+            (select-window composer-window)
+            (when (fboundp 'evil-insert-state)
+              (evil-insert-state)))
+          composer-window))))
+
+  (defun my/agent-shell--focus-composer (&optional shell-buffer)
+    "Focus the dedicated composer for SHELL-BUFFER."
+    (let ((shell-buffer
+           (or shell-buffer
+               (and (derived-mode-p 'my/agent-shell-composer-mode)
+                    my/agent-shell-composer-shell-buffer)
+               (agent-shell--shell-buffer :no-create t))))
+      (or (my/agent-shell--show-composer shell-buffer t)
+          (user-error "Agent Shell is not visible"))))
+
+  (defun my/agent-shell--disarm-composer (composer-buffer)
+    "Stop waiting to accept COMPOSER-BUFFER's queued prompt."
+    (when (buffer-live-p composer-buffer)
+      (with-current-buffer composer-buffer
+        (when my/agent-shell-composer-subscription
+          (when (buffer-live-p my/agent-shell-composer-shell-buffer)
+            (with-current-buffer my/agent-shell-composer-shell-buffer
+              (agent-shell-unsubscribe
+               :subscription
+               (buffer-local-value
+                'my/agent-shell-composer-subscription composer-buffer))))
+          (setq my/agent-shell-composer-subscription nil)))))
+
+  (defun my/agent-shell--accept-composer-if-ready (composer-buffer)
+    "Submit COMPOSER-BUFFER's queued prompt when its shell becomes ready."
+    (when (buffer-live-p composer-buffer)
+      (with-current-buffer composer-buffer
+        (let ((shell-buffer my/agent-shell-composer-shell-buffer))
+          (when (and my/agent-shell-composer-queued-p
+                     (buffer-live-p shell-buffer)
+                     (not (with-current-buffer shell-buffer
+                            (shell-maker-busy))))
+            (let ((prompt (my/agent-shell--composer-text composer-buffer)))
+              (if (string-empty-p (string-trim prompt))
+                  (progn
+                    (my/agent-shell--disarm-composer composer-buffer)
+                    (setq my/agent-shell-composer-queued-p nil)
+                    (force-mode-line-update t))
+                (with-current-buffer shell-buffer
+                  (agent-shell-queue-request prompt))
+                (my/agent-shell--disarm-composer composer-buffer)
+                (my/agent-shell--composer-clear composer-buffer))))))))
+
+  (defun my/agent-shell--arm-composer (composer-buffer)
+    "Arrange for COMPOSER-BUFFER's queued prompt to run when ready."
+    (with-current-buffer composer-buffer
+      (unless my/agent-shell-composer-subscription
+        (let ((shell-buffer my/agent-shell-composer-shell-buffer))
+          (setq my/agent-shell-composer-subscription
+                (agent-shell-subscribe-to
+                 :shell-buffer shell-buffer
+                 :on-event
+                 (lambda (event)
+                   (when (memq (map-elt event :event)
+                               '(turn-complete error))
+                     (run-at-time
+                      0 nil
+                      (lambda ()
+                        (my/agent-shell--accept-composer-if-ready
+                         composer-buffer)))))))))))
+
+  (defun my/agent-shell-composer-submit ()
+    "Send or queue the current dedicated composer prompt."
+    (interactive)
+    (unless (derived-mode-p 'my/agent-shell-composer-mode)
+      (user-error "Not in an Agent Shell composer"))
+    (unless (my/agent-shell--composer-has-text-p)
+      (user-error "Nothing to send"))
+    (let ((shell-buffer my/agent-shell-composer-shell-buffer)
+          (composer-buffer (current-buffer)))
+      (if (with-current-buffer shell-buffer (shell-maker-busy))
+          (progn
+            (setq my/agent-shell-composer-queued-p t)
+            (my/agent-shell--arm-composer composer-buffer)
+            (force-mode-line-update t)
+            (message "Follow-up queued — edit it here or C-c to unqueue"))
+        (let ((prompt (my/agent-shell--composer-text)))
+          (with-current-buffer shell-buffer
+            (agent-shell-queue-request prompt))
+          (my/agent-shell--disarm-composer composer-buffer)
+          (my/agent-shell--composer-clear composer-buffer)))))
+
+  (defun my/agent-shell-composer-unqueue ()
+    "Cancel queueing while preserving the editable composer text."
+    (interactive)
+    (unless (derived-mode-p 'my/agent-shell-composer-mode)
+      (user-error "Not in an Agent Shell composer"))
+    (if my/agent-shell-composer-queued-p
+        (progn
+          (my/agent-shell--disarm-composer (current-buffer))
+          (setq my/agent-shell-composer-queued-p nil)
+          (force-mode-line-update t)
+          (message "Queued follow-up canceled; draft remains editable"))
+      (keyboard-quit)))
+
+  (defun my/agent-shell-composer-force-submit ()
+    "Interrupt the active turn and submit the composer prompt next."
+    (interactive)
+    (unless (derived-mode-p 'my/agent-shell-composer-mode)
+      (user-error "Not in an Agent Shell composer"))
+    (unless (my/agent-shell--composer-has-text-p)
+      (user-error "Nothing to force-submit"))
+    (let ((shell-buffer my/agent-shell-composer-shell-buffer)
+          (composer-buffer (current-buffer))
+          (prompt (my/agent-shell--composer-text)))
+      (my/agent-shell--force-prompt shell-buffer prompt)
+      (my/agent-shell--disarm-composer composer-buffer)
+      (my/agent-shell--composer-clear composer-buffer)))
+
+  (defun my/agent-shell--sync-composer-windows ()
+    "Keep a composer below the visible Agent Shell and nowhere else."
+    (unless my/agent-shell--syncing-composer-windows
+      (let ((my/agent-shell--syncing-composer-windows t))
+        (dolist (window (window-list nil nil))
+          (when-let ((shell-buffer
+                      (window-parameter window
+                                        'my/agent-shell-composer-shell)))
+            (unless (get-buffer-window shell-buffer t)
+              (set-window-dedicated-p window nil)
+              (set-window-parameter window
+                                    'my/agent-shell-composer-shell nil)
+              (if (window-parent window)
+                  (delete-window window)
+                (set-window-buffer
+                 window
+                 (or (and (buffer-live-p
+                           my/agent-shell-chat-return-buffer)
+                          my/agent-shell-chat-return-buffer)
+                     (other-buffer (window-buffer window) t)))))))
+        (cond
+         ((derived-mode-p 'agent-shell-mode)
+          (my/agent-shell--show-composer (current-buffer)))
+         ((derived-mode-p 'my/agent-shell-composer-mode)
+          (when (buffer-live-p my/agent-shell-composer-shell-buffer)
+            (my/agent-shell--show-composer
+             my/agent-shell-composer-shell-buffer)))))))
+
+  ;; The embedded input region supersedes the separate composer window.
+  (remove-hook 'post-command-hook #'my/agent-shell--sync-composer-windows)
+  (advice-remove #'shell-maker--output-filter
+                 #'my/agent-shell--after-shell-output)
+  (defun my/agent-shell--after-shell-output (process _string)
+    "Keep the embedded input after streamed Agent Shell output."
+    (when-let ((shell-buffer (process-buffer process)))
+      (when (buffer-live-p shell-buffer)
+        (with-current-buffer shell-buffer
+          (when (derived-mode-p 'agent-shell-mode)
+            (if (my/agent-shell--inline-queue-active-p)
+                (my/agent-shell--relocate-inline-queue)
+              (my/agent-shell--ensure-inline-input))
+            (my/agent-shell--hide-native-prompt shell-buffer))))))
+  (advice-add #'shell-maker--output-filter :after
+              #'my/agent-shell--after-shell-output)
+  (advice-remove #'agent-shell--update-fragment
+                 #'my/agent-shell--after-fragment-update)
+  (advice-remove #'agent-shell--update-fragment
+                 #'my/agent-shell--around-fragment-update)
+  (advice-add #'agent-shell--update-fragment :around
+              #'my/agent-shell--around-fragment-update)
+  (advice-remove #'agent-shell--process-pending-request
+                 #'my/agent-shell--around-process-pending-request)
+  (advice-add #'agent-shell--process-pending-request :around
+              #'my/agent-shell--around-process-pending-request)
+
+  (defun my/agent-shell--sync-inline-input ()
+    "Keep a visible Agent Shell's embedded input available and focused.
+
+While Evil is in Insert state, point must remain inside the editable input.
+Commands such as backspace at an empty prompt can otherwise leave point in
+the protected prompt header without changing Evil state."
+    (when (derived-mode-p 'agent-shell-mode)
+      (my/agent-shell--ensure-inline-input nil t)
+      (when (and (bound-and-true-p evil-local-mode)
+                 (eq evil-state 'insert)
+                 (my/agent-shell--inline-queue-active-p))
+        (let ((start (marker-position
+                      my/agent-shell--inline-queue-content-start))
+              (end (marker-position
+                    my/agent-shell--inline-queue-content-end)))
+          (unless (<= start (point) end)
+            (goto-char (if (< (point) start) start end)))))))
+
+  (add-hook 'post-command-hook #'my/agent-shell--sync-inline-input)
+
+  (defun my/agent-shell--retire-composer-window
+      (shell-buffer &optional focus)
+    "Move SHELL-BUFFER's separate composer into its embedded input region."
+    (when (buffer-live-p shell-buffer)
+      (let* ((composer
+              (buffer-local-value 'my/agent-shell--composer-buffer
+                                  shell-buffer))
+             (text (and (buffer-live-p composer)
+                        (my/agent-shell--composer-text composer)))
+             (queued (and (buffer-live-p composer)
+                          (buffer-local-value
+                           'my/agent-shell-composer-queued-p composer)))
+             (composer-window (and (buffer-live-p composer)
+                                   (get-buffer-window composer t)))
+             (shell-window (get-buffer-window shell-buffer t)))
+        (when (buffer-live-p composer)
+          (my/agent-shell--disarm-composer composer)
+          (when (window-live-p composer-window)
+            (set-window-dedicated-p composer-window nil)
+            (set-window-parameter composer-window
+                                  'my/agent-shell-composer-shell nil)
+            (cond
+             ((and (window-live-p shell-window)
+                   (window-parent composer-window))
+              (select-window shell-window)
+              (delete-window composer-window))
+             ((not (window-live-p shell-window))
+              (set-window-buffer composer-window shell-buffer)
+              (setq shell-window composer-window))))
+          (kill-buffer composer))
+        (with-current-buffer shell-buffer
+          (my/agent-shell--ensure-inline-input nil t)
+          (when (and text (not (string-empty-p text)))
+            (goto-char my/agent-shell--inline-queue-content-end)
+            (insert text))
+          (when queued
+            (setq my/agent-shell--inline-queue-queued-p t)
+            (my/agent-shell--arm-inline-queue shell-buffer)
+            (my/agent-shell--relocate-inline-queue t))
+          (when focus
+            (when-let ((window (get-buffer-window shell-buffer t)))
+              (select-window window))
+            (my/agent-shell--ensure-inline-input t t)
+            (when (fboundp 'evil-insert-state)
+              (evil-insert-state)))))))
+
+  (defun my/agent-shell-self-insert-or-compose (count)
+    "Insert COUNT characters in Agent Shell's embedded input region."
+    (interactive "p")
+    (if (derived-mode-p 'agent-shell-mode)
+        (progn
+          (my/agent-shell--ensure-inline-input t t)
+          (my/agent-shell--inline-queue-insert
+           (make-string count last-command-event)))
+      (self-insert-command count)))
+
+  (defun my/agent-shell-yank-or-compose (&optional argument)
+    "Paste clipboard text into Agent Shell's embedded input region."
+    (interactive "*P")
+    (when (derived-mode-p 'agent-shell-mode)
+      (my/agent-shell--ensure-inline-input t t))
+    (yank argument))
 
   (defun my/agent-shell--evil-paste-as-reference
       (original count &optional register yank-handler)
@@ -2542,23 +4589,26 @@ is included in the measurement."
                          (evil-get-register register t)
                        (current-kill 0 t))
                    (error nil))))
-      (if (and context
-               (my/agent-shell--prompt-buffer-p)
-               (stringp text)
-               (equal (substring-no-properties text)
-                      (plist-get context :text)))
-          (let* ((reference
-                  (format "%s:%d-%d"
-                          (plist-get context :path)
-                          (plist-get context :line-start)
-                          (plist-get context :line-end)))
-                 ;; Give Evil a temporary unnamed register.  The real kill
-                 ;; ring and named registers remain unchanged.
-                 (kill-ring (cons reference kill-ring))
-                 (kill-ring-yank-pointer kill-ring)
-                 (interprogram-paste-function nil))
-            (funcall original count nil nil))
-        (funcall original count register yank-handler))))
+      (let ((reference
+             (when (and context
+                        (my/agent-shell--prompt-buffer-p)
+                        (stringp text)
+                        (equal (substring-no-properties text)
+                               (plist-get context :text)))
+               (format "%s:%d-%d"
+                       (plist-get context :path)
+                       (plist-get context :line-start)
+                       (plist-get context :line-end)))))
+        (when (derived-mode-p 'agent-shell-mode)
+          (my/agent-shell--ensure-inline-input t t))
+        (if (and reference (my/agent-shell--prompt-buffer-p))
+            (let* (;; Give Evil a temporary unnamed register.  The real
+                   ;; kill ring and named registers remain unchanged.
+                   (kill-ring (cons reference kill-ring))
+                   (kill-ring-yank-pointer kill-ring)
+                   (interprogram-paste-function nil))
+              (funcall original count nil nil))
+          (funcall original count register yank-handler)))))
 
   (after! evil
     ;; Avoid stacking the advice when reloading Doom's config.
@@ -2580,9 +4630,26 @@ is included in the measurement."
   ;; Evil operators.  Resolve the latest pending permission from session state
   ;; instead, making these commands reliable from any Evil state and anywhere
   ;; in the shell or viewport.
+  (defun my/agent-shell--context-shell-buffer (&optional no-error)
+    "Return the Agent Shell buffer associated with the current editing view."
+    (let ((shell-buffer
+           (cond
+            ((derived-mode-p 'my/agent-shell-composer-mode)
+             my/agent-shell-composer-shell-buffer)
+            ((derived-mode-p 'agent-shell-mode)
+             (current-buffer))
+            (t
+             (condition-case nil
+                 (agent-shell--shell-buffer :no-error t :no-create t)
+               (error nil))))))
+      (if (buffer-live-p shell-buffer)
+          shell-buffer
+        (unless no-error
+          (user-error "No associated Agent Shell buffer")))))
+
   (defun my/agent-shell--pending-permission ()
     "Return the latest pending Agent Shell permission and its session data."
-    (let* ((shell-buffer (agent-shell--shell-buffer :no-create t))
+    (let* ((shell-buffer (my/agent-shell--context-shell-buffer))
            (state (with-current-buffer shell-buffer
                     (agent-shell--state)))
            pending)
@@ -2669,27 +4736,533 @@ is included in the measurement."
           (call-interactively command)
         (call-interactively fallback))))
 
-  (defun my/agent-shell-permission-return ()
-    "Allow once when permission is pending; otherwise preserve RET."
+  (defun my/agent-shell--viewport-draft ()
+    "Return the current viewport draft, or nil when it is empty."
+    (when (derived-mode-p 'agent-shell-viewport-edit-mode)
+      (let ((draft (string-trim (buffer-substring (point-min) (point-max)))))
+        (unless (string-empty-p draft)
+          draft))))
+
+  (defun my/agent-shell-newline ()
+    "Insert a newline in the editable Agent Shell input."
     (interactive)
-    (if (my/agent-shell--permission-pending-p)
+    (cond
+     ((derived-mode-p 'my/agent-shell-composer-mode)
+      (newline))
+     ((derived-mode-p 'agent-shell-mode)
+      (my/agent-shell--ensure-inline-input t t)
+      (newline))
+     (t
+      (newline))))
+
+  (defun my/agent-shell-open-below (count)
+    "Open a new prompt line below point and enter Evil Insert state.
+
+Keep Evil's ordinary `o' behavior, including COUNT and repeat bookkeeping,
+but constrain its end-of-line insertion to the editable Agent Shell prompt.
+The protected prompt footer otherwise makes `evil-open-below' target the UI
+boundary instead of inserting the same real newline as Shift-Return."
+    (interactive "p")
+    (if (not (derived-mode-p 'agent-shell-mode))
+        (evil-open-below count)
+      (unless (my/agent-shell--ensure-inline-input t t)
+        (user-error "Agent session is still starting"))
+      (let ((input-end (marker-position
+                        my/agent-shell--inline-queue-content-end)))
+        ;; `o' opens below the current prompt line.  On the final line, clamp
+        ;; to the marker before the invisible sentinel and read-only footer.
+        (goto-char (min (line-end-position) input-end))
+        (let ((evil-auto-indent nil))
+          (cl-letf (((symbol-function 'evil-insert-newline-below)
+                     (lambda ()
+                       (my/agent-shell--inline-queue-insert "\n"))))
+            (evil-open-below count))))))
+
+  (defun my/agent-shell-delete-to-line-start ()
+    "Delete backward within the current editable Agent Shell line.
+
+Unlike `comint-kill-input', never delete earlier prompt lines."
+    (interactive)
+    (when (derived-mode-p 'agent-shell-mode)
+      (my/agent-shell--ensure-inline-input t t))
+    (let ((begin (max (line-beginning-position)
+                      (if (and (derived-mode-p 'agent-shell-mode)
+                               (my/agent-shell--inline-queue-active-p))
+                          (marker-position
+                           my/agent-shell--inline-queue-content-start)
+                        (point-min)))))
+      (when (< begin (point))
+        (delete-region begin (point)))))
+
+  (defun my/agent-shell-submit-or-queue ()
+    "Submit or queue the current prompt using FIFO Return behavior.
+
+Non-empty input appends to the queue while busy.  With empty input and a
+non-empty queue, force-submit its first request."
+    (interactive)
+    (cond
+     ((derived-mode-p 'my/agent-shell-composer-mode)
+      (my/agent-shell-composer-submit))
+     ((derived-mode-p 'agent-shell-viewport-edit-mode)
+      (call-interactively #'agent-shell-viewport-compose-send))
+     ((derived-mode-p 'agent-shell-mode)
+      (my/agent-shell--queue-inline-prompt))
+     (t
+      (my/agent-shell--call-major-binding "RET" #'newline))))
+
+  (defun my/agent-shell--prepend-pending-request (shell-buffer prompt)
+    "Put PROMPT first in SHELL-BUFFER's pending request queue."
+    (with-current-buffer shell-buffer
+      (let ((state (agent-shell--state)))
+        ;; Existing conversations created before Agent Shell gained queueing
+        ;; may not have this state slot yet.
+        (unless (assq :pending-requests state)
+          (nconc state (list (cons :pending-requests nil))))
+        (map-put! state :pending-requests
+                  (cons prompt (map-elt state :pending-requests))))))
+
+  (defun my/agent-shell--resume-pending-if-ready (shell-buffer)
+    "Start SHELL-BUFFER's first pending request once it is no longer busy."
+    (when (buffer-live-p shell-buffer)
+      (with-current-buffer shell-buffer
+        (when (and (not (shell-maker-busy))
+                   (map-elt (agent-shell--state) :pending-requests))
+          (agent-shell--process-pending-request)))))
+
+  (defun my/agent-shell--active-prompt-request-p (state)
+    "Return non-nil when STATE has an in-flight session prompt."
+    (seq-some
+     (lambda (request)
+       (equal (or (map-elt request :method)
+                  (map-elt request 'method))
+              "session/prompt"))
+     (map-elt state :active-requests)))
+
+  (defun my/agent-shell--pending-permission-p (state)
+    "Return non-nil when STATE is legitimately waiting for user approval."
+    (let (pending)
+      (map-do
+       (lambda (_tool-call-id tool-call)
+         (when (map-elt tool-call :permission-request-id)
+           (setq pending t)))
+       (map-elt state :tool-calls))
+      pending))
+
+  (defun my/agent-shell--seconds-since-activity (state)
+    "Return seconds since STATE or its buffer last saw ACP activity."
+    (let ((times (delq nil
+                       (list my/agent-shell--last-acp-activity-time
+                             (map-elt state :last-activity-time)))))
+      (when times
+        (- (float-time)
+           (apply #'max (mapcar #'float-time times))))))
+
+  (defun my/agent-shell--stalled-p (&optional force)
+    "Return non-nil when the current Agent Shell needs recovery.
+
+FORCE ignores the inactivity timeout, but retains all state and permission
+guards.  It is used after a protocol callback itself failed."
+    (condition-case nil
+        (let* ((state (agent-shell--state))
+               (client (map-elt state :client))
+               (process (and client (map-elt client :process)))
+               (age (my/agent-shell--seconds-since-activity state)))
+          (and (derived-mode-p 'agent-shell-mode)
+               (not my/agent-shell--auto-recovery-in-progress)
+               (eq (agent-shell-status) 'busy)
+               (shell-maker-busy)
+               (map-nested-elt state '(:session :id))
+               (not (my/agent-shell--pending-permission-p state))
+               (or (my/agent-shell--active-prompt-request-p state)
+                   force)
+               (or force
+                   (not (and process (process-live-p process)))
+                   (and age (> age my/agent-shell-stall-timeout)))))
+      (error nil)))
+
+  (defun my/agent-shell--stop-stall-watchdog ()
+    "Stop the current Agent Shell buffer's stall watchdog."
+    (when (timerp my/agent-shell--stall-watchdog-timer)
+      (cancel-timer my/agent-shell--stall-watchdog-timer))
+    (setq my/agent-shell--stall-watchdog-timer nil))
+
+  (defun my/agent-shell--schedule-recovery-retry (buffer-name)
+    "Retry BUFFER-NAME's retained recovery snapshot after a short delay."
+    (when-let ((snapshot
+                (alist-get buffer-name
+                           my/agent-shell--recovery-snapshots
+                           nil nil #'equal)))
+      (when (< (or (plist-get snapshot :recovery-attempt) 0)
+               my/agent-shell-recovery-retry-limit)
+        (run-at-time
+         my/agent-shell-recovery-retry-delay nil
+         (lambda ()
+           (when-let ((buffer (get-buffer buffer-name)))
+             (with-current-buffer buffer
+               (unless my/agent-shell--auto-recovery-in-progress
+                 (setq my/agent-shell--auto-recovery-in-progress t)
+                 (my/agent-shell--run-auto-recovery buffer)))))))))
+
+  (defun my/agent-shell--run-auto-recovery (shell-buffer)
+    "Recover stalled SHELL-BUFFER, reporting but containing failures."
+    (when (buffer-live-p shell-buffer)
+      (let ((buffer-name (buffer-name shell-buffer)))
+        (condition-case error-data
+            (my/agent-shell-recover-stalled-session shell-buffer)
+          (error
+           (when (buffer-live-p shell-buffer)
+             (with-current-buffer shell-buffer
+               (setq my/agent-shell--auto-recovery-in-progress nil)))
+           (display-warning
+            'agent-shell
+            (format "Automatic Agent Shell recovery failed: %S" error-data)
+            :error)
+           (my/agent-shell--schedule-recovery-retry buffer-name))))))
+
+  (defun my/agent-shell--stall-watchdog-tick (shell-buffer &optional force)
+    "Recover SHELL-BUFFER automatically when it is demonstrably stalled.
+
+FORCE requests an immediate guarded check after an ACP callback error."
+    (when (buffer-live-p shell-buffer)
+      (with-current-buffer shell-buffer
+        (when (my/agent-shell--stalled-p force)
+          (setq my/agent-shell--auto-recovery-in-progress t)
+          (message "Agent Shell stopped receiving ACP activity; reconnecting...")
+          (run-at-time 0 nil #'my/agent-shell--run-auto-recovery
+                       shell-buffer)))))
+
+  (defun my/agent-shell--start-stall-watchdog ()
+    "Monitor the current Agent Shell and recover silent transport stalls."
+    (my/agent-shell--stop-stall-watchdog)
+    (setq my/agent-shell--stall-watchdog-timer
+          (run-with-timer
+           my/agent-shell-stall-check-interval
+           my/agent-shell-stall-check-interval
+           #'my/agent-shell--stall-watchdog-tick
+           (current-buffer)))
+    (add-hook 'kill-buffer-hook
+              #'my/agent-shell--stop-stall-watchdog nil t))
+
+  (add-hook 'agent-shell-mode-hook #'my/agent-shell--start-stall-watchdog)
+
+  (defvar my/agent-shell--recovery-snapshots nil
+    "Local drafts and queues waiting for a stalled-session recovery.")
+
+  (defun my/agent-shell--recovery-snapshot (shell-buffer)
+    "Capture SHELL-BUFFER's local-only state before restarting it."
+    (with-current-buffer shell-buffer
+      (let* ((inline (my/agent-shell--inline-queue-active-p))
+             (native-range (and (not inline)
+                                (my/agent-shell--native-input-range)))
+             (draft (cond
+                     (inline (my/agent-shell--inline-queue-text))
+                     (native-range
+                      (buffer-substring-no-properties
+                       (car native-range) (cdr native-range)))
+                     (t "")))
+             (offset
+              (cond
+               ((and inline
+                     (>= (point) my/agent-shell--inline-queue-content-start)
+                     (<= (point) my/agent-shell--inline-queue-content-end))
+                (- (point) my/agent-shell--inline-queue-content-start))
+               ((and native-range
+                     (>= (point) (car native-range))
+                     (<= (point) (cdr native-range)))
+                (- (point) (car native-range)))
+               (t (length draft)))))
+        (list :buffer-name (buffer-name)
+              :default-directory default-directory
+              :agent-config (map-elt (agent-shell--state) :agent-config)
+              :session-id (map-nested-elt (agent-shell--state)
+                                          '(:session :id))
+              :draft draft
+              :draft-offset offset
+              :queued my/agent-shell--inline-queue-queued-p
+              :pending-requests
+              (copy-sequence (my/agent-shell--pending-requests
+                              shell-buffer))))))
+
+  (defun my/agent-shell--recovery-config (snapshot)
+    "Return SNAPSHOT's agent config, with a legacy snapshot fallback."
+    (or (plist-get snapshot :agent-config)
+        ;; Snapshots made before agent config preservation was added can still
+        ;; be recovered from the provider-specific buffer name.  New snapshots
+        ;; never need this fallback.
+        (let ((name (plist-get snapshot :buffer-name)))
+          (cond
+           ((and (stringp name) (string-prefix-p "Claude" name))
+            (require 'agent-shell-anthropic)
+            (agent-shell-anthropic-make-claude-code-config))
+           ((and (stringp name) (string-prefix-p "Codex" name))
+            (require 'agent-shell-openai)
+            (agent-shell-openai-make-codex-config))))))
+
+  (defun my/agent-shell--restore-recovery-snapshot (shell-buffer snapshot)
+    "Restore local-only SNAPSHOT state into reconnected SHELL-BUFFER."
+    (when (buffer-live-p shell-buffer)
+      (with-current-buffer shell-buffer
+        (when (my/agent-shell--inline-queue-active-p)
+          (my/agent-shell--delete-inline-queue))
+        (map-put! (agent-shell--state) :pending-requests
+                  (copy-sequence (plist-get snapshot :pending-requests)))
+        (setq my/agent-shell--inline-queue-queued-p
+              (plist-get snapshot :queued))
+        (my/agent-shell--insert-inline-queue-block
+         (plist-get snapshot :draft)
+         (plist-get snapshot :draft-offset))
+        (my/agent-shell--hide-native-prompt shell-buffer)
+        (when my/agent-shell--inline-queue-queued-p
+          (my/agent-shell--arm-inline-queue shell-buffer)))))
+
+  (defun my/agent-shell-recover-stalled-session (&optional shell-buffer)
+    "Restart and resume a stalled ACP session without losing local input.
+
+The current inline/native draft and native FIFO are snapshotted before the
+wedged transport is shut down.  Agent Shell then reconnects to the same ACP
+session.  Once initialization finishes, the draft and FIFO are restored and
+an already-accepted queued request resumes automatically.  A failed reconnect
+keeps the snapshot in memory so a retry cannot silently discard it."
+    (interactive)
+    (let* ((shell-buffer (or shell-buffer
+                             (my/agent-shell--context-shell-buffer)))
+           (buffer-name (buffer-name shell-buffer))
+           (saved (alist-get buffer-name
+                             my/agent-shell--recovery-snapshots
+                             nil nil #'equal))
+           (snapshot (or saved
+                         (my/agent-shell--recovery-snapshot shell-buffer)))
+           (config (my/agent-shell--recovery-config snapshot))
+           (directory (or (plist-get snapshot :default-directory)
+                          (buffer-local-value 'default-directory
+                                              shell-buffer)))
+           (session-id (plist-get snapshot :session-id)))
+      (unless session-id
+        (user-error "This Agent Shell has no session to resume"))
+      (unless config
+        (error "Recovery snapshot has no Agent Shell configuration"))
+      (setq snapshot (plist-put snapshot :agent-config config)
+            snapshot (plist-put snapshot :default-directory directory)
+            snapshot
+            (plist-put snapshot :recovery-attempt
+                       (1+ (or (plist-get snapshot :recovery-attempt) 0))))
+      (with-current-buffer shell-buffer
+        (setq my/agent-shell--auto-recovery-in-progress t)
+        (setq default-directory directory)
+        ;; A previous restart may have failed after replacing the old buffer.
+        ;; Rehydrate the one field upstream `agent-shell-restart' needs so the
+        ;; retained snapshot can retry from that partial buffer.
+        (when (derived-mode-p 'agent-shell-mode)
+          (map-put! (agent-shell--state) :agent-config config)))
+      (setf (alist-get buffer-name my/agent-shell--recovery-snapshots
+                       nil nil #'equal)
+            snapshot)
+      (let* ((windows (get-buffer-window-list shell-buffer nil t))
+             (new-shell-buffer
+              (if (with-current-buffer shell-buffer
+                    (derived-mode-p 'agent-shell-mode))
+                  (progn
+                    ;; `agent-shell-restart' normally asks before killing an
+                    ;; active request.  Automatic recovery is that decision,
+                    ;; so bypass only its active-request confirmation.
+                    (cl-letf (((symbol-function
+                                'agent-shell--active-requests-p)
+                               (lambda (&rest _arguments) nil)))
+                      (with-current-buffer shell-buffer
+                        (let ((shell-maker-prompt-before-killing-buffer nil))
+                          (agent-shell-restart :session-id session-id))))
+                    (get-buffer buffer-name))
+                ;; A failed startup can leave a fundamental-mode placeholder
+                ;; behind.  Rebuild directly from the retained snapshot rather
+                ;; than requiring that partial buffer to be a working shell.
+                (when (buffer-live-p shell-buffer)
+                  (kill-buffer shell-buffer))
+                (let ((default-directory directory))
+                  (let ((new-buffer
+                         (agent-shell--start
+                          :config config
+                          :session-strategy 'new
+                          :session-id session-id
+                          :new-session t
+                          :no-focus t)))
+                    (shell-maker-set-buffer-name new-buffer buffer-name)
+                    (if-let ((live-windows
+                              (seq-filter #'window-live-p windows)))
+                        (dolist (window live-windows)
+                          (set-window-buffer window new-buffer))
+                      (agent-shell--display-buffer new-buffer))
+                    new-buffer))))
+            subscription
+            restored
+            retry-scheduled)
+        (unless (buffer-live-p new-shell-buffer)
+          (error "Agent Shell restart failed; recovery snapshot retained"))
+        (cl-labels
+            ((restore-after-init
+              ()
+              (unless restored
+                (setq restored t)
+                (when subscription
+                  (agent-shell-unsubscribe :subscription subscription))
+                (my/agent-shell--restore-recovery-snapshot
+                 new-shell-buffer snapshot)
+                (setq my/agent-shell--recovery-snapshots
+                      (assoc-delete-all
+                       buffer-name my/agent-shell--recovery-snapshots))
+                (when (plist-get snapshot :pending-requests)
+                  (run-at-time
+                   0 nil #'my/agent-shell--resume-pending-if-ready
+                   new-shell-buffer))
+                (message "Agent session recovered; local draft and queue restored"))))
+          (setq subscription
+                (agent-shell-subscribe-to
+                 :shell-buffer new-shell-buffer
+                 :on-event
+                 (lambda (event)
+                   (pcase (map-elt event :event)
+                     ('init-finished
+                      (restore-after-init))
+                     ('error
+                      (unless (or restored retry-scheduled)
+                        (setq retry-scheduled t)
+                        (when subscription
+                          (agent-shell-unsubscribe
+                           :subscription subscription))
+                        (my/agent-shell--schedule-recovery-retry
+                         buffer-name))))))))
+        (message "Restarting and resuming Agent Shell session %s..."
+                 session-id))))
+
+  (defun my/agent-shell--interrupt-for-forced-request (shell-buffer)
+    "Interrupt SHELL-BUFFER, then resume its frontmost forced request."
+    (let (subscription finished)
+      (cl-labels
+          ((resume-when-ready
+            ()
+            (when (and (not finished) (buffer-live-p shell-buffer))
+              (with-current-buffer shell-buffer
+                ;; `error' is emitted before Shell Maker clears its busy
+                ;; flag.  An unrelated request can also error first, so keep
+                ;; the subscription armed until this turn is genuinely idle.
+                (unless (shell-maker-busy)
+                  (setq finished t)
+                  (when subscription
+                    (agent-shell-unsubscribe :subscription subscription))
+                  (my/agent-shell--resume-pending-if-ready shell-buffer)))))
+           (resume-after-event
+            ()
+            ;; ACP cancellation can finish through either `turn-complete'
+            ;; or `error'.  Defer until the event callback has returned.
+            (run-at-time 0 nil (lambda () (resume-when-ready)))))
+        (setq subscription
+              (agent-shell-subscribe-to
+               :shell-buffer shell-buffer
+               :on-event
+               (lambda (event)
+                 (when (memq (map-elt event :event)
+                             '(turn-complete error clean-up))
+                   (resume-after-event)))))
+        (with-current-buffer shell-buffer
+          (agent-shell-interrupt t)
+          ;; Pre-session and already-finished turns may stop synchronously.
+          (unless (shell-maker-busy)
+            (resume-when-ready))))))
+
+  (defun my/agent-shell--force-prompt (shell-buffer prompt)
+    "Run PROMPT next in SHELL-BUFFER, interrupting its active turn if needed."
+    (if (with-current-buffer shell-buffer (shell-maker-busy))
+        (progn
+          (my/agent-shell--prepend-pending-request shell-buffer prompt)
+          (my/agent-shell--interrupt-for-forced-request shell-buffer)
+          (message "Interrupted active turn; force-submitting next"))
+      (with-current-buffer shell-buffer
+        (agent-shell-queue-request prompt))))
+
+  (defun my/agent-shell-force-submit ()
+    "Interrupt the active turn and submit the current draft next.
+
+The forced draft is placed at the front of Agent Shell's native queue, ahead
+of ordinary queued follow-ups.  With no active turn, submit normally."
+    (interactive)
+    (cond
+     ((derived-mode-p 'my/agent-shell-composer-mode)
+      (my/agent-shell-composer-force-submit))
+     ((derived-mode-p 'agent-shell-viewport-edit-mode)
+      (let* ((viewport-buffer (current-buffer))
+             (shell-buffer (agent-shell--shell-buffer :no-create t))
+             (prompt (or (my/agent-shell--viewport-draft)
+                         (user-error "Nothing to submit"))))
+        (if (with-current-buffer shell-buffer (shell-maker-busy))
+            (progn
+              (my/agent-shell--prepend-pending-request shell-buffer prompt)
+              (agent-shell-viewport--initialize)
+              (if agent-shell-viewport-dismiss-on-send
+                  (agent-shell-viewport--dismiss viewport-buffer)
+                (agent-shell-viewport-view-last))
+              (my/agent-shell--interrupt-for-forced-request shell-buffer)
+              (message "Interrupted active turn; force-submitting next"))
+          (call-interactively #'agent-shell-viewport-compose-send))))
+     ((derived-mode-p 'agent-shell-mode)
+      (my/agent-shell--ensure-inline-input t t)
+      (let ((prompt (my/agent-shell--inline-queue-text))
+            (shell-buffer (current-buffer)))
+        (unless (and prompt
+                     (not (string-empty-p (string-trim prompt))))
+          (user-error "Nothing to force-submit"))
+        (my/agent-shell--delete-inline-queue)
+        (condition-case error-data
+            (progn
+              (my/agent-shell--force-prompt shell-buffer prompt)
+              (unless (my/agent-shell--inline-queue-active-p)
+                (my/agent-shell--insert-inline-queue-block ""))
+              (my/agent-shell--hide-native-prompt shell-buffer)
+              (goto-char my/agent-shell--inline-queue-content-end))
+          (error
+           (unless (my/agent-shell--inline-queue-active-p)
+             (my/agent-shell--insert-inline-queue-block prompt))
+           (signal (car error-data) (cdr error-data))))))
+     ((derived-mode-p 'agent-shell-viewport-view-mode)
+      (agent-shell-viewport-reply)
+      (message "Type the replacement prompt, then press Command-Return"))
+     (t
+      (user-error "Not in an Agent Shell prompt"))))
+
+  (defun my/agent-shell-permission-return ()
+    "Allow once when appropriate; otherwise submit or queue the prompt."
+    (interactive)
+    (if (and (my/agent-shell--permission-pending-p)
+             ;; A composed follow-up wins over the permission shortcut.  This
+             ;; allows RET to queue it, or force the FIFO head with empty
+             ;; input, even while the current turn is blocked.
+             (not (my/agent-shell--viewport-draft))
+             (not (let ((shell-buffer
+                         (my/agent-shell--context-shell-buffer t)))
+                    (and shell-buffer
+                         (with-current-buffer shell-buffer
+                           (or (my/agent-shell--inline-queue-has-text-p)
+                               (my/agent-shell--pending-requests
+                                shell-buffer)))))))
         (my/agent-shell-permission-allow-once)
-      (my/agent-shell--call-major-binding "RET" #'newline)))
+      (my/agent-shell-submit-or-queue)))
 
   (defun my/agent-shell--current-draft-p ()
     "Return non-nil when cancellation would overwrite an unsent draft."
-    (or (condition-case nil
-            (when-let* ((shell-buffer
-                         (agent-shell--shell-buffer
-                          :no-error t :no-create t)))
-              (with-current-buffer shell-buffer
-                (agent-shell--input)))
-          (error nil))
-        (and (derived-mode-p 'agent-shell-viewport-edit-mode)
-             (not (string-empty-p
-                   (string-trim
-                    (buffer-substring-no-properties
-                     (point-min) (point-max))))))))
+    (let ((shell-buffer (my/agent-shell--context-shell-buffer t)))
+      (or (and shell-buffer
+               (with-current-buffer shell-buffer
+                 (my/agent-shell--inline-queue-has-text-p)))
+          ;; Keep this fallback only for a native prompt that has not yet been
+          ;; migrated during a live config reload.
+          (condition-case nil
+              (when shell-buffer
+                (with-current-buffer shell-buffer
+                  (my/agent-shell--native-input-text)))
+            (error nil))
+          (and (derived-mode-p 'agent-shell-viewport-edit-mode)
+               (not (string-empty-p
+                     (string-trim
+                      (buffer-substring-no-properties
+                       (point-min) (point-max)))))))))
 
   (defun my/agent-shell--last-submitted-input (shell-buffer)
     "Return the newest submitted input from SHELL-BUFFER history."
@@ -2701,7 +5274,7 @@ is included in the measurement."
   (defun my/agent-shell-interrupt-and-edit ()
     "Interrupt the active turn and restore its prompt for editing."
     (interactive)
-    (let* ((shell-buffer (agent-shell--shell-buffer :no-create t))
+    (let* ((shell-buffer (my/agent-shell--context-shell-buffer))
            (input (my/agent-shell--last-submitted-input shell-buffer))
            token
            restored)
@@ -2714,17 +5287,18 @@ is included in the measurement."
               (setq restored t)
               (with-current-buffer shell-buffer
                 (when token
-                  (agent-shell-unsubscribe :subscription token))
-                ;; Never overwrite text that appeared while cancellation was
-                ;; in flight.
-                (unless (agent-shell--input)
-                  (let ((inhibit-read-only t))
-                    (goto-char (point-max))
-                    (insert input))
-                  (when-let* ((window (get-buffer-window shell-buffer t)))
-                    (set-window-point window (point-max))
-                    (with-selected-window window
-                      (evil-insert-state))))))))
+                  (agent-shell-unsubscribe :subscription token)))
+              (with-current-buffer shell-buffer
+                (my/agent-shell--ensure-inline-input nil t)
+                ;; Never overwrite text typed while cancellation was in flight.
+                (unless (my/agent-shell--inline-queue-has-text-p)
+                  (goto-char my/agent-shell--inline-queue-content-end)
+                  (insert input))
+                (when-let ((window (get-buffer-window shell-buffer t)))
+                  (select-window window))
+                (my/agent-shell--ensure-inline-input t t)
+                (when (fboundp 'evil-insert-state)
+                  (evil-insert-state))))))
         (setq token
               (agent-shell-subscribe-to
                :shell-buffer shell-buffer
@@ -2739,21 +5313,37 @@ is included in the measurement."
             (restore-input))))))
 
   (defun my/agent-shell-cancel-submitted-prompt ()
-    "Cancel and restore a submitted prompt before the agent starts replying."
+    "Unqueue a follow-up or interrupt the active Agent Shell turn.
+
+A just-submitted prompt is restored for editing when no response has arrived
+yet.  Any separate draft already being edited is preserved unchanged."
     (interactive)
-    (let ((shell-buffer
-           (agent-shell--shell-buffer :no-error t :no-create t)))
-      (if (and shell-buffer
-               (not (my/agent-shell--current-draft-p))
-               (with-current-buffer shell-buffer
-                 (and (eq (agent-shell-status) 'busy)
-                      ;; Input submission resets this to nil.  The first
-                      ;; message/thought/tool update sets it, closing the
-                      ;; brief terminal-style edit window.
-                      (null (map-elt (agent-shell--state)
-                                     :last-entry-type)))))
-          (my/agent-shell-interrupt-and-edit)
-        (keyboard-quit))))
+    (let ((shell-buffer (my/agent-shell--context-shell-buffer t)))
+      (cond
+       ((and (derived-mode-p 'agent-shell-mode)
+             (my/agent-shell--pending-index-at-point))
+        (my/agent-shell-remove-pending-request-at-point))
+       ((and shell-buffer
+             (buffer-local-value
+              'my/agent-shell--inline-queue-queued-p shell-buffer))
+        ;; Unqueue without destroying text; it remains an editable draft.
+        (with-current-buffer shell-buffer
+          (my/agent-shell--unqueue-inline-prompt)
+          (my/agent-shell--ensure-inline-input t t)))
+       ((and shell-buffer
+             (with-current-buffer shell-buffer
+               (eq (agent-shell-status) 'busy)))
+        (if (and (not (my/agent-shell--current-draft-p))
+                 (with-current-buffer shell-buffer
+                   ;; Submission resets this to nil.  Before the first
+                   ;; response entry, interrupt-and-edit can restore it.
+                   (null (map-elt (agent-shell--state) :last-entry-type))))
+            (my/agent-shell-interrupt-and-edit)
+          (with-current-buffer shell-buffer
+            (agent-shell-interrupt t))
+          (message "Agent interrupted; current draft preserved")))
+       (t
+        (keyboard-quit)))))
 
 
   (defun my/agent-shell--navigate-permission (backward)
@@ -2808,27 +5398,94 @@ is included in the measurement."
   ;; auxiliary maps so the Agent Shell commands reliably win there only.
   (dolist (map (list agent-shell-mode-map
                      agent-shell-viewport-edit-mode-map
-                     agent-shell-viewport-view-mode-map))
+                     agent-shell-viewport-view-mode-map
+                     my/agent-shell-composer-mode-map))
     (define-key map (kbd "s-y")
                 #'my/agent-shell-permission-allow-once)
     (define-key map (kbd "s-Y")
                 #'my/agent-shell-permission-allow-always)
     (define-key map (kbd "s-g")
                 #'my/agent-shell-permission-view-diff)
-    (define-key map (kbd "C-g")
+    (define-key map (kbd "C-g") nil)
+    (define-key map (kbd "C-c")
                 #'my/agent-shell-cancel-submitted-prompt)
+    (dolist (key '("M-N" "M-S-n"))
+      (define-key map (kbd key) #'my/agent-shell-new-conversation))
+    (dolist (key '("s-RET" "s-<return>" "C-RET" "C-<return>"))
+      (define-key map (kbd key) #'my/agent-shell-force-submit))
     (evil-define-key* '(normal motion visual insert) map
       (kbd "s-y") #'my/agent-shell-permission-allow-once
       (kbd "s-Y") #'my/agent-shell-permission-allow-always
       (kbd "s-g") #'my/agent-shell-permission-view-diff
-      (kbd "C-g") #'my/agent-shell-cancel-submitted-prompt))
+      (kbd "C-g") nil
+      (kbd "C-c") #'my/agent-shell-cancel-submitted-prompt)
+    (dolist (key '("M-N" "M-S-n"))
+      (evil-define-key* '(normal motion visual insert) map
+        (kbd key) #'my/agent-shell-new-conversation))
+    (dolist (key '("s-RET" "s-<return>" "C-RET" "C-<return>"))
+      (evil-define-key* '(normal motion visual insert) map
+        (kbd key) #'my/agent-shell-force-submit)))
+
+  ;; Comint normally binds insert-state C-u to `comint-kill-input', which
+  ;; erases every line in a multiline prompt.  Keep Vim's line-local behavior
+  ;; in Agent Shell without changing normal-state C-u scrolling.
+  (evil-define-key* 'insert agent-shell-mode-map
+    (kbd "C-u") #'my/agent-shell-delete-to-line-start)
+  (evil-define-key* 'insert agent-shell-viewport-edit-mode-map
+    (kbd "C-u") #'my/agent-shell-delete-to-line-start)
+  (evil-define-key* 'insert my/agent-shell-composer-mode-map
+    (kbd "C-u") #'my/agent-shell-delete-to-line-start)
+
+  ;; Evil's stock `o' follows the physical line into the protected prompt
+  ;; footer.  Open below within the editable transcript prompt instead.
+  (evil-define-key* 'normal agent-shell-mode-map
+    (kbd "o") #'my/agent-shell-open-below)
+
+  ;; Transcript output is read-only.  Redirect typed text into the embedded
+  ;; gray input region at the bottom of the same buffer.
+  ;; Agent Shell binds plain n/p for item navigation in its major map, which
+  ;; otherwise shadows self-insert even in Evil insert state.  Keep navigation
+  ;; in normal/motion state and let insert state type both characters.
+  (dolist (key '("n" "p"))
+    (define-key agent-shell-mode-map (kbd key) nil))
+  (evil-define-key* '(normal motion) agent-shell-mode-map
+    (kbd "n") #'agent-shell-next-item
+    (kbd "p") #'agent-shell-previous-item)
+  (define-key agent-shell-mode-map [remap self-insert-command]
+              #'my/agent-shell-self-insert-or-compose)
+  (define-key agent-shell-mode-map (kbd "s-v")
+              #'my/agent-shell-yank-or-compose)
+
+  ;; Transitional bindings let a live config reload migrate an old composer
+  ;; without trapping the user there.
+  (define-key my/agent-shell-composer-mode-map (kbd "RET")
+              #'my/agent-shell-permission-return)
+  (define-key my/agent-shell-composer-mode-map (kbd "<return>")
+              #'my/agent-shell-permission-return)
+
+  ;; Zed-style prompt editing: Return sends, Shift-Return inserts a newline.
+  (dolist (key '("S-RET" "S-<return>"))
+    (define-key agent-shell-mode-map (kbd key) #'my/agent-shell-newline)
+    (define-key agent-shell-viewport-edit-mode-map
+                (kbd key) #'my/agent-shell-newline)
+    (define-key my/agent-shell-composer-mode-map
+                (kbd key) #'my/agent-shell-newline)
+    (evil-define-key* '(normal motion visual insert)
+      agent-shell-mode-map (kbd key) #'my/agent-shell-newline)
+    (evil-define-key* '(normal motion visual insert)
+      agent-shell-viewport-edit-mode-map
+      (kbd key) #'my/agent-shell-newline)
+    (evil-define-key* '(normal motion visual insert)
+      my/agent-shell-composer-mode-map
+      (kbd key) #'my/agent-shell-newline))
 
   (defun my/agent-shell--ns-paste-secondary
       (original &rest arguments)
     "Turn macOS secondary paste into approval only for pending agent prompts."
     (if (and (derived-mode-p 'agent-shell-mode
                              'agent-shell-viewport-edit-mode
-                             'agent-shell-viewport-view-mode)
+                             'agent-shell-viewport-view-mode
+                             'my/agent-shell-composer-mode)
              (my/agent-shell--permission-pending-p))
         (my/agent-shell-permission-allow-once)
       (apply original arguments)))
@@ -2845,18 +5502,14 @@ is included in the measurement."
 
   (map! :map (agent-shell-mode-map
               agent-shell-viewport-edit-mode-map
-              agent-shell-viewport-view-mode-map)
+              agent-shell-viewport-view-mode-map
+              my/agent-shell-composer-mode-map)
         ;; Default permission controls in normal, motion, visual, and insert.
         :nvim "RET" #'my/agent-shell-permission-return
         :nvim "<return>" #'my/agent-shell-permission-return
         :nvim "TAB" #'my/agent-shell-permission-tab
         :nvim "<tab>" #'my/agent-shell-permission-tab
         :nvim "<backtab>" #'my/agent-shell-permission-backtab
-        ;; Explicit fallbacks are useful in terminal Emacs.
-        :nvim "C-c a" #'my/agent-shell-permission-allow-once
-        :nvim "C-c A" #'my/agent-shell-permission-allow-always
-        :nvim "C-c x" #'my/agent-shell-permission-reject
-        :nvim "C-c v" #'my/agent-shell-permission-view-diff
         ;; Evil navigation in normal/motion state.
         :nm "h" #'evil-backward-char
         :nm "j" #'evil-next-visual-line
@@ -2864,7 +5517,24 @@ is included in the measurement."
         :nm "l" #'evil-forward-char
         :nm "gv" #'my/agent-shell-permission-view-diff
         :nm "]p" #'agent-shell-next-permission-button
-        :nm "[p" #'agent-shell-previous-permission-button))
+        :nm "[p" #'agent-shell-previous-permission-button)
+
+  ;; A config reload may find an existing instance of the short-lived separate
+  ;; composer design.  Fold it back into its owning transcript without losing
+  ;; a draft or queued state.
+  (dolist (shell-buffer (agent-shell-buffers))
+    (when (buffer-live-p shell-buffer)
+      (with-current-buffer shell-buffer
+        (my/agent-shell--enable-inline-queue-editing)
+        (my/agent-shell--start-stall-watchdog))
+      (run-at-time
+       0 nil #'my/agent-shell--retire-composer-window shell-buffer
+       (and (buffer-live-p
+             (buffer-local-value 'my/agent-shell--composer-buffer
+                                 shell-buffer))
+            (eq (window-buffer (selected-window))
+                (buffer-local-value 'my/agent-shell--composer-buffer
+                                    shell-buffer)))))))
 
 ;; Give every GUI Emacs instance its own emacsclient socket (server<PID>)
 ;; so external tools — claude_approver's EmacsWatcher in particular — can
