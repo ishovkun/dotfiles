@@ -169,6 +169,18 @@
 (add-hook 'after-change-major-mode-hook #'my/buffer-font-size--apply)
 (add-hook 'doom-load-theme-hook #'my/ui-font-size--apply 110)
 
+(defun my/counsel-imenu-dwim ()
+  "Jump via `counsel-imenu', degrading gracefully with no imenu index.
+Modes that set up no imenu leave `imenu-create-index-function' nil, so
+plain `counsel-imenu' does (funcall nil) and dies with the cryptic
+\"Symbol's function definition is void: nil\".  Give a clear message
+instead."
+  (interactive)
+  (if (functionp imenu-create-index-function)
+      (call-interactively #'counsel-imenu)
+    (user-error "No imenu index in %s — nothing for `gs' to jump to"
+                major-mode)))
+
 (map!
  (:map treemacs-mode-map
   "M-l"         #'evil-window-right
@@ -249,7 +261,7 @@
    :nv "C-k" #'scroll-down-line
    )
   :nv "gc"          #'evil-avy-goto-char-timer
-  :nv "gs"          #'counsel-imenu
+  :nv "gs"          #'my/counsel-imenu-dwim
   :nv "g["          #'avy-goto-char-2-above
   :nv "g]"          #'avy-goto-char-2-below
   :n  "S"           #'avy-goto-char-in-line
