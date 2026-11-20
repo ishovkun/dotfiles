@@ -457,7 +457,7 @@ instead."
     :nv "s"   #'split-window-below
     :nv "e"   #'balance-windows
     )
-  (:after ivy :nv "SPC" #'+ivy/switch-workspace-buffer)
+  :desc "Open project buffer or file" :nv "SPC" #'my/project-picker
   (:prefix "b"
     :desc "kill current buffer"          :nv "d" #'kill-current-buffer
     :desc "switch to compilation buffer" :nv "c" #'switch-to-compilation-buffer
@@ -1041,6 +1041,149 @@ Chat takes precedence over Popup, and Popup over Terminal."
             )
            )))
 )
+
+;; Make `SPC SPC' behave like Zed's project picker.  Use Emacs's local VC
+;; project backend here instead of Projectile: Projectile intentionally ignores
+;; bare .git roots below (otherwise ~/.git claims every directory), while the VC
+;; backend still resolves the nearest local repository correctly.
+(defvar my/project-picker-history nil)
+
+(defun my/project-picker--active-files (root)
+  "Return recently active file buffers beneath ROOT as relative paths."
+  (delete-dups
+   (delq nil
+         (mapcar
+          (lambda (buffer)
+            (when-let ((file (buffer-local-value 'buffer-file-name buffer)))
+              (when (ignore-errors (file-in-directory-p file root))
+                (file-relative-name file root))))
+          (buffer-list)))))
+
+(defun my/project-picker--project-files (project root)
+  "Return PROJECT files as paths relative to ROOT."
+  (let ((project-files-relative-names t))
+    (delete-dups
+     (mapcar (lambda (file)
+               (file-relative-name (expand-file-name file root) root))
+             (project-files project)))))
+
+(defun my/project-picker--candidates (project root)
+  "Return open files first, then remaining PROJECT files beneath ROOT."
+  (let* ((active (my/project-picker--active-files root))
+         (active-set (make-hash-table :test #'equal))
+         (files (my/project-picker--project-files project root)))
+    (dolist (file active)
+      (puthash file t active-set))
+    (append
+     (mapcar (lambda (file)
+               (propertize file 'my/project-picker-kind 'buffer))
+             active)
+     (mapcar (lambda (file)
+               (propertize file 'my/project-picker-kind 'file))
+             (seq-remove (lambda (file) (gethash file active-set)) files)))))
+
+(defun my/project-picker ()
+  "Open an active buffer or another file in the current local project."
+  (interactive)
+  (require 'project)
+  (require 'ivy)
+  (if-let ((project (and (not (file-remote-p default-directory))
+                         (project-current nil))))
+      (let* ((root (file-name-as-directory
+                    (expand-file-name (project-root project))))
+             (candidates (my/project-picker--candidates project root))
+             (current (when-let ((file buffer-file-name))
+                        (when (ignore-errors (file-in-directory-p file root))
+                          (file-relative-name file root)))))
+        (ivy-read
+         (format "[%s] Open: "
+                 (file-name-nondirectory (directory-file-name root)))
+         candidates
+         :require-match t
+         :sort nil
+         :history 'my/project-picker-history
+         :preselect (and current (regexp-quote current))
+         :action (lambda (candidate)
+                   (find-file
+                    (expand-file-name
+                     (substring-no-properties candidate) root)))
+         :caller 'my/project-picker))
+    (+ivy/switch-workspace-buffer)))
+
+(after! ivy
+  (defun my/project-picker--transformer (candidate)
+    "Render CANDIDATE and retain which project-picker section it belongs to."
+    (let* ((kind (get-text-property 0 'my/project-picker-kind candidate))
+           (file (substring-no-properties candidate))
+           (rendered
+            (if (and (display-graphic-p)
+                     (fboundp 'nerd-icons-icon-for-file))
+                (concat (nerd-icons-icon-for-file file) " " file)
+              file)))
+      (add-text-properties 0 (length rendered)
+                           `(my/project-picker-kind ,kind)
+                           rendered)
+      (when (eq kind 'file)
+        (add-face-text-property 0 (length rendered) 'ivy-virtual nil rendered))
+      rendered))
+
+  (defun my/project-picker--add-divider (formatted-candidates)
+    "Draw the breadcrumb rule above the first line of FORMATTED-CANDIDATES."
+    (let* ((underline (face-attribute 'header-line :underline nil t))
+           (color (or (face-background 'ivy-posframe-border nil t)
+                      (and (listp underline)
+                           (plist-get underline :color))
+                      (face-foreground 'breadcrumb-face nil t)
+                      (face-background 'ivy-current-match nil t)
+                      (face-foreground 'default nil t)))
+           (rule-face `(:overline ,color))
+           (fringe-face 'my/ivy-posframe-divider-fringe)
+           (rendered (copy-sequence formatted-candidates))
+           (line-end (or (string-match-p "\n" rendered)
+                         (length rendered))))
+      (when (facep fringe-face)
+        (set-face-attribute fringe-face nil
+                            :foreground color
+                            :background
+                            (face-background 'ivy-posframe nil t)))
+      ;; Apply this after Ivy has painted `ivy-current-match'.  Its Colir
+      ;; blending otherwise reconstructs the selected candidate's face and
+      ;; discards our overline from the glyphs while leaving the stretch intact.
+      (add-face-text-property 0 line-end rule-face t rendered)
+      (concat (propertize
+               " " 'display
+               `(left-fringe my/ivy-posframe-divider-bitmap ,fringe-face))
+              (propertize
+               " " 'display
+               `(right-fringe my/ivy-posframe-divider-bitmap ,fringe-face))
+              (substring rendered 0 line-end)
+              (propertize
+               " "
+               'display '(space :align-to (- right-fringe 0))
+               'face rule-face)
+              (substring rendered line-end))))
+
+  (defun my/project-picker--format (candidates)
+    "Format CANDIDATES with a non-selectable project-files divider."
+    (let ((boundary
+           (cl-position 'file candidates
+                        :key (lambda (candidate)
+                               (get-text-property
+                                0 'my/project-picker-kind candidate)))))
+      (if (not (and boundary (> boundary 0)))
+          (+ivy-format-function-line-or-arrow candidates)
+        (let ((buffer-candidates (cl-subseq candidates 0 boundary))
+              (file-candidates (nthcdr boundary candidates)))
+          (concat
+           (let ((ivy--window-index ivy--window-index))
+             (+ivy-format-function-line-or-arrow buffer-candidates))
+           (my/project-picker--add-divider
+            (let ((ivy--window-index (- ivy--window-index boundary)))
+              (+ivy-format-function-line-or-arrow file-candidates))))))))
+
+  (ivy-configure 'my/project-picker
+    :display-transformer-fn #'my/project-picker--transformer
+    :format-fn #'my/project-picker--format))
 
 (if window-system
   (setq window-divider-default-bottom-width 4 ; in pixels
