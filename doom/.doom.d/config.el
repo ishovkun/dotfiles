@@ -2873,3 +2873,24 @@ is included in the measurement."
 (unless (daemonp)
   (setq server-name (format "server%d" (emacs-pid)))
   (server-start))
+
+;; [[ / ]] move by function (methods inside classes too, via the major
+;; mode's beginning/end-of-defun), while { / } take over evil's vim-style
+;; section motions that [[ / ]] had by default.
+(after! evil
+  (evil-define-motion my/evil-backward-defun (count)
+    "Go to the beginning of the current defun; repeat for previous ones."
+    :type exclusive
+    :jump t
+    (beginning-of-defun (or count 1)))
+
+  (evil-define-motion my/evil-forward-defun (count)
+    "Go to the end of the current defun; repeat for following ones."
+    :type inclusive
+    :jump t
+    (end-of-defun (or count 1)))
+
+  (map! :m "[[" #'my/evil-backward-defun
+        :m "]]" #'my/evil-forward-defun
+        :m "{"  #'evil-backward-section-begin
+        :m "}"  #'evil-forward-section-begin))
