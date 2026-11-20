@@ -23,7 +23,7 @@
        :ui
        deft                    ; notational velocity for Emacs
        doom                    ; what makes DOOM look the way it does
-       dashboard               ; a nifty splash screen for Emacs
+       doom-dashboard          ; a nifty splash screen for Emacs
        ;; doom-quit            ; DOOM quit-message prompts when you quit Emacs
        ;; (emoji +unicode)     ; 🙂
        ;; fill-column          ; a `fill-column' indicator
@@ -113,7 +113,10 @@
        ;;wakatime
        :checkers
        syntax                  ; tasing you for every semicolon you forget
-       spell                   ; tasing you for misspelling mispelling
+       ;; tasing you for misspelling mispelling (when a checker is installed)
+       (spell :if (or (executable-find "aspell")
+                      (executable-find "hunspell")
+                      (executable-find "enchant-2")))
        grammar                 ; tasing grammar mistake every you make
 
        :os
@@ -137,7 +140,7 @@
        emacs-lisp              ; drown in parentheses
        ;;ess                   ; emacs speaks statistics
        ;;fsharp                ; ML stands for Microsoft's Language
-       ;;go                    ; the hipster dialect
+       go                      ; the hipster dialect
        ;;(haskell +intero)     ; a language that's lazier than I am
        ;;hy                    ; readability of scheme w/ speed of python
        ;;idris             ;
@@ -171,7 +174,7 @@
        ;;php                   ; perl's insecure younger brother
        ;;plantuml              ; diagrams for confusing people more
        ;;purescript            ; javascript, but functional
-       (python +lsp            ; beautiful is better than ugly
+       (python +lsp +pyright   ; beautiful is better than ugly
                ;;+conda
                )
        ;;qt                    ; the 'cutest' gui framework ever

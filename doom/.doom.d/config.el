@@ -1223,6 +1223,15 @@ Chat takes precedence over Popup, and Popup over Terminal."
      ;; (lsp-treemacs-sync-mode 1)
      ))
 
+;; Use basedpyright as the Python language server so `gs' (counsel-imenu over
+;; LSP document symbols) shows exactly the class/function outline Zed does —
+;; Zed's Python extension runs basedpyright too.  The variable only exists on
+;; newer lsp-pyright, so guard it; without it lsp-pyright falls back to plain
+;; `pyright', whose document-symbol tree is identical for outline purposes.
+(after! lsp-pyright
+  (when (boundp 'lsp-pyright-langserver-command)
+    (setq lsp-pyright-langserver-command "basedpyright")))
+
 (use-package! lsp-ui
   :init
   (setq lsp-ui-sideline-enable nil)
