@@ -180,7 +180,8 @@
    `(vertical-border ((,class (:foreground ,bg-dark :background ,bg-dark))))
    `(minibuffer-prompt ((,class (:bold t :foreground ,keyword, :background ,bg))))
    `(default-italic ((,class (:italic t))))
-   `(link ((,class (:foreground ,const :underline t))))
+   `(link ((,class (:foreground ,overlay1
+                    :underline (:color ,overlay1 :style line)))))
    `(org-code ((,class (:foreground ,fg-dim))))
    `(org-hide ((,class (:foreground ,const))))
    `(org-level-1 ((,class (:bold t :foreground ,func :height 1.1))))
@@ -189,7 +190,8 @@
    `(org-level-4 ((,class (:bold nil :foreground ,keyword))))
    `(org-date ((,class (:underline t :foreground ,var))))
    `(org-footnote  ((,class (:underline t :foreground ,const))))
-   `(org-link ((,class (:underline t :foreground ,type ))))
+   `(org-link ((,class (:foreground ,overlay1
+                        :underline (:color ,overlay1 :style line)))))
    `(org-special-keyword ((,class (:foreground ,func))))
    `(org-block ((,class (:foreground ,fg-bright))))
    `(org-quote ((,class (:inherit org-block :slant italic))))

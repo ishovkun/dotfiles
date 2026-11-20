@@ -100,6 +100,8 @@
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
       (my/buffer-font-size--apply)))
+  (when (fboundp 'my/org-refresh-right-tags-after-font-scale)
+    (my/org-refresh-right-tags-after-font-scale))
   (force-window-update t)
   (message "Buffer font size: %d%%"
            (round
@@ -1778,12 +1780,335 @@ Chat takes precedence over Popup, and Popup over Terminal."
 ;; ----------------------------------- Org ----------------------------------
 (after! org
   (progn
+    (defun my/org-insert-today ()
+      "Insert today as an active Org timestamp without prompting.
+In normal state, insert after the cursor (like `a'), because leaving insert
+state moves point back onto the last typed char (e.g. the space after `*')."
+      (interactive)
+      (when (and (bound-and-true-p evil-local-mode)
+                 (evil-normal-state-p)
+                 (not (eolp)))
+        (forward-char))
+      (org-insert-time-stamp (current-time)))
+
+    (defun my/org-set-todo-state (state)
+      "Set the current Org heading to workflow STATE."
+      (org-todo state))
+
+    (defun my/org-todo-todo ()
+      "Mark the current Org heading TODO."
+      (interactive)
+      (my/org-set-todo-state "TODO"))
+
+    (defun my/org-todo-start ()
+      "Mark the current Org heading STRT (shown as PROGRESS)."
+      (interactive)
+      (my/org-set-todo-state "STRT"))
+
+    (defun my/org-todo-wait ()
+      "Mark the current Org heading WAIT."
+      (interactive)
+      (my/org-set-todo-state "WAIT"))
+
+    (defun my/org-todo-hold ()
+      "Mark the current Org heading HOLD."
+      (interactive)
+      (my/org-set-todo-state "HOLD"))
+
+    (defun my/org-todo-kill ()
+      "Mark the current Org heading KILL."
+      (interactive)
+      (my/org-set-todo-state "KILL"))
+
+    (defun my/org-todo-done ()
+      "Mark the current Org heading DONE without adding a timestamp."
+      (interactive)
+      (my/org-set-todo-state "DONE"))
+
+    (defun my/org-todo-done-with-today ()
+      "Mark the current Org heading DONE and prefix its title with today."
+      (interactive)
+      (save-excursion
+        (org-back-to-heading t)
+        (my/org-set-todo-state "DONE")
+        (org-back-to-heading t)
+        (let ((heading (org-get-heading t t t t)))
+          (unless (string-match-p
+                   (concat "\\`" org-ts-regexp "\\(?:[[:space:]]\\|\\'\\)")
+                   heading)
+            (org-edit-headline
+             (concat (format-time-string
+                      (concat "<" (car org-time-stamp-formats) ">"))
+                     (unless (string-empty-p heading) " ")
+                     heading))))))
+
+    (map! :map org-mode-map
+          :localleader
+          "p" #'org-priority
+          "`" #'my/org-insert-today
+          (:prefix ("t" . "todo state")
+           :desc "Choose/cycle state" "RET" #'org-todo
+           :desc "TODO" "t" #'my/org-todo-todo
+           :desc "PROGRESS" "s" #'my/org-todo-start
+           :desc "WAIT" "w" #'my/org-todo-wait
+           :desc "HOLD" "h" #'my/org-todo-hold
+           :desc "KILL" "k" #'my/org-todo-kill
+           :desc "DONE + today" "d" #'my/org-todo-done-with-today
+           :desc "DONE (no timestamp)" "D" #'my/org-todo-done))
+
+    ;; Keep real Org TODO states while displaying their mirrored tag on the
+    ;; right in todos.org.  Either `org-todo' or tag selection can change it.
+    (defconst my/org-right-status-tags
+      '("TODO" "STRT" "WAIT" "HOLD" "KILL" "DONE"))
+
+    ;; Org keywords cannot contain spaces, so keep Doom's STRT in the file and
+    ;; only change what the right-aligned badge says.
+    (defconst my/org-right-status-labels
+      '(("STRT" . "PROGRESS")))
+
+    (defconst my/org-right-uppercase-markers '("bug" "feature"))
+
+    (defvar-local my/org--syncing-right-status nil)
+    (defvar-local my/org--right-status-display-installed nil)
+    (defvar-local my/org--right-tag-display-installed nil)
+    (defvar-local my/org--active-timestamp-display-installed nil)
+
+    (defun my/org-match-active-timestamp-brackets (limit)
+      "Style level-one active timestamp headings and hide brackets up to LIMIT."
+      (when (re-search-forward (concat "^\\* +" org-ts-regexp) limit t)
+        (let ((begin (1- (match-beginning 1)))
+              (end (1+ (match-end 1)))
+              (inhibit-read-only t))
+          (with-silent-modifications
+            ;; A journal date is the heading text, so derive all of its visual
+            ;; attributes from the theme's level-one heading face.
+            (put-text-property begin end 'face 'org-level-1)
+            (put-text-property begin (1+ begin) 'display "")
+            (put-text-property (1- end) end 'display ""))
+          t)))
+
+    (defun my/org-active-timestamp-display-setup ()
+      "Hide timestamp brackets without replacing native Org heading faces."
+      (unless my/org--active-timestamp-display-installed
+        (setq-local my/org--active-timestamp-display-installed t)
+        (add-to-list (make-local-variable 'font-lock-extra-managed-props)
+                     'display)
+        (font-lock-add-keywords
+         nil '((my/org-match-active-timestamp-brackets (0 nil))) 'append))
+      (font-lock-flush))
+
+    (defun my/org-right-status-buffer-p ()
+      (and buffer-file-name
+           (file-equal-p buffer-file-name
+                         (expand-file-name "~/notes/todos.org"))))
+
+    (defun my/org-sync-right-status-tag-from-todo ()
+      (when (and (my/org-right-status-buffer-p)
+                 (org-at-heading-p)
+                 (not my/org--syncing-right-status))
+        (let* ((my/org--syncing-right-status t)
+               (state (org-get-todo-state))
+               (tags (seq-remove
+                      (lambda (tag)
+                        (member tag my/org-right-status-tags))
+                      (org-get-tags nil t))))
+          (org-set-tags (if state (cons state tags) tags)))))
+
+    (defun my/org-sync-todo-from-right-status-tag ()
+      (when (and (my/org-right-status-buffer-p)
+                 (org-at-heading-p)
+                 (not my/org--syncing-right-status))
+        (let* ((my/org--syncing-right-status t)
+               (state (seq-find
+                       (lambda (tag) (member tag (org-get-tags nil t)))
+                       my/org-right-status-tags))
+               (current (org-get-todo-state)))
+          (unless (equal state current)
+            (org-todo (or state 'none))))))
+
+    (defun my/org-match-native-status (limit)
+      (when (my/org-right-status-buffer-p)
+        (let ((case-fold-search nil)
+              (status-regexp (regexp-opt my/org-right-status-tags)))
+          (when (re-search-forward
+                 (concat "^\\*+ +\\(" status-regexp "\\(?: +\\|$\\)\\)")
+                 limit t)
+            ;; `org-modern--todo' paints padding with `display' on the first
+            ;; and last keyword characters.  A display replacement wins over
+            ;; invisibility, leaving the first status character on screen, so
+            ;; remove that chrome before hiding the native keyword.
+            (remove-text-properties
+             (match-beginning 1) (match-end 1) '(display nil))
+            (add-text-properties
+             (match-beginning 1) (match-end 1)
+             '(invisible my/org-native-status
+               rear-nonsticky (invisible)))
+            t))))
+
+    (defun my/org-right-status-face (status)
+      "Return the same face Org Modern uses for native STATUS keywords."
+      (if (and (bound-and-true-p org-modern-mode)
+               (facep 'org-modern-label))
+          (if-let ((face (and (boundp 'org-modern-todo-faces)
+                              (or (cdr (assoc status org-modern-todo-faces))
+                                  (cdr (assq t org-modern-todo-faces))))))
+              `(:inherit (,face org-modern-label))
+            (if (member status org-not-done-keywords)
+                'org-modern-todo
+              'org-modern-done))
+        (if (member status org-done-keywords) 'org-done 'org-todo)))
+
+    (defun my/org-right-marker-face (tag)
+      "Return one full-size badge face for right-aligned TAG."
+      (if (member tag my/org-right-status-tags)
+          (my/org-right-status-face tag)
+        ;; Type tags such as bug/feature should use the same substantial pill
+        ;; as an active status instead of Org Modern's smaller generic label.
+        (if (bound-and-true-p org-modern-mode)
+            'org-modern-todo
+          'org-todo)))
+
+    (defun my/org-right-tags-pixel-width (begin end)
+      "Return rendered width of tags between BEGIN and END.
+
+Use the live window when available so buffer-local font remapping from M-=
+is included in the measurement."
+      (if-let ((window (get-buffer-window (current-buffer) t)))
+          (car (window-text-pixel-size window begin end))
+        (string-pixel-width (buffer-substring begin end))))
+
+    (defun my/org-refresh-right-tags-after-font-scale ()
+      "Refontify right-aligned tags after shared buffer zoom changes."
+      (dolist (buffer (buffer-list))
+        (with-current-buffer buffer
+          (when (my/org-right-status-buffer-p)
+            (font-lock-flush)
+            ;; Hidden buffers will fontify after they acquire a window, when
+            ;; `my/org-right-tags-pixel-width' can measure their live scale.
+            (when (get-buffer-window buffer t)
+              (font-lock-ensure))))))
+
+    (defun my/org-match-right-aligned-tags (limit)
+      (when (and (my/org-right-status-buffer-p)
+                 (re-search-forward org-tag-line-re limit t))
+        (let* ((tag-begin (match-beginning 1))
+               (tag-end (match-end 1))
+               (padding-begin
+                (save-excursion
+                  (goto-char tag-begin)
+                  (skip-chars-backward " \t")
+                  (point)))
+               ;; Preserve the final display properties when measuring.
+               (tag-width
+                (progn
+                  (save-excursion
+                    ;; Hide the source-syntax colons at both edges.  Interior
+                    ;; colons become a narrow transparent gap so adjacent
+                    ;; marker backgrounds remain visually distinct.
+                    (goto-char tag-begin)
+                    (while (search-forward ":" tag-end t)
+                      (let ((colon (1- (point))))
+                        (put-text-property
+                         colon (point) 'display
+                         (if (and (> colon tag-begin)
+                                  (< colon (1- tag-end)))
+                             '(space :width 0.5)
+                           ""))))
+                    ;; Mirrored workflow states should be visually identical
+                    ;; to their native TODO/DONE keyword.  Type markers use
+                    ;; that same full-size badge treatment as well.
+                    (goto-char tag-begin)
+                    (while (re-search-forward "[^:]+" tag-end t)
+                      (let ((tag (match-string-no-properties 0))
+                            (marker-begin (match-beginning 0))
+                            (marker-end (match-end 0)))
+                        (put-text-property
+                         marker-begin marker-end 'face
+                         (my/org-right-marker-face tag))
+                        ;; One shared string over the whole span renders once,
+                        ;; replacing e.g. STRT with PROGRESS.  It is set
+                        ;; before measuring, so right alignment uses its width.
+                        (when-let ((label (cdr (assoc tag my/org-right-status-labels))))
+                          (put-text-property
+                           marker-begin marker-end 'display
+                           (propertize label 'face
+                                       (my/org-right-marker-face tag))))
+                        ;; Keep canonical Org tags lowercase in the file, but
+                        ;; render type badges in the same all-caps vocabulary
+                        ;; as workflow statuses.
+                        (when (member tag my/org-right-uppercase-markers)
+                          (dotimes (index (- marker-end marker-begin))
+                            (let* ((position (+ marker-begin index))
+                                   (letter
+                                    (upcase
+                                     (string (char-after position)))))
+                              (put-text-property
+                               position (1+ position) 'display
+                               (concat
+                                (if (= index 0) " " "")
+                                letter
+                                (if (= position (1- marker-end)) " " "")))))))))
+                  ;; Landing on (or within a pixel of) the right edge makes
+                  ;; Emacs wrap the final badge glyph.  One pixel of slack is
+                  ;; not enough: org-modern's pill renders a hair wider than the
+                  ;; measured source text, so lines land at exactly the edge and
+                  ;; spill.  Reserve a whole character of slack, which scales
+                  ;; with the live font size (buffer zoom via M-=).
+                  (+ (my/org-right-tags-pixel-width tag-begin tag-end)
+                     (if-let ((window (get-buffer-window (current-buffer) t)))
+                         (frame-char-width (window-frame window))
+                       10)))))
+          (when (< padding-begin tag-begin)
+            (add-text-properties
+             padding-begin tag-begin
+             `(display
+               (space :align-to (- right (,tag-width)))
+               rear-nonsticky (display))))
+          t)))
+
+    (defun my/org-right-status-display-setup ()
+      (when (my/org-right-status-buffer-p)
+        ;; Keep one ordinary source space before tags.  Alignment is purely a
+        ;; display property, so it follows each window's live right edge.
+        (setq-local org-auto-align-tags nil)
+        (setq-local org-tags-column 0)
+        (unless my/org--right-status-display-installed
+          (setq-local my/org--right-status-display-installed t)
+          (add-to-invisibility-spec 'my/org-native-status)
+          (add-to-list (make-local-variable 'font-lock-extra-managed-props)
+                       'invisible)
+          (font-lock-add-keywords
+           nil '((my/org-match-native-status (0 nil))) 'append))
+        (unless my/org--right-tag-display-installed
+          (setq-local my/org--right-tag-display-installed t)
+          (add-to-list (make-local-variable 'font-lock-extra-managed-props)
+                       'display)
+          (font-lock-add-keywords
+           nil '((my/org-match-right-aligned-tags (0 nil))) 'append))
+        (font-lock-flush)))
+
+    (add-hook 'org-after-todo-state-change-hook
+              #'my/org-sync-right-status-tag-from-todo)
+    (add-hook 'org-after-tags-change-hook
+              #'my/org-sync-todo-from-right-status-tag)
+    (add-hook 'org-mode-hook #'my/org-right-status-display-setup)
+
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+        (when (derived-mode-p 'org-mode)
+          (my/org-right-status-display-setup))))
+
     (setq org-directory "~/Dropbox/enotes")
      (setq org-agenda-files (list org-directory))
     (when (string= (system-name) "space")
       (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
       )
+    ;; Let native Org compose timestamps with their surrounding heading face.
+    ;; Org Modern's timestamp pill forces a tiny 0.8-height label with its own
+    ;; dark background, hiding `org-level-1' sizing in journal date headings.
+    (setq org-modern-timestamp nil)
     (add-hook 'org-mode-hook #'org-modern-mode)
+    (add-hook 'org-mode-hook #'my/org-active-timestamp-display-setup t)
     (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
     (setq org-ellipsis "…")
     (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
