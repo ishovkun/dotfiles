@@ -38,9 +38,36 @@
   '((t (:inherit doom-modeline-highlight)))
   "Hover face for the version-control button.")
 
-(defconst ishovkun-frame-status-navigation-commands
-  '(evil-window-left evil-window-right evil-window-up evil-window-down
-    windmove-left windmove-right windmove-up windmove-down))
+(define-derived-mode ishovkun-frame-status-mode special-mode "Frame-Status"
+  "Internal read-only mode for the frame-wide status row."
+  (setq-local mode-line-format nil
+              cursor-type nil
+              truncate-lines t
+              buffer-read-only t
+              buffer-undo-list t
+              buffer-offer-save nil))
+
+(defun ishovkun-frame-status--window-p (window)
+  "Return non-nil when WINDOW is the protected frame status window."
+  (and (window-live-p window)
+       (or (window-parameter window 'ishovkun-frame-status-window)
+           (eq (window-buffer window)
+               (get-buffer ishovkun-frame-status-buffer)))))
+
+(defun ishovkun-frame-status--fallback-window (&optional frame)
+  "Return a selectable editor window on FRAME."
+  (let ((frame (or frame (selected-frame))))
+    (or (and (window-live-p ishovkun-frame-status-source-window)
+             (eq (window-frame ishovkun-frame-status-source-window) frame)
+             (not (ishovkun-frame-status--window-p
+                   ishovkun-frame-status-source-window))
+             ishovkun-frame-status-source-window)
+        (seq-find
+         (lambda (window)
+           (and (window-live-p window)
+                (not (window-minibuffer-p window))
+                (not (ishovkun-frame-status--window-p window))))
+         (window-list frame 'no-minibuffer)))))
 
 (defun ishovkun-frame-status--top-level-frame (&optional frame)
   "Return the top-level editor frame containing FRAME."
@@ -138,11 +165,28 @@ the fake minibuffer cursor."
 
 (defun ishovkun-frame-status--select-window (original window &rest args)
   "Make the dedicated status WINDOW non-selectable."
-  (if (and (eq (window-buffer window) (get-buffer ishovkun-frame-status-buffer))
-           (not ishovkun-frame-status-allow-selection)
-           (memq this-command ishovkun-frame-status-navigation-commands))
+  (if (and (ishovkun-frame-status--window-p window)
+           (not ishovkun-frame-status-allow-selection))
       (selected-window)
     (apply original window args)))
+
+(defun ishovkun-frame-status--reject-selection (&optional frame)
+  "Move selection out of the status window on FRAME.
+
+This catches mouse and low-level window selection paths that do not call the
+Lisp-level `select-window' function."
+  (let* ((frame (or frame (selected-frame)))
+         (selected (frame-selected-window frame)))
+    (when (and (ishovkun-frame-status--window-p selected)
+               (not ishovkun-frame-status-allow-selection))
+      (when-let ((fallback (ishovkun-frame-status--fallback-window frame)))
+        (let ((ishovkun-frame-status-allow-selection t))
+          (select-window fallback 'norecord))))))
+
+(defun ishovkun-frame-status--ace-ignore-window (original window)
+  "Make Ace Window ignore protected status WINDOW unconditionally."
+  (or (ishovkun-frame-status--window-p window)
+      (funcall original window)))
 
 (defun ishovkun-frame-status--restore-focus ()
   "Return focus after a mouse action in the status window."
@@ -472,14 +516,15 @@ the fake minibuffer cursor."
    (lambda (segment)
      (let ((text
             (copy-sequence
-             (if (eq segment 'diagnostics)
-                 (ishovkun-frame-status--diagnostics)
-               (cl-letf (((symbol-function 'doom-modeline--active)
-                          (lambda () t)))
-                 (format-mode-line
-                  `((:eval
-                     (,(intern
-                        (format "doom-modeline-segment--%s" segment)))))))))))
+             (or (if (eq segment 'diagnostics)
+                     (ishovkun-frame-status--diagnostics)
+                   (cl-letf (((symbol-function 'doom-modeline--active)
+                              (lambda () t)))
+                     (format-mode-line
+                      `((:eval
+                         (,(intern
+                            (format "doom-modeline-segment--%s" segment))))))))
+                 ""))))
        (ishovkun-frame-status--adapt-keymaps text)
        (pcase segment
          ((or 'workspace-name 'persp-name)
@@ -685,7 +730,9 @@ the fake minibuffer cursor."
                    (row-height
                     (or (window-parameter
                          window 'ishovkun-frame-status-row-height)
-                        (with-selected-window window (line-pixel-height))))
+                        (let ((ishovkun-frame-status-allow-selection t))
+                          (with-selected-window window
+                            (line-pixel-height)))))
                    (target-height
                     (+ row-height (window-bottom-divider-width window)))
                    (delta (- target-height (window-pixel-height window))))
@@ -706,12 +753,18 @@ the fake minibuffer cursor."
     (let ((ishovkun-frame-status--ensuring-window t)
           (window (get-buffer-window ishovkun-frame-status-buffer frame)))
       (ishovkun-frame-status--remove-popup-windows)
-      (unless (window-live-p window)
-        (let ((buffer (get-buffer-create ishovkun-frame-status-buffer)))
-          (with-current-buffer buffer
-            (setq-local mode-line-format nil
-                        cursor-type nil
-                        buffer-read-only t))
+      (let ((buffer (get-buffer-create ishovkun-frame-status-buffer)))
+        ;; Session/layout restoration can preserve the old status buffer while
+        ;; replacing its window.  Reassert the internal mode for both existing
+        ;; and newly created windows, not just the latter.
+        (with-current-buffer buffer
+          (unless (derived-mode-p 'ishovkun-frame-status-mode)
+            (ishovkun-frame-status-mode))
+          (setq-local mode-line-format nil
+                      cursor-type nil
+                      buffer-read-only t
+                      buffer-undo-list t))
+        (unless (window-live-p window)
           (with-selected-frame frame
             (setq window
                   (display-buffer-in-side-window
@@ -719,7 +772,9 @@ the fake minibuffer cursor."
                    '((side . bottom) (slot . -100) (window-height . 1)))))))
       (when (window-live-p window)
         (set-window-dedicated-p window t)
+        (set-window-parameter window 'ishovkun-frame-status-window t)
         (set-window-parameter window 'no-other-window t)
+        (set-window-parameter window 'no-delete-other-windows t)
         (ishovkun-frame-status--pin-window-height window))
       ;; Doom's session restoration can restore its default mode line at the
       ;; same time that it replaces the window configuration.
@@ -821,7 +876,17 @@ the fake minibuffer cursor."
   (add-hook 'emacs-startup-hook #'ishovkun-frame-status--ensure-window 100)
   (when (boundp 'doom-after-init-hook)
     (add-hook 'doom-after-init-hook #'ishovkun-frame-status--ensure-window 100))
+  (advice-remove #'select-window #'ishovkun-frame-status--select-window)
   (advice-add #'select-window :around #'ishovkun-frame-status--select-window)
+  (remove-hook 'window-selection-change-functions
+               #'ishovkun-frame-status--reject-selection)
+  (add-hook 'window-selection-change-functions
+            #'ishovkun-frame-status--reject-selection 100)
+  (with-eval-after-load 'ace-window
+    (advice-remove #'aw-ignored-p
+                   #'ishovkun-frame-status--ace-ignore-window)
+    (advice-add #'aw-ignored-p :around
+                #'ishovkun-frame-status--ace-ignore-window))
   (add-hook 'post-command-hook #'ishovkun-frame-status-render)
   (add-hook 'post-command-hook #'ishovkun-frame-status--restore-focus 100)
   (add-hook 'minibuffer-setup-hook #'ishovkun-frame-status--minibuffer-setup)
