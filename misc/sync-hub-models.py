@@ -3,6 +3,8 @@
 
     sync-hub-models            # dry run: show what would change
     sync-hub-models --apply    # rewrite both configs (backups first)
+    sync-hub-models --cron     # weekly launchd job: apply unless a default
+                               # model would vanish; macOS notification
 
 Fetches GET /v1/models with $INFERENCEHUB_TOKEN, keeps only the model lines
 listed in LINES below (no flash/lite/mini/nano/haiku/luna), keeps the newest
@@ -20,7 +22,7 @@ are reported and skipped until a pattern is added to LINES.
 
 The token is read from the environment and never printed or written anywhere.
 """
-import argparse, copy, json, os, re, shutil, sys, time, urllib.request
+import argparse, copy, json, os, re, shutil, subprocess, sys, time, urllib.request
 
 HUB = "https://inference-api.nvidia.com/v1/models"
 KEEP = 2
@@ -256,6 +258,9 @@ def build_opencode(picked, old_models):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--apply", action="store_true", help="write the configs (default: dry run)")
+    ap.add_argument("--cron", action="store_true",
+                    help="unattended: refuse to drop a default model; one-line summary; "
+                         "notify on change or refusal")
     args = ap.parse_args()
 
     picked, unknown = select(fetch_hub())
@@ -288,9 +293,20 @@ def main():
     except KeyError: pass
     m = oc_cfg.get("model", "")
     if m.startswith("inference-hub/"): defaults.append(("opencode model", m.split("/", 1)[1]))
-    for where, mid in defaults:
-        if mid not in new_ids:
-            print(f"\nWARNING: {where} = {mid} is not in the new list")
+    lost = [(w, mid) for w, mid in defaults if mid not in new_ids]
+    for where, mid in lost:
+        print(f"\nWARNING: {where} = {mid} is not in the new list")
+
+    added, dropped = sorted(new_ids - old_ids), sorted(old_ids - new_ids)
+    if args.cron:
+        if lost:
+            notify("Hub model sync skipped",
+                   f"would drop default model {lost[0][1]}; run sync-hub-models by hand")
+            sys.exit(2)
+        if not added and not dropped:
+            print("no changes")
+            return
+        args.apply = True
 
     if not args.apply:
         print("\ndry run; re-run with --apply to write")
@@ -307,6 +323,18 @@ def main():
         with open(path, "r+") as f:
             f.seek(0); f.write(text); f.truncate()
         print(f"wrote {path}  (backup {bak})")
+
+    if args.cron:
+        short = lambda ids: ", ".join(i.rsplit("/", 1)[-1] for i in ids)
+        msg = " ".join(filter(None, [f"+{len(added)}: {short(added)}" if added else "",
+                                     f"−{len(dropped)}: {short(dropped)}" if dropped else ""]))
+        notify("Hub models updated", msg)
+
+
+def notify(title, msg):
+    print(f"{title}: {msg}")
+    script = f"display notification {json.dumps(msg[:240])} with title {json.dumps(title)}"
+    subprocess.run(["/usr/bin/osascript", "-e", script], check=False)
 
 
 if __name__ == "__main__":

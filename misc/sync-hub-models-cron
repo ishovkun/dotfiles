@@ -1,0 +1,14 @@
+#!/bin/zsh
+# launchd entry point for sync-hub-models (weekly, Thu 18:00 local).
+# launchd's own INFERENCEHUB_TOKEN is broken (empty quotes), so take the real
+# one from ~/secrets.sh, which is the same file interactive shells source.
+set -u
+unset INFERENCEHUB_TOKEN
+[[ -r "$HOME/secrets.sh" ]] && source "$HOME/secrets.sh"
+log_dir="$HOME/.local/state/sync-hub-models"
+/bin/mkdir -p "$log_dir"
+{
+  print -- "=== $(/bin/date '+%a %-d %b %Y %H:%M %Z')"
+  /usr/bin/env python3 "${0:A:h}/sync-hub-models.py" --cron
+  print -- "exit $?"
+} >> "$log_dir/sync.log" 2>&1
